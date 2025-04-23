@@ -61,6 +61,16 @@ enum MAXState { WAITING, ANALYSING, SHOW_RESULTS };
 MAXState maxState = WAITING;
 bool firstFill = true;
 
+// Variables auxiliares (declarar al inicio del archivo, junto a globals)
+static uint16_t initialFillIndex = 0;
+static uint16_t chunkIndex        = 0;
+static uint32_t tempIR[FreqS];
+static uint32_t tempRed[FreqS];
+
+// Prototipos (encima de setup/loop)
+void shiftBuffers(uint16_t shiftCount);
+void displayRealtime(uint32_t hr, uint32_t sp);
+
 // Function prototypes
 void initDisplay();
 void initMPU();
@@ -77,17 +87,10 @@ void setup() {
 }
 
 void loop() {
-  // Manage buttons and background animation or alerts
   handleButtonsAndAnimation();
-
-  // Update MPU sensor and display step count / fall alerts
   mpu.update();
   handleMPU();
-
-  // Handle MAX30102 measurements and Serial output
   handleMAX();
-
-  delay(200); // Small pause to avoid flooding Serial
 }
 
 // Initialize TFT display and button inputs
@@ -112,7 +115,7 @@ void initMPU() {
     while (1); // Halt on error
   }
   Serial.println("Calibrando MPU-6050...");
-  delay(1000);
+  millis();
   mpu.calcOffsets(true, true);
   Serial.println("MPU-6050 listo.");
 }
@@ -126,13 +129,13 @@ void initMAX() {
     tft.setTextColor(TFT_WHITE);
     tft.setCursor(0, 0);
     tft.println("Sensor NO hallado");
-    while (1) delay(100);
+
   }
   particleSensor.setup(
     /* ledBrightness   */ 0x1F,
-    /* sampleAverage   */ 4,
+    /* sampleAverage   */ 2,
     /* ledMode         */ 2,
-    /* sampleRate      */ FreqS,
+    /* sampleRate      */ 100,
     /* pulseWidth      */ 411,
     /* adcRange        */ 4096
   );
@@ -160,7 +163,7 @@ void handleButtonsAndAnimation() {
       Serial.println("ALERTA: botones presionados");
       showingAlert = true;
       bothButtonsPressed = false;
-      delay(2000); // Show alert for 2 seconds
+      delay(2000); 
     }
   } else {
     bothButtonsPressed = false;
@@ -181,6 +184,8 @@ void handleButtonsAndAnimation() {
       previousMillis = currentMillis;
       tft.pushImage(0, 0, 160, 235, frames[frameIndex]);
       frameIndex = (frameIndex + 1) % 10;
+
+      displayRealtime();  
     }
   }
 }
@@ -219,9 +224,9 @@ void handleMPU() {
   // Display step count and detection status
   tft.setTextColor(TFT_BLACK, TFT_WHITE);
   tft.setTextSize(2);
-  tft.setCursor(10, 200);
+  tft.setCursor(15, 200);
   tft.printf("Pasos: %d", stepCount);
-  tft.setCursor(10, 220);
+  tft.setCursor(15, 220);
   if (isStepDetected) {
     tft.printf("Paso detectado!");
   }
@@ -229,64 +234,78 @@ void handleMPU() {
 
 // Acquire data from MAX30102, compute HR/SpO2, and output to Serial
 void handleMAX() {
-  // Wait for a new sample
-  while (!particleSensor.available()) {
-    particleSensor.check();
-  }
-  uint32_t ir = particleSensor.getIR();
+  // Actualizar y comprobar FIFO sin bloquear
+  particleSensor.check();
+  if (!particleSensor.available()) return;
+
+  // Leer muestra
+  uint32_t ir  = particleSensor.getIR();
   uint32_t red = particleSensor.getRed();
   particleSensor.nextSample();
 
-  // Finger removed -> show final results
+  // Dedo retirado -> transición de estados
   if (ir < IR_THRESHOLD) {
     if (maxState == ANALYSING) {
       fingerRemovedMillis = millis();
       maxState = SHOW_RESULTS;
     }
-    if (maxState == SHOW_RESULTS && (millis() - fingerRemovedMillis) > 3000) {
+    if (maxState == SHOW_RESULTS && millis() - fingerRemovedMillis > 3000) {
       Serial.printf("RESULTADOS FINALES - AvgHR=%ld BPM AvgSpO2=%ld %%\n",
                     lastAvgHR, lastAvgSpO2);
+      // Mostrar promedio final y permanecer en pantalla
+      tft.fillRect(0, 0, 160, 240, TFT_BLACK);
+      tft.setTextColor(TFT_WHITE);
+      tft.setTextSize(2);
+      tft.setCursor(20, 60);
+      tft.printf("HR avg: %ld BPM", lastAvgHR);
+      tft.setCursor(20, 90);
+      tft.printf("SpO2 avg: %ld %%", lastAvgSpO2);
       maxState = WAITING;
+      initialFillIndex = chunkIndex = 0;
     }
     return;
   }
 
-  // Start measurement when finger detected
+  // Iniciar análisis al detectar dedo
   if (maxState == WAITING) {
     maxState = ANALYSING;
     sumHR = sumSpO2 = 0;
     countHR = countSpO2 = 0;
     firstFill = true;
+    initialFillIndex = chunkIndex = 0;
     Serial.println("Dedo detectado: comenzando medicion");
-
+    // Limpiar solo la zona de datos para evitar residuos
+    tft.fillRect(0, 0, 160, 240, TFT_BLACK);
   }
 
-  // Fill or shift buffers
+  // Relleno inicial del buffer (muestra a muestra)
   if (firstFill) {
-    for (int i = 0; i < BUFFER_SIZE; i++) {
-      while (!particleSensor.available()) particleSensor.check();
-      redBuffer[i] = particleSensor.getRed();
-      irBuffer[i]  = particleSensor.getIR();
-      particleSensor.nextSample();
+    irBuffer[initialFillIndex]  = ir;
+    redBuffer[initialFillIndex] = red;
+    if (++initialFillIndex >= BUFFER_SIZE) {
+      firstFill = false;
+      initialFillIndex = 0;
     }
-    firstFill = false;
-  } else {
-    // Shift existing data
-    for (int i = 0; i < BUFFER_SIZE - FreqS; i++) {
-      redBuffer[i] = redBuffer[i + FreqS];
-      irBuffer[i]  = irBuffer[i + FreqS];
-    }
-    redBuffer[BUFFER_SIZE - FreqS] = red;
-    irBuffer[BUFFER_SIZE - FreqS]  = ir;
-    for (int j = BUFFER_SIZE - FreqS + 1; j < BUFFER_SIZE; j++) {
-      while (!particleSensor.available()) particleSensor.check();
-      redBuffer[j] = particleSensor.getRed();
-      irBuffer[j]  = particleSensor.getIR();
-      particleSensor.nextSample();
-    }
+    // Mostrar promedio actual aún vacío
+    displayRealtime();
+    return;
   }
 
-  // Compute HR and SpO2
+  // Agrupar en chunks de FreqS
+  tempIR[chunkIndex]  = ir;
+  tempRed[chunkIndex] = red;
+  if (++chunkIndex < FreqS) {
+    displayRealtime();
+    return;
+  }
+
+  // Desplazar buffer y copiar nuevos datos
+  shiftBuffers(FreqS);
+  memcpy(irBuffer  + BUFFER_SIZE - FreqS, tempIR,  FreqS * sizeof(uint32_t));
+  memcpy(redBuffer + BUFFER_SIZE - FreqS, tempRed, FreqS * sizeof(uint32_t));
+  chunkIndex = 0;
+
+  // Cálculo HR y SpO2
   maxim_heart_rate_and_oxygen_saturation(
     irBuffer, BUFFER_SIZE,
     redBuffer,
@@ -294,9 +313,9 @@ void handleMAX() {
     &heartRate, &validHR
   );
 
-  // Filter and average results
-  bool hrOK   = validHR   && heartRate  > 0 && heartRate  <= 200;
-  bool spo2OK = validSPO2 && spo2       > 0 && spo2       <= 100;
+  // Filtrar y promediar
+  bool hrOK   = validHR   && heartRate > 0 && heartRate <= 200;
+  bool spo2OK = validSPO2 && spo2      > 0 && spo2      <= 100;
   if (hrOK) {
     sumHR += heartRate;
     countHR++;
@@ -308,7 +327,10 @@ void handleMAX() {
     lastAvgSpO2 = sumSpO2 / countSpO2;
   }
 
-  // Serial output
+  // Mostrar promedio en tiempo real
+  displayRealtime();
+
+  // Salida Serial
   if (hrOK && spo2OK) {
     Serial.printf("HR=%ld SpO2=%ld AvgHR=%ld AvgSpO2=%ld\n",
                   heartRate, spo2, lastAvgHR, lastAvgSpO2);
@@ -317,3 +339,36 @@ void handleMAX() {
                   heartRate, validHR, spo2, validSPO2);
   }
 }
+
+// Desplaza los buffers a la izquierda 'shiftCount' posiciones
+template <typename T>
+void genericShift(T* buffer, uint16_t length, uint16_t shiftCount) {
+  memmove(buffer, buffer + shiftCount, (length - shiftCount) * sizeof(T));
+}
+
+void shiftBuffers(uint16_t shiftCount) {
+  genericShift(irBuffer,  BUFFER_SIZE, shiftCount);
+  genericShift(redBuffer, BUFFER_SIZE, shiftCount);
+}
+
+
+void displayRealtime() {
+
+  tft.setTextSize(2);
+  tft.setTextColor(TFT_BLACK, TFT_WHITE);
+
+  tft.setCursor(80, 35);
+  tft.printf("%ld", lastAvgHR);
+  
+
+  tft.setCursor(80, 80);
+  tft.printf("%ld%%", lastAvgSpO2);
+
+  // Texto Analizando si aún midiendo (igual estilo printf)
+  if (maxState == ANALYSING) {
+
+    tft.setCursor(10, 220);
+    tft.printf("ANALIZANDO ...");
+  }
+}
+
