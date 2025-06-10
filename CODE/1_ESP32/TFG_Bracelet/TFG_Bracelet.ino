@@ -234,16 +234,16 @@ void handleMPU() {
 
 // Acquire data from MAX30102, compute HR/SpO2, and output to Serial
 void handleMAX() {
-  // Actualizar y comprobar FIFO sin bloquear
+  // Update and check FIFO without blocking
   particleSensor.check();
   if (!particleSensor.available()) return;
 
-  // Leer muestra
+  // Reed IR and RED
   uint32_t ir  = particleSensor.getIR();
   uint32_t red = particleSensor.getRed();
   particleSensor.nextSample();
 
-  // Dedo retirado -> transición de estados
+  // Finger removed -> state transition
   if (ir < IR_THRESHOLD) {
     if (maxState == ANALYSING) {
       fingerRemovedMillis = millis();
@@ -252,7 +252,7 @@ void handleMAX() {
     if (maxState == SHOW_RESULTS && millis() - fingerRemovedMillis > 3000) {
       Serial.printf("RESULTADOS FINALES - AvgHR=%ld BPM AvgSpO2=%ld %%\n",
                     lastAvgHR, lastAvgSpO2);
-      // Mostrar promedio final y permanecer en pantalla
+      // Show final average and stay on screen
       tft.fillRect(0, 0, 160, 240, TFT_BLACK);
       tft.setTextColor(TFT_WHITE);
       tft.setTextSize(2);
@@ -266,7 +266,7 @@ void handleMAX() {
     return;
   }
 
-  // Iniciar análisis al detectar dedo
+  // Start analysis when finger is detected
   if (maxState == WAITING) {
     maxState = ANALYSING;
     sumHR = sumSpO2 = 0;
@@ -274,11 +274,11 @@ void handleMAX() {
     firstFill = true;
     initialFillIndex = chunkIndex = 0;
     Serial.println("Dedo detectado: comenzando medicion");
-    // Limpiar solo la zona de datos para evitar residuos
+    // Clean only the data area to avoid residue
     tft.fillRect(0, 0, 160, 240, TFT_BLACK);
   }
 
-  // Relleno inicial del buffer (muestra a muestra)
+  // Initial buffer filling (sample by sample)
   if (firstFill) {
     irBuffer[initialFillIndex]  = ir;
     redBuffer[initialFillIndex] = red;
@@ -286,12 +286,12 @@ void handleMAX() {
       firstFill = false;
       initialFillIndex = 0;
     }
-    // Mostrar promedio actual aún vacío
+    // Show current average still empty
     displayRealtime();
     return;
   }
 
-  // Agrupar en chunks de FreqS
+  //  Grouping in FreqS chunks
   tempIR[chunkIndex]  = ir;
   tempRed[chunkIndex] = red;
   if (++chunkIndex < FreqS) {
@@ -299,13 +299,13 @@ void handleMAX() {
     return;
   }
 
-  // Desplazar buffer y copiar nuevos datos
+  //  Grouping in FreqSS chunks, moving buffer and copying new data
   shiftBuffers(FreqS);
   memcpy(irBuffer  + BUFFER_SIZE - FreqS, tempIR,  FreqS * sizeof(uint32_t));
   memcpy(redBuffer + BUFFER_SIZE - FreqS, tempRed, FreqS * sizeof(uint32_t));
   chunkIndex = 0;
 
-  // Cálculo HR y SpO2
+  // HR and SpO2 calculation
   maxim_heart_rate_and_oxygen_saturation(
     irBuffer, BUFFER_SIZE,
     redBuffer,
@@ -313,7 +313,7 @@ void handleMAX() {
     &heartRate, &validHR
   );
 
-  // Filtrar y promediar
+  // Filtering and averaging
   bool hrOK   = validHR   && heartRate > 0 && heartRate <= 200;
   bool spo2OK = validSPO2 && spo2      > 0 && spo2      <= 100;
   if (hrOK) {
@@ -327,10 +327,10 @@ void handleMAX() {
     lastAvgSpO2 = sumSpO2 / countSpO2;
   }
 
-  // Mostrar promedio en tiempo real
+  // Display real-time average
   displayRealtime();
 
-  // Salida Serial
+  // Serial Output
   if (hrOK && spo2OK) {
     Serial.printf("HR=%ld SpO2=%ld AvgHR=%ld AvgSpO2=%ld\n",
                   heartRate, spo2, lastAvgHR, lastAvgSpO2);
@@ -340,7 +340,7 @@ void handleMAX() {
   }
 }
 
-// Desplaza los buffers a la izquierda 'shiftCount' posiciones
+// Output SerialShift buffers to the left ‘shiftCount’ positions
 template <typename T>
 void genericShift(T* buffer, uint16_t length, uint16_t shiftCount) {
   memmove(buffer, buffer + shiftCount, (length - shiftCount) * sizeof(T));
@@ -364,7 +364,6 @@ void displayRealtime() {
   tft.setCursor(80, 80);
   tft.printf("%ld%%", lastAvgSpO2);
 
-  // Texto Analizando si aún midiendo (igual estilo printf)
   if (maxState == ANALYSING) {
 
     tft.setCursor(10, 220);
