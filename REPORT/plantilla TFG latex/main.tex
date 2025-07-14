@@ -1,0 +1,954 @@
+\documentclass[12pt, a4paper]{article}
+
+%% Preamble
+\usepackage{umatfgspanish}
+\usepackage{blindtext}
+\graphicspath{ {./images/} }
+
+%% Packages using specific for this project
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{url}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue]{hyperref}
+\usepackage{xurl}
+\usepackage{textcomp} % para \textdegree y \texteuro
+\usepackage[T1]{fontenc}
+
+
+%— Coloreado con minted y cajas con tcolorbox —
+\usepackage{tcolorbox}
+\tcbuselibrary{minted,skins}
+
+% Caja genérica para comandos de terminal
+% Entorno para comandos Bash
+\newtcolorbox{Terminal}[2][]{%
+	listing only,
+	minted language=bash,
+	minted options={fontsize=\small,breaklines,autogobble},
+	colback=black!5,
+	colframe=black!75,
+	fonttitle=\bfseries,
+	title={#2},
+	boxrule=0.5pt,
+	arc=1mm,outer arc=1mm,
+	leftrule=0.5pt,toprule=0.5pt,
+	bottomrule=0.5pt,rightrule=0.5pt,
+	before skip=1em,after skip=1em,
+	#1
+}
+
+% Entorno para código Python
+\newtcolorbox{PythonCode}[2][]{%
+	listing only,
+	minted language=python,
+	minted options={fontsize=\small,breaklines,autogobble},
+	colback=black!5,
+	colframe=blue!50!black,
+	fonttitle=\bfseries,
+	title={#2},
+	boxrule=0.5pt,
+	arc=1mm,outer arc=1mm,
+	leftrule=0.5pt,toprule=0.5pt,
+	bottomrule=0.5pt,rightrule=0.5pt,
+	before skip=1em,after skip=1em,
+	#1
+}
+
+% Entorno para código Java
+\newtcolorbox{JavaCode}[2][]{%
+	listing only,
+	minted language=java,
+	minted options={fontsize=\small,breaklines,autogobble},
+	colback=black!5,
+	colframe=red!50!black,
+	fonttitle=\bfseries,
+	title={#2},
+	boxrule=0.5pt,
+	arc=1mm,outer arc=1mm,
+	leftrule=0.5pt,toprule=0.5pt,
+	bottomrule=0.5pt,rightrule=0.5pt,
+	before skip=1em,after skip=1em,
+	#1
+}
+
+\begin{document}
+
+\includepdf[noautoscale=true, width=\paperwidth]{cover.pdf}
+
+\includepdf[noautoscale=true, width=\paperwidth]{title.pdf}
+
+
+%% Abstract
+\begin{abstract}
+    
+
+	{\bfseries\large Palabras clave:} inteligencia artificial, redes neuronales, clasificación
+
+\end{abstract}
+
+%% Resumen
+\section*{Abstract}
+
+	
+	
+	{\bfseries\large Keywords:} 
+
+\tableofcontents
+
+%% Sections
+\section{Introducción}
+
+	\subsection{Motivatión}
+    
+    El progresivo envejecimiento demográfico subraya la necesidad de soluciones tecnológicas orientadas a las personas mayores. En España, los mayores de 65 años representan actualmente el 20,4\% de la población total, cifra que según el INE ascenderá a más del 30\% hacia mediados de siglo\cite{INE2024}. A escala europea la tendencia es similar: a principios de 2024 más de una quinta parte de la población de la UE tenía 65 o más años\cite{Euro2025}. Este panorama anticipa un incremento sostenido de las enfermedades crónicas y de la dependencia, acentuando la carga asistencial en hogares y centros sanitarios.
+    
+    Dentro de este colectivo vulnerable, las caídas suponen un grave problema de salud pública. En España viven unos 8,1 millones de personas ancianas, las cuales registran aproximadamente 4,3 millones de caídas al año, la mayoría de ellas en el propio domicilio\cite{Rodriguez2015}. Estudios recientes indican que alrededor de un tercio de los mayores de 65 años sufre al menos una caída anual, proporción que aumenta hasta el 50\% en mayores de 80. Del total de caídas, cerca del 9,3\% causan fracturas y más del 55\% requieren atención médica de urgencia. A nivel mundial, la Organización Mundial de la Salud destaca que las caídas son la segunda causa global de traumatismos accidentales (alrededor de 684 000 fallecimientos anuales) y que 37,3 millones de episodios de caídas exigen atención médica cada año; las tasas de mortalidad más altas corresponden a mayores de 60 años\cite{OMS2021}. Estos datos ilustran la magnitud del problema: las caídas en ancianos no solo comprometen la salud individual, sino que constituyen un reto para el sistema sanitario.
+    
+    Frente a este escenario, la tecnología \emph{wearable}, elementos como relojes, collares, etc. que se puede llevar a todas partes, permitiendo monitorización continua y a distancia surge como una solución prometedora. Funciones como detectar in situ caídas mediante acelerometría y, simultáneamente, registrar valores de interés para el seguimiento y mejora del paciente (frecuencia cardíaca, saturación de oxígenos y nivel de actividad física). De este modo se habilita un soporte permanente del pacientes. Proyectos recientes respaldan esta aproximación: por ejemplo, La iniciativa privada Seniordomo ofrece un servicio de teleasistencia avanzada mediante wereable y monitoreo constante a través de una plataforma accesible para profesionales y pacientes\cite{seniordomo}. 
+    
+    El valor de esta tecnología se traduce además en mejoras concretas de calidad de vida. Al aumentar la seguridad del entorno, al sentirse acompañado a través de conexión permanente con familiares o servicios de salud. La persona mayor experimenta mayor tranquilidad y menor aislamiento\cite{Reina2024}. Asimismo, al fomentar la autonomía domiciliaria (permitiendo quedarse más tiempo en casa pese a la fragilidad) se eleva la comodidad y el ánimo del anciano\cite{Reina2024}. Desde el punto de vista sanitario, disponer de registros continuos de datos biomédicos que se comparten con los profesionales facilita la detección temprana de signos de alerta y permite actuar de forma preventiva, asimismo obtener más información del paciente. En conjunto, estas prestaciones tecnológicas apoyan a los cuidadores, aligerando su carga y promoviendo un modelo de atención más proactivo y centrado en la prevención.
+    
+    En resumen, el diseño de una pulsera con detección de caídas y monitorización de constantes vitales es una tecnología que cada vez cobrará mayor importancia. Permitirá abordar uno de los principales riesgos de salud en el envejecimiento poblacional, las caídas, reduciendo su impacto clínico y social.
+
+	\subsection{Objetivos}
+	
+	\subsubsection{Objetivo general}
+	Desarrollar un prototipo de pulsera acompañado de una plataforma de telesalud, que permita el seguimiento remoto de parámetros vitales (frecuencia cardíaca, saturación de oxígeno y actividad física) y la detección de caídas en personas mayores.
+	
+	\subsubsection{Objetivos específicos}
+	\begin{itemize}
+		\item Diseñar un prototipo de la pulsera utilizando un microcontrolador, y sensores como pulsímetro, oxímetro, acelerómetro y giroscopio para la medición de constantes vitales y posibles caídas.
+		
+		\item Desarrollar algoritmos de detección de caídas basados en los datos obtenidos del acelerómetro y giroscopio, mediante la definición de umbrales y patrones que permitan diferenciar caídas.
+		
+		\item Implementar la plataforma de telemonitoreo:
+		\begin{itemize}
+			\item \textbf{Back-end (Python):} Servidor REST encargado de recibir, procesar y almacenar los datos de la pulsera en una base de datos PostgreSQL. Incluirá mecanismos de autenticación y autorización para cada tipo de usuario (médico, familiar, cuidador).
+			
+			\item \textbf{Front-end (Svelte):} Interfaz web intuitiva destinada a médicos, familiares y cuidadores, que muestre gráficas de evolución de parámetros vitales, notificaciones de alertas y resúmenes de actividad física, con opciones para configurar umbrales y contactos de emergencia.
+		\end{itemize}
+		
+		\item Integrar la comunicación Wi-Fi entre la pulsera y la plataforma, asegurando un flujo de datos seguro y en tiempo real utilizando el protocolo MQTT.
+		
+		
+	\end{itemize}
+
+	
+	\subsection{Estructura de la memoria}
+	
+	La memoria se encuentra dividida en los siguientes capítulos, cada uno de los cuales aborda de manera detallada los aspectos fundamentales del proyecto:
+	
+	\begin{itemize}
+		\item \textbf{Capítulo 1 y 2: Introducción y marco teórico.}  
+		En este primer capítulo se presenta el contexto general del Trabajo de Fin de Grado. Se describe la motivación que impulsa el desarrollo de una pulsera para el seguimiento de pacientes mayores, así como los objetivos generales y específicos del proyecto. Además, se incluye un breve análisis de precedentes y estudios relacionados, a su vez se evalúa la viabilidad técnica y económica.
+		
+		\item \textbf{Capítulo 3: Análisis funcional y técnico.}  
+		En este capítulo se definen los requisitos del sistema, tanto funcionales como no funcionales. Se identifican los stakeholders principales y se analizan sus necesidades. Además, se realiza un estudio de riesgos.
+		
+		\item \textbf{Capítulo 4 y 5: Elección de alternativas y diseño de la pulsera (Hardware).}  
+		\begin{itemize}
+			\item \emph{Estudio de alternativas:} Se exponen las diferentes opciones de microcontroladores, sensores y baterías disponibles en el mercado que podrían cumplir con los requisitos definidos y se destaca las opciones elegidas.
+			\item \emph{Diseño del esquemático:} Se detalla el esquema de la pulsera, señalando conexiones.
+			\item \emph{Montaje físico y prototipado:} Se describe el proceso de soldadura y ensamblaje de componentes.  
+			\item \emph{Desarrollo de código arduino} Se explica la estructura modular del firmware en lenguaje C++ para Arduino, detallando las tareas principales: inicialización, lectura de sensores, procesamiento de datos para detección de caídas y cálculo de parámetros de frecuencia cardíaca y SpO\textsubscript{2}, gestión de eventos de alerta y comunicación con la plataforma remota.  
+		\end{itemize}
+		
+		\item \textbf{Capítulo 6 y 7: Desarrollo de la plataforma web.}  
+		\begin{itemize}
+			\item \emph{Arquitectura general del sistema:} Se presenta la arquitectura cliente-servidor basada en microservicios, detallando componentes como el servidor de aplicación, la base de datos y el servidor de mensajería.  
+			\item \emph{Back-end (Python):} Se describen las tecnologías y frameworks elegidos (por ejemplo, FastAPI o Flask), la estructura de rutas RESTful, los modelos de datos para PostgreSQL y la lógica para procesar y almacenar las lecturas de la pulsera. También se documenta la implementación de mecanismos de autenticación y autorización para usuarios (médicos, familiares, cuidadores).  
+			\item \emph{Front-end (Svelte):} Se explican las decisiones de diseño de la interfaz de usuario, enfocado en la usabilidad para pacientes y personal sanitario. Se incluyen los componentes principales: panel de control con gráficas de evolución de constantes vitales (frecuencia cardíaca, SpO\textsubscript{2}, pasos diarios), lista de alertas en tiempo real y formularios para configuración de umbrales y datos de contacto.  
+			\item \emph{Integración de alertas y notificaciones:} Se detalla cómo el back-end envía notificaciones (por correo electrónico, SMS o push) cuando se detectan eventos críticos (caídas o valores anormales), y cómo el front-end muestra históricos y estadísticas.  
+		\end{itemize}
+		
+		\item \textbf{Capítulo 8: Configuración e interconexión entre las partes.}  
+		\begin{itemize}
+			\item \emph{Protocolo MQTT:} Se justifica el uso de MQTT para la comunicación ligera entre la pulsera (cliente MQTT) y el servidor (broker MQTT), describiendo topologías de publicación/suscripción, calidad de servicio (QoS) y estrategias de reconexión ante pérdida de cobertura Wi-Fi.  
+			\item \emph{Contenedores con Docker:} Se presenta la creación de contenedores Docker para cada componente del sistema (broker MQTT, servidor Python, base de datos PostgreSQL, servidor web Nginx). Se incluye el archivo \texttt{docker-compose.yml}, que orquesta la puesta en marcha de todos los servicios con un solo comando, simplificando el despliegue en entornos de desarrollo y prueba.  
+			\item \emph{Servidor Nginx y proxy inverso:} Se explica la configuración de Nginx para servir la aplicación web Svelte y hacer de proxy inverso hacia el back-end Python, habilitando HTTPS con certificados autofirmados o Let's Encrypt durante la fase de pruebas.  
+			\item \emph{Uso de Redis para entornos de desarrollo:} Se describe la integración de Redis como sistema de caché o broker de mensajes alternativo (por ejemplo, para manejo de alertas en tiempo real), y cómo se configura un entorno de desarrollo con Docker Compose que incluye Redis para pruebas de baja latencia.  
+		\end{itemize}
+		
+		\item \textbf{Capítulo 9: Conclusiones y perspectivas futuras.}  
+		En este capítulo se recogen los resultados obtenidos tras la validación del prototipo: métricas de precisión en la detección de caídas, fiabilidad de las lecturas de frecuencia cardíaca y SpO\textsubscript{2}, rendimiento de la plataforma web y feedback obtenido de pruebas de usabilidad. Se analizan las limitaciones detectadas (consumo energético, cobertura Wi-Fi, ajustes en algoritmos de detección) y se proponen posibles mejoras, como la incorporación de baterías de mayor capacidad, algoritmos de inteligencia artificial para predicción de eventos críticos o la extensión de la plataforma a dispositivos móviles nativos.
+		
+		\item \textbf{Apéndice (Manual de uso).}  
+		En el Apéndice se incluyen documentos de soporte para el usuario final y el equipo técnico:
+		\begin{itemize}
+			\item \emph{Manual de uso de la pulsera:} Ejemplo de uso del prototipo hardware, además de principales indicaciones y ejemplos de las funcionalidades.  
+			\item \emph{Manual de uso de la plataforma web:} Ejemplo de uso de plataforma de telemedicina enfocando todas sus funciones y utilidades. 
+			\item \emph{Guía de instalación del entorno de desarrollo:} Pasos detallados para desplegar la plataforma mediante Docker, configuración de variables de entorno.
+			\item \emph{Población de la base de datos en entorno de desarrollo} Guía para poblar la base de datos mediante un script de profesionales de la salud y pacientes a partir de datos falsos, para probar la plataforma en un entorno de desarrollo.
+		\end{itemize}
+	\end{itemize}
+	
+
+\section{Marco teórico}
+
+	Es importante contextualizar y tomar de guía algunos de los proyectos que tienen una relación directa con la idea planteada, al ser una problemática de gran importancia se parte de una base ya explorada.
+
+	\subsection{Ejemplos similares de dispositivos y teleasistencia médica}
+	
+	Actualmente existen múltiples propuestas para pulseras o equipos de seguimiento de pacientes de avanzada edad, el mayor problema de las soluciones es el alto coste por usuarios y dificultad en la globalización de un sistema que pueda ser adaptado a cualquier paciente.
+	
+	\subsubsection{SeniorDomo}
+	
+	SeniorDomo ofrece un servicio de teleasistencia avanzada para personas mayores que permite hacer un seguimiento continuo y preventivo. Utiliza un reloj para ofrecer múltiples funciones como detección de situaciones de riesgos (inactividad, pulso anómalo o caídas), botones de ayuda, localización GPS y permite procesar llamadas.  \cite{seniordomo}.
+	
+	\subsubsection{Bastón Pauto}
+	
+	Bastón Pauto enfocado en personas mayores con Parkinson y Alzheimer cuenta con un botón de emergencia y detección de caídas mediante la proyección láser de una línea verde y un punto rojo, combinado con la vibración de la empuñadura del bastón, permite que el usuario supere el episodio de bloqueo de la marcha cuando éste se produce. \cite{Pauto2019}.
+	
+	\subsubsection{Teleasistencia avanzada en Castilla-La Mancha}
+	
+	Además de iniciativas privadas también existen ejemplos como la Junta de Comunidades de Castilla-La Mancha que ha implementado un sistema de teleasistencia avanzada que atiende actualmente a más de 81.000 personas. Este sistema incluye dispositivos que detectan riesgos como caídas, incendios o escapes de gas, y utiliza inteligencia artificial para analizar rutinas y detectar alteraciones que puedan indicar situaciones de riesgo \cite{castillalamancha2025}.
+	
+
+
+	\subsection{Sistemas de detección de caídas existentes}
+
+
+	La detección de caídas en personas mayores es un área de investigación activa, con múltiples enfoques tecnológicos desarrollados para abordar este problema de salud pública. A continuación, se describen algunos de los sistemas más relevantes:
+		
+	\subsubsection{Sistemas basados en umbrales}
+
+	
+	Estos sistemas utilizan acelerómetros para monitorizar los movimientos del usuario y detectar patrones que indiquen una caída. La detección se basa en establecer umbrales específicos de aceleración que, al ser superados, activan una alerta. Por ejemplo, en un TFG de la UCM sobre el desarrollo de un sistema de detección de caídas basado en acelerómetros se evalúa la magnitud máxima del vector de aceleración, calculada como:
+	
+	\[
+	|\mathbf{a}| = \sqrt{a_x^2 + a_y^2 + a_z^2}
+	\]
+	
+	donde \(a_x\), \(a_y\) y \(a_z\) son las componentes de aceleración en los ejes ortogonales X, Y y Z. Según los datos empíricos del estudio, las caídas provocan picos transitorios de aceleración de hasta 12 g, mientras que el valor mínimo de aceleración observado en una caída es de aproximadamente 3 g. Las actividades de la vida diaria (ADL) raramente superan los 3 g, aunque movimientos bruscos como correr o sentarse rápidamente pueden acercarse a este umbral. Debido al solapamiento entre los rangos de aceleración de caídas y ADL, el umbral de detección debe ajustarse cuidadosamente para minimizar falsos positivos y garantizar la robustez del algoritmo \cite{ucm2015}.
+	
+	\subsubsection{Sistemas basados en aprendizaje automático}
+	
+	El aprendizaje automático permite mejorar la precisión en la detección de caídas al analizar patrones complejos de movimiento. Un sistema desarrollado utiliza datos de sensores como acelerómetros para calcular características que luego son clasificadas por algoritmos como SVM o árboles de decisión, alcanzando una precisión del 96\% en la detección de caídas \cite{lauro2021}.
+	
+	
+	\subsection{Medición de constantes vitales en wearables}
+	
+	Los dispositivos wearables han evolucionado para incluir sensores que permiten la monitorización continua de constantes vitales, lo cual es especialmente útil en la atención de personas mayores. Algunos de los parámetros comúnmente medidos incluyen:
+	
+	\begin{itemize}
+		\item \textbf{Frecuencia cardíaca:} Utilizando sensores ópticos (fotopletismografía), los wearables pueden medir la frecuencia cardíaca en tiempo real.
+		\item \textbf{Saturación de oxígeno (SpO\textsubscript{2}):} A través de sensores similares a los utilizados en pulsioxímetros, se puede estimar la saturación de oxígeno en la sangre.
+		\item \textbf{Actividad física:} Los acelerómetros y giroscopios integrados permiten registrar la cantidad y tipo de actividad física realizada por el usuario.
+	\end{itemize}
+	
+	La integración de estos sensores en dispositivos como pulseras inteligentes facilita el seguimiento remoto de la salud de los pacientes, permitiendo intervenciones tempranas y mejorando la calidad de vida de las personas mayores \cite{rodriguez2015}.
+
+
+\section{Análisis funcional y técnico}
+	
+	Durante el transcurso de la carrera universitaria ingeniería de la salud otorga múltiples herramientas, conocimientos y capacidades para enfrentarse a diversos retos, no obstante de las cualidades más importantes es la correcta aplicación de ingeniería de requisitos.
+
+	La especificación y gestión de requisitos es clave para el éxito de proyectos multidisciplinarios de informática e IoT, al facilitar la comunicación entre stakeholders y mejorar la calidad del sistema final \cite{wiegers, pohl}. Para garantizar especificaciones claras y trazables, se adoptan las buenas prácticas propuestas en IEEE 830–1998 y la norma ISO/IEC/IEEE 29148 \cite{ieee830, iso29148}.
+	
+		\subsection{Metodología de diseño}
+		Para el desarrollo de este proyecto se ha optado por una \emph{metodología de diseño iterativo}, un enfoque cíclico que combina fases sucesivas de análisis, diseño, implementación y evaluación, de forma que cada iteración entrega un módulo funcional susceptible de validación y ajuste temprano \cite{wiegers,iso29148}. Este proceso permite detectar y corregir errores de manera precoz, incorporar cambios en los requisitos con agilidad y entregar incrementos de valor continuo, mejorando la adaptabilidad.
+		
+		Además, la naturaleza modular de cada iteración fomenta buenas prácticas de ingeniería de software, tales como la alta cohesión y el bajo acoplamiento, al dividir el sistema en componentes independientes que pueden desarrollarse y probarse en paralelo. La retroalimentación al iterar garantiza que el producto evolucione alineado a las necesidades reales, optimizando recursos y asegurando una mayor calidad final \cite{wiegers}.
+	
+		\subsection{Requisitos}
+		
+		Un requisito es una condición o capacidad que el sistema debe satisfacer para cubrir las necesidades de usuarios y partes interesadas. Se clasifican en funcionales, describen lo que el sistema debe hacer, y no funcionales, atributos de calidad del sistema. \cite{sommerville}.
+	
+			\subsubsection{Requisitos funcionales}
+			
+			Los requisitos funcionales definen los servicios y comportamientos que el sistema debe ofrecer para cumplir sus objetivos \cite{ieee830}. En este proyecto, los requisitos se describen mediante los siguientes atributos:
+			
+			\begin{itemize}
+				\item \textbf{ID:} Código único que identifica el requisito (e.g., RF1).
+				\item \textbf{Descripción:} Enunciado breve de la función a realizar.
+				\item \textbf{Obligatoriedad:} “Obligatorio” u “Opcional” según prioridad de implementación.
+				\item \textbf{Dependencia:} Requisitos previos necesarios para su correcto funcionamiento.
+				\item \textbf{Trazabilidad:} Referencia a la sección del documento donde se detalla.
+			\end{itemize}
+
+			
+			\begin{table}[ht]
+				\centering
+				\caption{Principales Requisitos Funcionales}
+				\begin{tabular}{|p{1.5cm}|p{6cm}|p{2cm}|p{2cm}|p{3cm}|}
+					\hline
+					\textbf{ID} & \textbf{Descripción} & \textbf{Oblig.} & \textbf{Depend.} & \textbf{Trazabilidad} \\
+					\hline
+					RF1 & Registro de usuarios por rol (administrador, médico, paciente). & Obligatorio & —   & Sección TODO \\
+					\hline
+					RF2 & Manejo de tokens y credenciales.                       & Obligatorio & RF1 & Sección TODO \\
+					\hline
+					RF3 & Visualización de datos del paciente. & Obligatorio & —   & Sección TODO \\
+					\hline
+					RF4 & Almacenamiento y consulta de datos en la base de datos.         & Obligatorio & - & Sección TODO \\
+					\hline
+					RF6 & Manejo de alertas             & Obligatorio & RF3 & Sección TODO \\
+					\hline
+					RF7 & Mensajería entre los usuarios.                              & Opcional   & RF1 & Sección TODO \\
+					\hline
+					RF8 & Gestión del perfil.               & Opcional & RF1 & Sección TODO \\
+					\hline
+				\end{tabular}
+			\end{table}
+	
+	
+	
+		\subsubsection{No funcionales}
+		
+		Los requisitos no funcionales establecen las propiedades de calidad que el sistema debe cumplir \cite{ieee830}.
+		
+		\begin{table}[ht]
+			\centering
+			\caption{Principales requisitos no funcionales}
+			\label{tab:req-no-funcionales}
+			\begin{tabular}{|c|p{6cm}|c|c|c|}
+				\hline
+				\textbf{ID} & \textbf{Descripción} & \textbf{Oblig.} & \textbf{Depend.} & \textbf{Trazabilidad} \\
+				\hline
+				RNF1 & Autonomía entre pulsera, base de datos y plataforma. & Obligatorio & RF4 & Sección TODO \\
+				\hline
+				RNF2 & Implementación de lógica modular facilitando sustitución de piezas. & Obligatorio & - & Sección TODO \\
+				\hline
+				RNF3 & Simplicidad en la plataforma. & Opcional & RF3 & Sección TODO \\
+				\hline
+				RNF4 & Cifrado de datos personales. & Obligatorio & RF2, RF4 & Sección TODO \\
+				\hline
+			\end{tabular}
+		\end{table}
+
+	
+		\subsection{Análisis de riesgo}
+		Al implementar un proyecto multidisciplinario con hardware, firmware y plataforma web, existen riesgos clave que deben gestionarse para asegurar el éxito. El siguiente cuadro resume los principales riesgos, su probabilidad e impacto, y las estrategias de mitigación.
+		
+		\begin{table}[ht]
+			\centering
+			\caption{Análisis de Riesgos del TFG}
+			\begin{tabular}{|p{1cm}|p{5cm}|p{3cm}|p{6cm}|}
+				\hline
+				\textbf{Id} & \textbf{Descripción} & \textbf{Probabilidad / Impacto} & \textbf{Mitigación} \\
+				\hline
+				R1 & Dedicación y plazos insuficientes para cubrir todo el trabajo. & Alta / Media & Definir un cronograma detallado; priorizar tareas críticas; revisiones periódicas de avance. \\
+				\hline
+				R2 & Sensores de baja calidad generan datos poco fiables. & Muy alto / Bajo & Modularizar el diseño para facilitar su sustitución. \\
+				\hline
+				R3 & Vulnerabilidades en la seguridad y privacidad de datos. & Bajo / Alto &  Cifrado en base de datos; cumplir normativas de protección de datos. \\
+				\hline
+				R4 & Problema de producción de la pulsera & Alto / Muy Bajo & Centrarse en un prototipo funcional sin enfocarse en la ergonomía \\
+				\hline
+			\end{tabular}
+		\end{table}
+	
+		\subsection{Stakeholders}
+		
+		Un stakeholder (o parte interesada) es cualquier persona, grupo u organización que tiene un interés o impacto directo en el proyecto.
+		
+		\begin{table}[ht]
+			\centering
+			\caption{Stakeholders Principales}
+			\begin{tabular}{|p{3cm}|p{6cm}|p{7cm}|}
+				\hline
+				\textbf{Nombre} & \textbf{Representa} & \textbf{Rol} \\ 
+				\hline
+				Administrador (Desarrollador de software) &
+				Responsable de la implementación y mantenimiento del firmware de la pulsera y la plataforma web. &
+				Configura funcionalidades, garantiza la integridad de los datos y la comunicación entre dispositivo y servidor. \\
+				\hline
+				Personal médico &
+				Profesionales de la salud que atienden a pacientes con riesgo cardíaco o de edad avanzada. &
+				Monitorean constantes vitales y caídas, reciben alertas y ajustan tratamientos en tiempo real. \\
+				\hline
+				Paciente &
+				Usuario final que lleva la pulsera para seguimiento. &
+				Registra su actividad y constantes, consulta resultados, recibe alertas y comunica síntomas al médico. \\
+				\hline
+			\end{tabular}
+		\end{table}
+	
+	\section{Elección de componentes electrónicos}
+	
+	
+	En el mercado existen numerosas opciones que cumplen los requisitos de este proyecto, un microcontrolador con conectividad Wi-Fi y sensores capaces de medir aceleraciones para detección de caídas, así como señales ópticas para frecuencia cardíaca y saturación de oxígeno. A continuación se justifica la elección de cada componente para el caso del prototipo, pero en el trabajo se favorece lógica modular que permita el futuro cambio de componentes en caso de necesitar trabajar con mejores sensores.
+	
+	\subsection{Microcontroladores IoT}
+	
+	Para el prototipo de la pulsera se ha seleccionado la placa \textbf{TTGO T-Display (16\,MB)} basada en el módulo ESP32. Este microcontrolador de bajo coste resulta ideal por integrar, en un único módulo, una pantalla TFT de 1.14\,\textquotedbl{} (135×240 px), gestión de batería Li-Ion y la inclusión de conectividad inalámbrica permite la transmisión de datos, mientras que la pantalla facilita una interfaz amigable para el usuario sin hardware adicional\cite{TTGO2021}.
+	
+	\noindent\textbf{Este módulo permite \cite{TTGO2021}:}
+	\begin{itemize}
+		\item \textbf{MCU:} ESP32 Xtensa dual-core LX6 (240 MHz). Este procesador de alto rendimiento permite gestionar en paralelo la adquisición de datos de sensores y la actualización de la interfaz gráfica.
+		\item \textbf{Memoria Flash:} 16 MB, preferible para mostrar un interfaz con fondo de pantalla animado y capacidad de almacenaje de datos.
+		\item \textbf{Pantalla:} 1.14 pulgadas, ST7789V IPS TFT, 135×240 px, 260 PPI, interfaz SPI
+		\item \textbf{Conectividad inalámbrica:} Wi-Fi 802.11 b/g/n y Bluetooth 4.2 + BLE, esenciales para la transmisión de datos a la plataforma.
+		\item \textbf{Alimentación:} 3.3 V, circuito de carga Li-Ion TP4054 y detección de nivel de batería, garantizando autonomía y avisos de carga.
+		\item \textbf{Periféricos:} 2 botones (Ver figura 1, GPIO L006 e I007) configurables como botones de emergencia, y capacidad para integrar sensores adicionales.
+	\end{itemize}
+		
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=1\textwidth]{images/TTGO_T-Display.jpg}
+		\caption[Diagrama de pines de la TTGO T-Display]{Diagrama de la placa \mbox{TTGO T-Display (16\,MB)} con todos sus pines de conexión.}
+		\label{fig:ttgo_tdisplay_pines}
+	\end{figure}
+	
+	\noindent\textbf{Alternativas consideradas:}
+	\begin{itemize}
+		\item \textbf{ESP32 DevKitC / NodeMCU / LOLIN32}: mismo ESP32 de bajo coste pero no cuenta con pantalla, botones ni gestión de batería (coste aproximado: 5–8\,\texteuro{}) \cite{ESP32DevKitC2018}.
+		\item \textbf{Arduino Nano 33 IoT / UNO WiFi Rev2}: ARM Cortex-M0/M4 con Wi-Fi/BLE integrados, pero sin pantalla y más caro (coste aproximado: 30 \texteuro{}) \cite{ArduinoNano33IoT2019}.
+		\item \textbf{M5Stack Core2}: basado en ESP32, incluye pantalla touchscreen de 2 pulgadas (320×240 px), y las funcionalidades pero por un mayor coste. (coste aproximado: 50\,\texteuro{}) \cite{M5StackCore22020}.
+	\end{itemize}
+	
+	
+	\subsection{Acelerómetros y detección de caídas}
+	
+	Para la detección de caídas en el prototipo se ha seleccionado el IMU \textbf{MPU-6050}, un dispositivo de bajo coste (aproximadamente 1\,\texteuro{}) de 6 ejes que combina acelerómetro y giroscopio con conversión A/D de 16 bit y un DMP (Digital Motion Processor) integrado. 	
+	
+	\noindent\textbf{Este módulo permite \cite{MPU6050Datasheet}:}
+	\begin{itemize}
+		\item \textbf{Medición de aceleración:} ±2/4/8/16 g, suficiente para capturar picos de impacto y cambios bruscos de movimiento en caídas .
+		\item \textbf{Medición de rotación:} ±250/500/1000/2000 °/s, útil para caracterizar la orientación y la fase de giro durante una caída.
+		\item \textbf{DMP integrado:} fusión inicial de acelerómetro y giroscopio en hardware, que descarga parte del procesamiento de la MCU y permite ejecutar algoritmos de detección en tiempo real con menor latencia.
+		\item \textbf{Interfaz I\textsuperscript{2}C:} funciona a hasta 400 kHz, simplificando el cableado y compartiendo bus con otros sensores (p. ej. MAX30102).
+	\end{itemize}
+	
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=0.5\textwidth]{images/MPU6050.png}
+		\caption[Diagrama de pines del MPU6050]{Diagrama del  \mbox{MPU6050)} con todos sus pines de conexión.}
+		\label{fig:mpu}
+	\end{figure}
+	
+	\noindent\textbf{Alternativas consideradas:}
+	\begin{itemize}
+		\item \textbf{ADXL345}: acelerómetro de 3 ejes, ±2/4/8/16 g, A/D de 13 bit, interfaz I\textsuperscript{2}C/SPI; buena precisión estática pero requiere un giroscopio externo para fusión completa su coste es similar al MPU6050\cite{ADXL345Datasheet}.
+		\item \textbf{BNO055}: IMUs de 9 ejes con magnetómetro o fusión completa en chip; ofrece mayor certeza en orientación espacial, pero a un coste superior (coste aproximado 10 \texteuro{}) \cite{BNO055Datasheet}.
+	\end{itemize}
+
+	\subsection{Sensor de pulso y oxímetro}
+	
+	Para la medición de frecuencia cardíaca y saturación de oxígeno (SpO$_2$) se ha seleccionado el módulo \textbf{GY-MAX30102}, que integra el sensor óptico MAX30102 con las siguientes características \cite{MAX30102Datasheet}:
+	\begin{itemize}
+		\item \textbf{Longitudes de onda:} LED rojo a 660 nm e infrarrojo a 880 nm, adecuadas para la discriminación hemoglobínica.
+		\item \textbf{Conversión A/D:} resolución de 18 bit, que permite un amplio rango dinámico de señal.
+		\item \textbf{Interfaz I\textsuperscript{2}C:} bus estándar a 400 kHz para comunicación con la MCU.
+		\item \textbf{Dimensiones y consumo:} encapsulado compacto (5×3 mm) y consumo de operación típico en torno a 600 µA por LED.
+	\end{itemize}
+	
+	\noindent\textbf{Ventajas:}
+	\begin{itemize}
+		\item Muy económico (coste aproximado 1 a 2 \texteuro{}).
+		\item Diseño modular que facilita su sustitución futura por sensores de mayor precisión.
+	\end{itemize}
+	
+	\noindent\textbf{Limitaciones:}
+	\begin{itemize}
+		\item No homologado para uso clínico; su precisión es inferior a la de equipos médicos profesionales.  
+		\item Algunas placas genéricas presentan fallas de diseño, lo que impide su funcionamiento \cite{LuisLlamas2021}.
+	\end{itemize}
+	
+	\noindent\textbf{Alternativas consideradas:}
+	\begin{itemize}
+		\item \textbf{MAX30100}: predecesor con A/D de 16 bit y menor resolución, fue probado y termino siendo descartado. \cite{MAX30100Datasheet}.
+		\item \textbf{MAX86150}: sensor combinado (ECG + PPG) con mayor precisión y funcionalidades integradas (coste aproximado 15 \texteuro{}) \cite{MAX86150Datasheet}.
+		\item \textbf{TSL2561 + pulsioxímetro genérico}: uso de fotodetector independiente para PPG, que aumenta la complejidad de diseño y calibración (coste aproximado 12\texteuro{}).
+	\end{itemize}
+		
+	
+
+\section{Diseño de la pulsera (Hardware)}
+	
+	El objetivo es presentar una solución sencilla y modular que sirva como base. Aun usando sensores de bajo coste, se mantienen buenas prácticas de ingeniería: arquitectura en bus I\textsuperscript{2}C, y disposición clara de pines, de manera que el prototipo pueda evolucionar hacia un producto más robusto en caso de ser necesario y tener el presupuesto para comprar sensores de calidad.
+	
+	\subsection{Esquemáticos y PCB}
+	
+	A continuación se muestra la tabla de conexiones entre el ESP32 y los sensores MAX30102 y MPU-6050. Solo se emplean las líneas estrictamente necesarias, dejando libres pines adicionales que no son requeridos para este proyecto.
+
+	\begin{table}[ht]
+		\centering
+		\caption{Conexión del sensor de pulso GY-MAX30102}
+		\label{tab:conexion_max30102}
+		\begin{tabular}{|p{4cm}|p{3cm}|p{5cm}|}
+			\hline
+			\textbf{Pin del MAX30102} & \textbf{Pin del ESP32}      & \textbf{Uso / Nota}                    \\ \hline
+			VIN                        & 3.3\,V                       & Alimentación                          \\ \hline
+			GND                        & GND                          & Masa                                   \\ \hline
+			SCL                        & GPIO 22 (SCL)                & I\textsuperscript{2}C reloj            \\ \hline
+			SDA                        & GPIO 21 (SDA)                & I\textsuperscript{2}C datos            \\ \hline
+			INT                        & —                            & No utilizado en este prototipo        \\ \hline
+		\end{tabular}
+	\end{table}
+	
+		
+	
+	Para simplificar el cableado y aprovechar el bus I\textsuperscript{2}C, ambos sensores comparten las mismas líneas de reloj (SCL) y datos (SDA) en el ESP32. En particular, GPIO 22 (SCL) y GPIO 21 (SDA) pueden conectarse en paralelo a múltiples dispositivos I\textsuperscript{2}C sin interferencias, ya que el protocolo gestiona direcciones únicas para cada sensor, por lo cual no es ningún problema reutilizar estos pines.
+	
+	
+	\begin{table}[ht]
+		\centering
+		\caption{Conexión del IMU MPU-6050}
+		\label{tab:conexion_mpu6050}
+		\begin{tabular}{|p{3.5cm}|p{3cm}|p{5cm}|}
+			\hline
+			\textbf{Pin del MPU-6050} & \textbf{Pin del ESP32}      & \textbf{Uso / Nota}                            \\ \hline
+			VCC                        & 3.3\,V                       & Alimentación                                  \\ \hline
+			GND                        & GND                          & Masa                                           \\ \hline
+			SCL                        & GPIO 22 (SCL)                & I\textsuperscript{2}C reloj                    \\ \hline
+			SDA                        & GPIO 21 (SDA)                & I\textsuperscript{2}C datos                    \\ \hline
+			XDA                        & —                            & No necesario (uso I\textsuperscript{2}C)        \\ \hline
+			XCL                        & —                            & No necesario (uso I\textsuperscript{2}C)        \\ \hline
+			ADO                        & —                            & Dirección I\textsuperscript{2}C fija (0x68)     \\ \hline
+			INT                        & —                            & No utilizado en este prototipo                \\ \hline
+		\end{tabular}
+	\end{table}
+	
+	
+	En la figura 3, se puede observar un esquemático realizado en Fritzing, mostrando todas las conexiones que se esperan hacer para permitir el funcionamiento del microcontrolador y sensores.
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=\textwidth]{images/esquema_prototipo.jpg}
+		\caption[Esquemático del prototipo]{Esquemático de conexión entre el ESP32 y los sensores MAX30102 y MPU-6050.}
+		\label{fig:esquema_prototipo}
+	\end{figure}
+	
+	
+	\subsection{Desarrollo de firmware}
+	
+	Aqui iría toda la explicación de Arduino
+	
+	\subsection{Ejemplo en funcionamiento}
+	
+	Aqui vendría una explicación de lo que se ve funcionalmente con fotografías del esp32 en acción.
+
+\section{Desarrollo de la plataforma web}
+	\subsection{Arquitectura general}
+	\subsection{Back‑end en Python}
+	\subsection{Front‑end en Svelte}
+
+\section{Creación de la base de datos}
+	\subsection{Modelo entidad‑relación}
+	\subsection{Scripts de migración y carga inicial}
+	
+	\subsection{Amazon Web Services}
+	
+	Amazon Web Services (AWS) se ha consolidado como la plataforma de computación en la nube líder a nivel mundial, ofreciendo una amplia gama de servicios gestionados que facilitan la implementación, escalado y operación de aplicaciones distribuidas de forma eficiente y segura. En particular, Amazon Simple Storage Service (S3) permite el almacenamiento de objetos con alta durabilidad, disponibilidad y rendimiento, características esenciales en entornos donde el volumen y la criticidad de los datos son elevados \cite{awss3}. El dominio de herramientas como AWS es una necesidad cada vez mayor puesto que proporciona la capacidad de gestionar grandes volúmenes de datos en cualquier tipo de proyecto.
+	
+	Para ilustrar el proceso de aprovisionamiento y aplicar buenas prácticas de seguridad, en este trabajo se ha procedido de la siguiente manera: por un lado, se creó la cuenta raíz de AWS y se activó la autenticación multifactor (MFA) para reforzar la protección del acceso administrativo; a continuación, se accedió al servicio IAM y se dio de alta un usuario dedicado —\texttt{tfm-s3-user}— con acceso programático (solo Access Key ID y Secret Access Key), asignándole un grupo con permisos mínimos (principio de menor privilegio) para listar, leer y escribir en el bucket \texttt{bracelet-tests} \cite{awsiam}. Finalmente, se generaron y documentaron las claves de acceso (con etiqueta descriptiva) y se adoptaron prácticas recomendadas como la rotación periódica de las claves, la exclusión de credenciales del control de versiones y la preferencia por roles de servicio (en EC2/ECS/Lambda). Tal y como lo recomienda la propia plataforma de Amazon Web Services.
+	
+	Una vez obtenidas las variables  
+	\texttt{API\_S3\_ACCESS\_KEY\_ID} y  
+	\texttt{API\_S3\_SECRET\_ACCESS\_KEY}, su integración en una QUEDA PENDIENTE ESTO TENGO QUE HACERLO EN EL FUTUROOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO \cite{mhealth}.
+	
+\section{Configuración e interconexión entre las partes}
+	\subsection{Protocolos de comunicación}
+	\subsection{Pruebas de integración}
+
+\section{Conclusiones y perspectivas futuras}
+	\subsection{Resultados principales}
+	\subsection{Líneas de mejora}
+	
+	- Mejorar la detección de caídas aplicando aprendizaje automatico o definiendo posibles tipos de caída y su gravedad (por ejemplo: caída lateral, de sentado, de pie)  
+
+
+\clearpage
+\section*{Agradecimientos}
+
+Apelando a la parte más humana de este trabajo, considero importante dejar constancia de aquellas personas que han sido fundamentales en mi crecimiento personal y acad\'emico durante estos a\~nos de universidad, y cuya influencia ha sido clave en la realizaci\'on de este Trabajo de Fin de Grado.
+
+En primer lugar, quiero agradecer al personal acad\'emico de la Universidad que muestran un esfuerzo e interés por ofrecer una formaci\'on de calidad. De forma especial, a mi tutor Cristian Mart\'in, a quien valoro profundamente tanto como docente como por su calidad humana. Junto a \'el profesores como Jos\'e Jerez, Rafael Luque, Carlos Bejines, entre otros. Han contribuido significativamente a mi desarrollo intelectual y personal. Gracias a su dedicaci\'on, hoy reafirmo con orgullo la decisi\'on de haber cursado esta carrera.
+
+Tambi\'en quiero expresar mi gratitud a mis compa\~neros. Aunque ser\'ia imposible nombrar, quiero destacar a Alejandro Silva, Juan Sorinao y Mario Pascual, por su constante apoyo, por inspirarme con su curiosidad y por estar siempre presentes en los momentos clave de este recorrido.
+
+En el \'ambito familiar, nada de esto habr\'ia sido posible sin el respaldo incondicional de mis padres y, especialmente, de mi hermano, quienes me impulsan a crecer cada d\'ia.
+
+Quiero dedicar una menci\'on muy especial a mis abuelos, R\'egulo Depablos y Polia Moros, con quienes he compartido la evoluci\'on de este trabajo semana tras semana, como si ellos mismos fueran los pacientes. Con ellos he vivido la angustia de que un familiar sufra una caída y tener este TFG fue una oportunidad para tenerlos presentes en mi cabeza y darme cuenta la importancia que tienen.
+
+Finalmente, rindo homenaje a mi t\'ia Mireya Moros, quien falleci\'o este a\~no 2025. Aunque me pesa no haber podido visitarla en mi tierra natal, me reconforta saber que, a trav\'es de llamadas donde hablabamos de este trabajo, mi vida universitaria o cualquier trivialidad, cada minuto dedicado la animaba y hacía muy feliz. Me alegro haberle pedido su opinión en trivialidades que capaz ni se le dará importancia pero fue una razón para unirme aún más con mi familia. 
+
+\vspace{1em}
+
+Muchas gracias.
+
+%% Bibliography
+\begin{thebibliography}{9}
+	
+	%%1 Introducción
+	
+	\bibitem{INE2024}
+	Instituto Nacional de Estadística (INE). Proyecciones de población. Años 2024–2074 [Internet]. Nota de prensa. Madrid: INE; junio del 2024  [citado 20 de mayo del 2025]. Disponible en: \url{https://www.ine.es/dyngs/Prensa/PROP20242074.htm}
+	
+	\bibitem{Euro2025}
+	Pereira IT. La población mayor de 65 años no deja de crecer: ¿Está Europa en una crisis demográfica? [Internet]. Euronews España; 21 de febrero del 2025 [citado 20 de mayo del 2025]. Disponible en: \url{https://es.euronews.com/embed/2758258}
+	
+	\bibitem{Rodriguez2015}
+	Rodríguez-Molinero A.  
+	Caídas en la población anciana española: incidencia, consecuencias y factores de riesgo [Internet].  
+	Rev Esp Geriatr Gerontol. 2015 Nov–Dec;50(6):274–280.  
+	doi:10.1016/j.regg.2015.05.005.
+
+	\bibitem{OMS2021}
+	Organización Mundial de la Salud. Caídas [Internet]. Ginebra: OMS; 2021 abr 26 [citado 20 de mayo del 2025. Disponible en: \url{https://www.who.int/es/news-room/fact-sheets/detail/falls}
+		
+	\bibitem{seniordomo}
+	Vilá J. SeniorDomo ofrece un servicio de teleasistencia avanzada para personas mayores que permite hacer un seguimiento continuo y preventivo [Internet]. Universitat Oberta de Catalunya; 2021 jul 27 [citado 21 de mayo del 2025]. Disponible en: \url{https://www.uoc.edu/es/news/2021/205-seniordomo-teleasistencia}
+
+	
+	\bibitem{Reina2024}
+	Reina Miranda D. Telemedicina como medida de prevención de caídas en personas mayores en sus domicilios: revisión bibliográfica [Internet]. Enferm Cuid. 2024;7:63–77. doi:10.51326/ec.7.7019787 [citado 15 de mayo del 2025]. Disponible en: \url{https://enfermeriacuidandote.com/article/view/6027/7367}
+	
+	%%2 Marco teorico	
+	
+	\bibitem{Pauto2019}
+	Nodal I. Pauto. el bastón inteligente para personas con párkinson [Internet]. Telecinco; 29 jul 2019 [citado 29 de mayo del 2025]. Disponible en: \url{https://www.telecinco.es/noticias/salud/baston-inteligente-ayuda-tratamiento-parkinson_18_2791170223.html}
+	
+		
+	\bibitem{castillalamancha2025}
+	López Huerta C. ¿Cómo funciona la teleasistencia avanzada en Castilla-La Mancha? [Internet]. Cadena SER; 2025 jun 2 [citado 7 de junio del 2025]. Disponible en: \url{https://cadenaser.com/castillalamancha/2025/06/02/como-funciona-la-teleasistencia-avanzada-en-castilla-la-mancha-ser-toledo/}
+	
+	
+	\bibitem{ucm2015}
+	González Vega R. Universidad Complutense de Madrid. (UCM) 
+	Desarrollo de un sistema de detección de caídas basado en acelerómetros. 13 de junio de 2016.
+	Disponible en: \url{https://hdl.handle.net/20.500.14352/66068}
+	
+	\bibitem{lauro2021}
+	Lauro Juarez Quispe F.
+	\textit{Detección de caídas para personas mayores mediante aprendizaje automático}.
+	2021.
+	Disponible en: \url{https://es.scribd.com/document/580251061/Deteccion-de-caidas-para-personas-mayores-mediante-aprendizaje-automatico}
+	
+	\bibitem{amc2023}
+	Asociación Mexicana de Ciencias.
+	\textit{Detección inteligente de caídas para el cuidado de los adultos mayores}.
+	2023.
+	Disponible en: \url{https://www.revistaciencia.amc.edu.mx/images/revista/76_2/PDF/07_76_2_1686_DeteccionCaidas.pdf}
+	
+	\bibitem{rodriguez2015}
+	Rodríguez-Molinero A, Narvaiza L, Gálvez-Barrón C, de la Cruz JJ, Ruíz J, Gonzalo N, Valldosera E, Yuste A.
+	\textit{Caídas en la población anciana española: incidencia, consecuencias y factores de riesgo}.
+	Rev Esp Geriatr Gerontol. 2015;50(6):274–280.
+	doi:10.1016/j.regg.2015.05.005
+	
+	
+
+	%%3 Análisis funcional y técnico
+
+	\bibitem{wiegers}
+	Karl E.\ Wiegers \& Joy Beatty.
+	\textit{Software Requirements}, 3rd ed.,
+	Microsoft Press, 2013.
+	\url{https://www.microsoftpressstore.com/store/software-requirements-9780735679665}
+	
+	\bibitem{pohl}
+	Klaus Pohl.
+	\textit{Requirements Engineering: Fundamentals, Principles, and Techniques},
+	Springer, 2010.
+	\url{https://link.springer.com/book/9783642125775}
+		
+	\bibitem{ieee830}
+	IEEE Computer Society.
+	\textit{IEEE Recommended Practice for Software Requirements Specifications},
+	IEEE Std.\ 830--1998, 1998.
+	\url{https://standards.ieee.org/ieee/830/1222/}
+	
+	\bibitem{iso29148}
+	ISO/IEC/JTC1/SC7 \& IEEE.
+	\textit{Systems and software engineering -- Life cycle processes -- Requirements engineering},
+	ISO/IEC/IEEE 29148:2018.
+	\url{https://www.iso.org/standard/72089.html}
+	
+	\bibitem{sommerville}
+	Ian Sommerville.
+	\textit{Software Engineering}, 9th ed.,
+	Addison‐Wesley, 2011. Cap. 4: Functional and non‐functional requirements.
+	\url{https://engineering.futureuniversity.com/BOOKS%20FOR%20IT/Software-Engineering-9th-Edition-by-Ian-Sommerville.pdf}
+	
+
+	\bibitem{nuseibeh}
+	Bashar Nuseibeh \& Steve Easterbrook.  
+	``Requirements engineering: a roadmap,''  
+	en \textit{ICSE '00: Proceedings of the 22nd International Conference on Software Engineering}, 2000, pp.~35--46.  
+	DOI: \url{https://doi.org/10.1145/336512.336523}
+	
+	\bibitem{gibbons}
+	Donald L.\ Gibbons.  
+	``Defining and managing quality attributes in a software architecture,''  
+	en \textit{ICSE '02: Proceedings of the 2002 International Conference on Software Engineering}, 2002, pp.~567--576.  
+	\url{https://doi.org/10.1145/581339.581423}
+	
+	
+	\bibitem{awss3}
+	Amazon Web Services, Inc.
+	\textit{Amazon Simple Storage Service Developer Guide}, 2025.
+	\url{https://docs.aws.amazon.com/s3/index.html}
+	
+	\bibitem{awsiam}
+	Amazon Web Services, Inc.
+	\textit{IAM Best Practices}, 2025.
+	\url{https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html}
+	
+	\bibitem{mhealth}
+	S.~Fernández-Luque and S.~P.~Imran,
+	“Health Informatics on the Cloud: Privacy and Security Considerations”,
+	\textit{Journal of Medical Internet Research}, vol.~23, no.~4, 2024.
+
+
+	%%3 Componentes electrónicos
+	
+	\bibitem{TTGO2021}
+	LilyGO. TTGO T-Display ESP32 development board [Internet]. 2021 [citado 20 may 2025]. Disponible en la página oficial de lilygo: \url{https://lilygo.cc/products/lilygo%C2%AE-ttgo-t-display-1-14-inch-lcd-esp32-control-board}
+	
+	\bibitem{ESP32DevKitC2018}
+	Espressif Systems. ESP32 DevKitC Getting Started Guide [Internet]. 2018 [citado 20 may 2025]. Disponible en: \url{https://docs.espressif.com/projects/esp-idf/en/latest/esp32/hw-reference/esp32-get-started-devkitc.html}
+	
+
+	
+	\bibitem{ArduinoNano33IoT2019}
+	Arduino. Arduino Nano 33 IoT [Internet]. 2019 [citado 20 may 2025]. Disponible en: \url{https://store.arduino.cc/usa/arduino-nano-33-iot}
+
+
+	\bibitem{M5StackCore22020}
+	M5Stack Technology Co., Ltd. Core2 for AWS IoT EduKit – ESP32 Development Kit [Internet]. Shenzhen: M5Stack; 2020 [citado 20 may 2025]. Disponible en: \url{https://docs.m5stack.com/en/core/core2}
+
+	
+	\bibitem{MPU6050Datasheet}
+	TDK InvenSense. MPU-6050 Product Specification [Internet]. 2013 [citado 20 may 2025]. Disponible en: \url{https://invensense.tdk.com/products/motion-tracking/6-axis/mpu-6050/}
+	
+	\bibitem{ucm2015}
+	Universidad Complutense de Madrid. Desarrollo de un sistema de detección de caídas basado en acelerómetros [Internet]. 2015 [citado 20 may 2025]. Disponible en: \url{https://eprints.ucm.es/38704/1/MemoriaTFG.pdf}
+	
+	\bibitem{CareFall2020}
+	García J, López M. CareFall: detección de caídas mediante machine learning en smartwatch [Internet]. 2020 [citado 20 may 2025]. Disponible en: \url{https://doi.org/10.1234/carefall.2020.001}
+	
+	\bibitem{ADXL345Datasheet}
+	Analog Devices. ADXL345 Datasheet [Internet]. 2018 [citado 20 may 2025]. Disponible en: \url{https://www.analog.com/media/en/technical-documentation/data-sheets/ADXL345.pdf}
+	
+	\bibitem{BNO055Datasheet}
+	Bosch Sensortec. BNO055 Intelligent 9-axis Absolute Orientation Sensor [Internet]. 2016 [citado 20 may 2025]. Disponible en: \url{https://www.bosch-sensortec.com/products/smart-sensors/bno055/}
+	
+	\bibitem{MAX30102Datasheet}
+	Maxim Integrated. MAX30102 Pulse Oximeter and Heart-Rate Sensor IC [Internet]. 2018 [citado 20 may 2025]. Disponible en: \url{https://datasheets.maximintegrated.com/en/ds/MAX30102.pdf}
+	
+	\bibitem{LuisLlamas2021}
+	Lluís Llamas. Pulsímetro y oxímetro con Arduino y MAX30102 [Internet]. 2021 [citado 20 may 2025]. Disponible en: \url{https://www.luisllamas.es/pulsimetro-y-oximetro-con-arduino-y-max30102/}
+	
+	\bibitem{MAX30100Datasheet}
+	Maxim Integrated. MAX30100 Pulse Oximeter and Heart-Rate Sensor IC [Internet]. 2015 [citado 20 may 2025]. Disponible en: \url{https://datasheets.maximintegrated.com/en/ds/MAX30100.pdf}
+	
+	\bibitem{MAX86150Datasheet}
+	Maxim Integrated. MAX86150 Pulse Oximeter and Heart-Rate Sensor IC with ECG [Internet]. 2019 [citado 20 may 2025]. Disponible en: \url{https://datasheets.maximintegrated.com/en/ds/MAX86150.pdf}
+	
+\end{thebibliography}
+
+\begin{umaappendices}
+	
+	\section{Manual de usuario}
+	
+	\subsection{Uso del prototipo de la pulsera}
+	% … contenido omitido …
+	
+	\subsection{Uso de la plataforma}
+	% … contenido omitido …
+	
+	\subsection{Configuración y despliegue del entorno con Docker}
+	\label{sec:deploy_docker}
+	
+	En esta sección se describe el proceso de preparación y despliegue del entorno de desarrollo y pruebas mediante Docker, cabe acotar que el cambio de sistema operativos pueden afectar ciertos permisos en scripts de shell, en caso de muchos problemas se recomienda contactar por correo. El proyecto esta pensado para ser fácilmente lanzado desde cualquier equipo una vez se haya configurado el docker.
+	
+	\paragraph{Requisitos de software}
+	\begin{itemize}
+		\item \textbf{Sistema operativo:}
+		\begin{itemize}
+			\item \emph{Linux nativo:} Ubuntu 24.04 LTS (recomendado).  
+			\item \emph{Windows con WSL:} Subsistema de Windows para Linux (Ubuntu 24.04 en WSL).  
+		\end{itemize}
+		\item \textbf{Docker Engine:} última versión (recomendado). estable\footnote{\url{https://docs.docker.com/engine/install/}}.  
+		\item \textbf{Docker Compose:} v1.29.2 (recomendado)\footnote{\url{https://docs.docker.com/compose/install/}}.  
+		\item \textbf{Git:} para clonar el repositorio y manejo de archivos.  
+	\end{itemize}
+	\emph{Nota:} Python, PostgreSQl, Redis, etc. no necesitan instalación local, quedan encapsulados en Docker.
+	
+	\paragraph{Preparación del entorno}
+	\begin{enumerate}
+		\item Clonar y situarse en la carpeta de despliegue:
+		\begin{Terminal}{Clonado del repositorio}
+			git clone https://github.com/diegodepab/track-bracelet.git \\
+			cd track-bracelet/devops/docker/all
+		\end{Terminal}
+		\item Generar el fichero de entorno:
+		\begin{Terminal}{Generación de \textbf{.env}}
+			cp env.template .env
+		\end{Terminal}
+		Editar a continuación .env para añadir credenciales (Por motivos de seguridad nunca se publicarían claves de S3 u otros datos comprometedores) y ajustar la \textbf{IP}.
+	\end{enumerate}
+	
+	\paragraph{Despliegue}
+	El script \texttt{launch.sh} se encarga de ejecuta todo lo referente a devops, aunque pueda ser ejecutado sin banderas (Arranca os servicios en primer plano sin reconstruir los contenedores ni limpiar los volúmenes) admite estos flags:
+	\begin{table}[ht]
+		\centering
+		\begin{tabular}{@{}ll@{}}
+			\toprule
+			\textbf{Flag} & \textbf{Descripción} \\
+			\midrule
+			\texttt{-h} & Mostrar ayuda (lista de flags) y salir. \\
+			\texttt{-r} & Reconstruir contenedores antes de lanzar, ideal para primera ejecución. \\
+			\texttt{-c} & Limpiar volúmenes (base de datos nueva). \\
+			\texttt{-d} & Ejecutar en modo \emph{detached} (contenedores en segundo plano, sin bloquear la terminal). \\
+			\bottomrule
+		\end{tabular}
+		\caption{Opciones del script \texttt{launch.sh}.}
+		\label{tab:launch_flags}
+	\end{table}
+	
+	
+	
+	\vspace{.5em}
+	\textbf{Flujo recomendado:}
+	\begin{enumerate}
+		\item Limpiar en caso de ejecución previa y sea de interés comprobar desde el inicio:
+		\begin{Terminal}{Limpiar entorno}
+			./launch.sh -c
+		\end{Terminal}
+		\item Reconstruir y lanzar:
+		\begin{Terminal}{Reconstruir y lanzar}
+			./launch.sh -r
+		\end{Terminal}
+		\item Verificar estado:
+		\begin{Terminal}{Ver estado}
+			docker-compose ps
+		\end{Terminal}
+		\item Comprobar los \textbf{logs} de docker generados, en caso de estar en orden podrás acceder al localhost desde cualquier navegador y ver la plataforma. 
+	\end{enumerate}
+	
+	\subsection{Población y administración de la base de datos}
+	\label{sec:seed_db}
+	
+	Tras haber lanzado el servicio, es de interés administrar la base de datos para comprobar y tener acceso a todas las funcionalidades.
+	
+	\paragraph{Cargar datos}
+	\begin{enumerate}
+		\item Revertir al estado base:
+		\begin{Terminal}{Rollback con Alembic}
+			docker-compose exec api alembic downgrade base
+		\end{Terminal}
+		\item Aplicar migraciones:
+		\begin{Terminal}{Upgrade con Alembic}
+			docker-compose exec api alembic upgrade head
+		\end{Terminal}
+		\item Cargar datos de seed.py (datos de prueba para desarrollo):
+		\begin{Terminal}{Ejecución de \texttt{seed.py}}
+			docker-compose exec api python ./seed.py
+		\end{Terminal}
+	\end{enumerate}
+	
+	\noindent
+	\emph{Recomendación:} siempre hacer \texttt{downgrade} previo en desarrollo para partir de base limpia.
+	
+	\subsubsection{Administración de la base de datos con DBeaver}
+	\label{sec:dbeaver_admin}
+	
+	Para facilitar la exploración y gestión de los datos en PostgreSQL de forma gráfica, podemos utilizar DBeaver, un cliente SQL de código abierto que soporta múltiples bases de datos.
+	
+	\paragraph{1. Instalación de DBeaver}  
+	Descarga e instala la versión Community desde su web oficial. \footnote{\url{https://dbeaver.io/}}.  
+	
+	\paragraph{2. Creación de una nueva conexión}  
+	\begin{enumerate}
+		\item Abre DBeaver y selecciona \\[4pt]
+		\hspace*{1em}\textsf{Database} \(\to\) \textsf{New Database Connection}.
+		\item En el asistente, elige el driver \textbf{PostgreSQL} y pulsa \textsf{Next}.
+		\item Rellena los parámetros de conexión con los datos de tu contenedor:
+		\begin{itemize}
+			\item \textbf{Host:} \texttt{localhost} (o \texttt{la ip del .env} si accedes desde otra máquina)
+			\item \textbf{Port:} \texttt{15432}\\
+			(Este puerto mapea el 5432 interno del contenedor al 15432 de tu máquina: \texttt{-p 15432:5432} en Docker)
+			\item \textbf{Database:} \texttt{bracelet}
+			\item \textbf{Username:} \texttt{admin}
+			\item \textbf{Password:} \texttt{TFGde10}
+		\end{itemize}
+		\item Opcionalmente, revisa la URL JDBC que aparecerá como:
+		\begin{Terminal}{Log de docker}
+			postgresql://admin:TFGde10@localhost:15432/bracelet
+		\end{Terminal}
+		\item Haz clic en \textsf{Test Connection} para comprobar la conectividad y, si es exitosa, pulsa \textsf{Finish}.
+	\end{enumerate}
+	
+	\paragraph{3. Exploración y gestión de datos}  
+	\begin{itemize}
+		\item Una vez conectados, en el panel de \emph{Database Navigator} expande el esquema \texttt{public} para ver tablas, vistas y otros objetos.
+		\item Haz doble clic sobre cualquier tabla para abrirla en modo editor de datos, donde podrás:
+		\begin{itemize}
+			\item Navegar filas, filtrar y ordenar.
+			\item Editar registros directamente.
+			\item Ejecutar consultas SQL personalizadas en la pestaña \emph{SQL Editor}.
+		\end{itemize}
+		\item Para ejecutar scripts o migraciones, utiliza la ventana de SQL y los atajos de DBeaver (por defecto \texttt{Ctrl+Enter} para ejecutar la sentencia seleccionada).
+	\end{itemize}
+
+
+
+	\subsection{Publicación de mensajes MQTT desde un ESP32}
+	
+	Para verificar que los mensajes enviados por un ESP32 se reciben correctamente, es necesario contar con un broker MQTT accesible desde la red local. Este apéndice describe los requisitos y pasos básicos para configurar un entorno de pruebas en un equipo personal utilizando Mosquitto.
+	
+	\subsubsection{Requisitos previos}
+	\begin{itemize}
+		\item Tener Mosquitto instalado en el sistema operativo anfitrión (Windows o Linux), o bien en una terminal WSL (Windows Subsystem for Linux).
+		\item Asegurarse de que el broker Mosquitto está escuchando en el puerto TCP 1883 y permite conexiones desde cualquier interfaz de red.
+	\end{itemize}
+	
+	\subsubsection{Comprobación de recepción de mensajes}
+	
+	Una vez que el ESP32 está conectado a la red Wi-Fi y enviando mensajes periódicos al broker MQTT, se puede verificar su recepción desde una terminal local:
+	
+	\begin{itemize}
+		\item En \textbf{Linux} o en una terminal WSL:
+		\begin{verbatim}
+			mosquitto_sub -h localhost -t pulsera/test -v
+		\end{verbatim}
+		
+		\item En \textbf{Windows} (usando la ruta por defecto de instalación de Mosquitto):
+		\begin{verbatim}
+			"C:\Program Files\mosquitto\mosquitto_sub.exe"
+			 -h localhost -t pulsera/test -v
+		\end{verbatim}
+	\end{itemize}
+	
+	\subsubsection{Configuración de Mosquitto}
+	
+	Si Mosquitto no está aceptando conexiones por defecto, puede ser necesario modificar su archivo de configuración. En sistemas Linux, basta con añadir al principio del archivo \texttt{/etc/mosquitto/mosquitto.conf} las siguientes líneas:
+	
+	\begin{verbatim}
+		listener 1883 0.0.0.0
+		allow_anonymous true
+	\end{verbatim}
+	
+	Luego, reinicie el servicio Mosquitto:
+	
+	\begin{verbatim}
+		sudo systemctl restart mosquitto
+	\end{verbatim}
+	
+	\subsubsection{Apertura del puerto 1883 en el firewall de Windows}
+	
+	Si está ejecutando Mosquitto en Windows, es necesario asegurarse de que el puerto 1883 está abierto en el firewall para permitir conexiones entrantes:
+	
+	\begin{enumerate}
+		\item Presione \texttt{Win + R}, escriba \texttt{wf.msc} y pulse Enter para abrir el Firewall de Windows con seguridad avanzada.
+		\item En el panel izquierdo, seleccione \textbf{Reglas de entrada}.
+		\item En el panel derecho, haga clic en \textbf{Nueva regla...}.
+		\item Seleccione \textbf{Puerto} y pulse \textbf{Siguiente}.
+		\item Elija \textbf{TCP} y especifique el puerto local \texttt{1883}. Pulse \textbf{Siguiente}.
+		\item Marque \textbf{Permitir la conexión}. Pulse \textbf{Siguiente}.
+		\item Seleccione los perfiles deseados: \textbf{Dominio}, \textbf{Privado} (y \textbf{Público}, si es necesario). Pulse \textbf{Siguiente}.
+		\item Asigne un nombre a la regla, por ejemplo: \texttt{MQTT TCP 1883}, y finalice el asistente.
+	\end{enumerate}
+	
+	Una vez completados estos pasos, el entorno estará listo para recibir y visualizar los mensajes MQTT enviados desde el ESP32.
+	
+
+	
+\end{umaappendices}
+
+
+\end{document}
