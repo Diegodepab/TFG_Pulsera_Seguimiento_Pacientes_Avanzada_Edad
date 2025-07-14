@@ -37,13 +37,21 @@ const int BUTTON1_PIN = 0;
 const int BUTTON2_PIN = 35;
 unsigned long buttonPressStart = 0;
 bool bothButtonsPressed = false;
-bool showingAlert = false;
 
 // MPU-6050 variables
 float prevAccX = 0, prevAccY = 0, prevAccZ = 0;
 int stepCount = 0;
 bool isStepDetected = false;
-const float FALL_THRESHOLD = 2.5;
+const float FALL_THRESHOLD = 5;
+
+// Parámetros para step detection mejorada
+const int WINDOW_SIZE = 20;           // tamaño de buffer para media móvil
+float zBuffer[WINDOW_SIZE] = {0};     // buffer circular de muestras de accZ
+int   zIndex = 0;
+float zSum = 0;                       // suma de valores en buffer
+unsigned long lastStepMillis = 0;
+const unsigned long MIN_STEP_INTERVAL = 300;  // ms entre pasos
+const float STEP_THRESHOLD = 1.2;     // umbral de pico en g (ajustable)
 
 // MAX30102 (pulse oximeter) variables
 int32_t spo2 = 0;
@@ -153,7 +161,7 @@ void handleButtonsAndAnimation() {
     if (!bothButtonsPressed) {
       buttonPressStart = currentMillis;
       bothButtonsPressed = true;
-    } else if (currentMillis - buttonPressStart >= 2500 && !showingAlert) {
+    } else if (currentMillis - buttonPressStart >= 2500) {
       tft.fillScreen(TFT_RED);
       tft.setTextColor(TFT_WHITE);
       tft.setTextSize(2);
@@ -161,13 +169,11 @@ void handleButtonsAndAnimation() {
       tft.drawString("Ambos botones", 1, 120);
       tft.drawString("Presionados!", 1, 150);
       Serial.println("ALERTA: botones presionados");
-      showingAlert = true;
       bothButtonsPressed = false;
       delay(2000); 
     }
   } else {
     bothButtonsPressed = false;
-    showingAlert = false;
   }
 
   // Single button press -> warning state
@@ -179,15 +185,13 @@ void handleButtonsAndAnimation() {
     tft.drawString("Presionado!", 10, 130);
   }
   // No buttons pressed -> background animation
-  else if (!showingAlert) {
-    if (currentMillis - previousMillis >= FRAME_INTERVAL) {
+  else if (currentMillis - previousMillis >= FRAME_INTERVAL) {
       previousMillis = currentMillis;
       tft.pushImage(0, 0, 160, 235, frames[frameIndex]);
       frameIndex = (frameIndex + 1) % 10;
 
       displayRealtime();  
     }
-  }
 }
 
 // Read MPU data, detect steps/falls, and update display/Serial
@@ -200,23 +204,36 @@ void handleMPU() {
   float dX = abs(accX - prevAccX);
   float dY = abs(accY - prevAccY);
   float dZ = abs(accZ - prevAccZ);
-  if ((dX > FALL_THRESHOLD || dY > FALL_THRESHOLD || dZ > FALL_THRESHOLD) && !showingAlert) {
+  if ((dX > FALL_THRESHOLD || dY > FALL_THRESHOLD || dZ > FALL_THRESHOLD)) {
     tft.fillScreen(TFT_RED);
     tft.setTextColor(TFT_WHITE);
     tft.setTextSize(2);
     tft.drawString("ALERTA: CAIDA", 0, 90);
     Serial.println("ALERTA: Caida detectada");
-    showingAlert = true;
+    delay(500);
+
   }
 
-  // Step detection on Z-axis
-  if (abs(accZ - prevAccZ) > 0.75) {
+  // --- STEP DETECTION AREA ---
+  // 1) Simple moving average (high-pass) filtering
+  zSum -= zBuffer[zIndex];
+  zBuffer[zIndex] = accZ;
+  zSum += zBuffer[zIndex];
+  zIndex = (zIndex + 1) % WINDOW_SIZE;
+  // we subtract the buffer average to remove slow components
+  float zMean = zSum / WINDOW_SIZE;
+  float zFiltered = accZ - zMean;
+
+  // 2) Threshold and minimum time peak detector
+  unsigned long now = millis();
+  if (zFiltered > STEP_THRESHOLD
+      && (now - lastStepMillis) > MIN_STEP_INTERVAL) {
     stepCount++;
     isStepDetected = true;
+    lastStepMillis = now;
   } else {
     isStepDetected = false;
   }
-
   prevAccX = accX;
   prevAccY = accY;
   prevAccZ = accZ;

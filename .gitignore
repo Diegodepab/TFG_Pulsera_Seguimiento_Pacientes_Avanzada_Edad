@@ -1,5 +1,6 @@
 # Ignorar archivos .h específicos de fotogramas
 frame_*.h
+*.h
 
 # Ignorar otros archivos generados automáticamente
 *.tmp
