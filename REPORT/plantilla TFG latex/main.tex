@@ -84,7 +84,7 @@
 \begin{abstract}
     
 
-	{\bfseries\large Palabras clave:} inteligencia artificial, redes neuronales, clasificación
+	{\bfseries\large Palabras clave:} 
 
 \end{abstract}
 
@@ -110,12 +110,12 @@
     
     El valor de esta tecnología se traduce además en mejoras concretas de calidad de vida. Al aumentar la seguridad del entorno, al sentirse acompañado a través de conexión permanente con familiares o servicios de salud. La persona mayor experimenta mayor tranquilidad y menor aislamiento\cite{Reina2024}. Asimismo, al fomentar la autonomía domiciliaria (permitiendo quedarse más tiempo en casa pese a la fragilidad) se eleva la comodidad y el ánimo del anciano\cite{Reina2024}. Desde el punto de vista sanitario, disponer de registros continuos de datos biomédicos que se comparten con los profesionales facilita la detección temprana de signos de alerta y permite actuar de forma preventiva, asimismo obtener más información del paciente. En conjunto, estas prestaciones tecnológicas apoyan a los cuidadores, aligerando su carga y promoviendo un modelo de atención más proactivo y centrado en la prevención.
     
-    En resumen, el diseño de una pulsera con detección de caídas y monitorización de constantes vitales es una tecnología que cada vez cobrará mayor importancia. Permitirá abordar uno de los principales riesgos de salud en el envejecimiento poblacional, las caídas, reduciendo su impacto clínico y social.
+    En resumen, el diseño de una pulsera con detección de caídas y monitorización de constantes vitales es una tecnología que cada vez cobrará mayor importancia. Permitirá abordar uno de los principales riesgos de salud en el envejecimiento poblacional, las caídas, reduciendo su impacto clínico y social. Esto enfocado a la par con la telemedicina ofreciendo un seguimiento de datos a cualquier paciente en el mundo abarca una solución para una problemática que abarcan cientos de millones de personas mayores al rededor del mundo.
 
 	\subsection{Objetivos}
 	
 	\subsubsection{Objetivo general}
-	Desarrollar un prototipo de pulsera acompañado de una plataforma de telesalud, que permita el seguimiento remoto de parámetros vitales (frecuencia cardíaca, saturación de oxígeno y actividad física) y la detección de caídas en personas mayores.
+	Desarrollar un prototipo de pulsera acompañado de una plataforma de telemedicina, que permita el seguimiento remoto de parámetros vitales (frecuencia cardíaca, saturación de oxígeno y actividad física) y la detección de caídas en personas mayores.
 	
 	\subsubsection{Objetivos específicos}
 	\begin{itemize}
@@ -458,7 +458,7 @@
 
 \section{Diseño de la pulsera (Hardware)}
 	
-	El objetivo es presentar una solución sencilla y modular que sirva como base. Aun usando sensores de bajo coste, se mantienen buenas prácticas de ingeniería: arquitectura en bus I\textsuperscript{2}C, y disposición clara de pines, de manera que el prototipo pueda evolucionar hacia un producto más robusto en caso de ser necesario y tener el presupuesto para comprar sensores de calidad.
+	El objetivo es presentar una solución sencilla y modular que sirva como base. Aún usando sensores de bajo coste, se mantienen buenas prácticas de ingeniería: arquitectura en bus I\textsuperscript{2}C, y disposición clara de pines, de manera que el prototipo pueda evolucionar hacia un producto más robusto en caso de ser necesario y tener el presupuesto para comprar sensores de calidad.
 	
 	\subsection{Esquemáticos y PCB}
 	
@@ -470,9 +470,9 @@
 		\label{tab:conexion_max30102}
 		\begin{tabular}{|p{4cm}|p{3cm}|p{5cm}|}
 			\hline
-			\textbf{Pin del MAX30102} & \textbf{Pin del ESP32}      & \textbf{Uso / Nota}                    \\ \hline
+			\textbf{Pin del MAX30102} & \textbf{Pin del ESP32}      & \textbf{Uso}                    \\ \hline
 			VIN                        & 3.3\,V                       & Alimentación                          \\ \hline
-			GND                        & GND                          & Masa                                   \\ \hline
+			GND                        & GND                          & Tierra                                   \\ \hline
 			SCL                        & GPIO 22 (SCL)                & I\textsuperscript{2}C reloj            \\ \hline
 			SDA                        & GPIO 21 (SDA)                & I\textsuperscript{2}C datos            \\ \hline
 			INT                        & —                            & No utilizado en este prototipo        \\ \hline
@@ -490,9 +490,9 @@
 		\label{tab:conexion_mpu6050}
 		\begin{tabular}{|p{3.5cm}|p{3cm}|p{5cm}|}
 			\hline
-			\textbf{Pin del MPU-6050} & \textbf{Pin del ESP32}      & \textbf{Uso / Nota}                            \\ \hline
+			\textbf{Pin del MPU-6050} & \textbf{Pin del ESP32}      & \textbf{Uso}                            \\ \hline
 			VCC                        & 3.3\,V                       & Alimentación                                  \\ \hline
-			GND                        & GND                          & Masa                                           \\ \hline
+			GND                        & GND                          & Tierra                                           \\ \hline
 			SCL                        & GPIO 22 (SCL)                & I\textsuperscript{2}C reloj                    \\ \hline
 			SDA                        & GPIO 21 (SDA)                & I\textsuperscript{2}C datos                    \\ \hline
 			XDA                        & —                            & No necesario (uso I\textsuperscript{2}C)        \\ \hline
@@ -738,6 +738,15 @@ Muchas gracias.
 	\bibitem{MAX86150Datasheet}
 	Maxim Integrated. MAX86150 Pulse Oximeter and Heart-Rate Sensor IC with ECG [Internet]. 2019 [citado 20 may 2025]. Disponible en: \url{https://datasheets.maximintegrated.com/en/ds/MAX86150.pdf}
 	
+	%%%%%%%%apendice
+	
+	\bibitem{PubSubClient}
+	O’Leary N. PubSubClient: Arduino MQTT client library [Internet]. 2013 [citado 15 jul 2025]. Disponible en: \url{https://github.com/knolleary/pubsubclient}
+
+	\bibitem{Mosquitto}
+	Eclipse Foundation. Eclipse Mosquitto [Internet]. 2025 [citado 15 jul 2025]. Disponible en: \url{https://mosquitto.org/}
+
+	
 \end{thebibliography}
 
 \begin{umaappendices}
@@ -885,68 +894,76 @@ Muchas gracias.
 		\item Para ejecutar scripts o migraciones, utiliza la ventana de SQL y los atajos de DBeaver (por defecto \texttt{Ctrl+Enter} para ejecutar la sentencia seleccionada).
 	\end{itemize}
 
-
-
 	\subsection{Publicación de mensajes MQTT desde un ESP32}
 	
-	Para verificar que los mensajes enviados por un ESP32 se reciben correctamente, es necesario contar con un broker MQTT accesible desde la red local. Este apéndice describe los requisitos y pasos básicos para configurar un entorno de pruebas en un equipo personal utilizando Mosquitto.
+	En este apartado se describe cómo montar un entorno para manejar el protocolo MQTT en un PC (Windows o Linux) con Mosquitto y cómo configurar un ESP32 para que publique mensajes.
 	
 	\subsubsection{Requisitos previos}
 	\begin{itemize}
-		\item Tener Mosquitto instalado en el sistema operativo anfitrión (Windows o Linux), o bien en una terminal WSL (Windows Subsystem for Linux).
+		\item Tener Mosquitto \cite{Mosquitto} instalado en el sistema operativo anfitrión (Windows o Linux), o bien en una terminal WSL (Windows Subsystem for Linux).
 		\item Asegurarse de que el broker Mosquitto está escuchando en el puerto TCP 1883 y permite conexiones desde cualquier interfaz de red.
-	\end{itemize}
-	
-	\subsubsection{Comprobación de recepción de mensajes}
-	
-	Una vez que el ESP32 está conectado a la red Wi-Fi y enviando mensajes periódicos al broker MQTT, se puede verificar su recepción desde una terminal local:
-	
-	\begin{itemize}
-		\item En \textbf{Linux} o en una terminal WSL:
-		\begin{verbatim}
-			mosquitto_sub -h localhost -t pulsera/test -v
-		\end{verbatim}
-		
-		\item En \textbf{Windows} (usando la ruta por defecto de instalación de Mosquitto):
-		\begin{verbatim}
-			"C:\Program Files\mosquitto\mosquitto_sub.exe"
-			 -h localhost -t pulsera/test -v
-		\end{verbatim}
-	\end{itemize}
-	
-	\subsubsection{Configuración de Mosquitto}
-	
-	Si Mosquitto no está aceptando conexiones por defecto, puede ser necesario modificar su archivo de configuración. En sistemas Linux, basta con añadir al principio del archivo \texttt{/etc/mosquitto/mosquitto.conf} las siguientes líneas:
-	
-	\begin{verbatim}
-		listener 1883 0.0.0.0
-		allow_anonymous true
-	\end{verbatim}
-	
-	Luego, reinicie el servicio Mosquitto:
-	
-	\begin{verbatim}
-		sudo systemctl restart mosquitto
-	\end{verbatim}
-	
-	\subsubsection{Apertura del puerto 1883 en el firewall de Windows}
-	
-	Si está ejecutando Mosquitto en Windows, es necesario asegurarse de que el puerto 1883 está abierto en el firewall para permitir conexiones entrantes:
-	
-	\begin{enumerate}
-		\item Presione \texttt{Win + R}, escriba \texttt{wf.msc} y pulse Enter para abrir el Firewall de Windows con seguridad avanzada.
-		\item En el panel izquierdo, seleccione \textbf{Reglas de entrada}.
-		\item En el panel derecho, haga clic en \textbf{Nueva regla...}.
-		\item Seleccione \textbf{Puerto} y pulse \textbf{Siguiente}.
-		\item Elija \textbf{TCP} y especifique el puerto local \texttt{1883}. Pulse \textbf{Siguiente}.
-		\item Marque \textbf{Permitir la conexión}. Pulse \textbf{Siguiente}.
-		\item Seleccione los perfiles deseados: \textbf{Dominio}, \textbf{Privado} (y \textbf{Público}, si es necesario). Pulse \textbf{Siguiente}.
-		\item Asigne un nombre a la regla, por ejemplo: \texttt{MQTT TCP 1883}, y finalice el asistente.
-	\end{enumerate}
-	
-	Una vez completados estos pasos, el entorno estará listo para recibir y visualizar los mensajes MQTT enviados desde el ESP32.
-	
+		\item Disponer de una placa ESP32 con soporte Wi‑Fi y el Arduino IDE (v1.8.x o superior) con el core ESP32 instalado.
+		\item Instalar en el IDE las librerías: WiFi.h y PubSubClient (cliente MQTT de Nick O'Leary, bastante útil para el protocolo MQTT \cite{PubSubClient}).
 
+	\end{itemize}
+		
+	\subsubsection{Preparar y ejecutar el broker MQTT}
+		Se puede usar Mosquitto para trabajar con el protocolo, para ello se recomienta probar enviar un mensaje desde el propio dispositivo tanto en localhost como en una red de área local 
+		por ejemplo  
+		En \textbf{Linux} o WSL:
+
+			\begin{verbatim}
+				mosquitto_sub -h localhost -t pulsera/test -v
+			\end{verbatim}
+		y en otra pestaña enviar 
+		
+			\begin{verbatim}
+			mosquitto_sub  -h localhost -t pulsera/test -m 
+			"Test local OK"
+			\end{verbatim}
+			
+		Se recomienda repetir la prueba con la dirección IPv4
+		
+		\subsubsection{Configuración de Mosquitto}
+		Si no acepta conexiones externas, lo recomendable es edita su configuración, tan sencillo como modificar o utilizar otro archivo en lugar de mosquitto.conf que simplifique el servicio de listener, por ejemplo:
+		
+		\begin{itemize}
+			\item En Linux, añade al inicio de \texttt{/etc/mosquitto/mosquitto.conf}:
+			\begin{verbatim}
+				listener 1883 0.0.0.0
+				allow_anonymous true
+			\end{verbatim}
+			y luego:
+			\begin{verbatim}
+				sudo systemctl restart mosquitto
+			\end{verbatim}
+			\item En Windows, crea un archivo \texttt{user\_mosq.conf} con:
+			\begin{verbatim}
+				listener 1883
+				allow_anonymous true
+			\end{verbatim}
+			y arranca Mosquitto en PowerShell:
+			\begin{verbatim}
+				cd "C:\Program Files\mosquitto"
+				.\mosquitto.exe -c .\user_mosq.conf -v
+			\end{verbatim}
+		\end{itemize}
+		
+		\subsubsection{Apertura del puerto 1883 en el cortafuegos  de Windows}
+		Un fallo muy común es problemas con el cortafuegos (firewall) para permitir conexiones entrantes en Windows para ello se recomienda añadir una regla de entrada:
+		
+		\begin{enumerate}
+			\item Pulsa \texttt{Win + R}, escribe \texttt{wf.msc} y pulsa Enter.
+			\item Selecciona \textbf{Reglas de entrada} y haz clic en \textbf{Nueva regla\ldots}.
+			\item Elige \textbf{Puerto}, selecciona TCP y especifica \texttt{1883}.
+			\item Marca \textbf{Permitir la conexión} y pulsa \textbf{Siguiente}.
+			\item Selecciona los perfiles deseados (\emph{Dominio}, \emph{Privado}, \emph{Público}) y pulsa \textbf{Siguiente}.
+			\item Pon un nombre a la regla (por ejemplo, \texttt{MQTT TCP 1883}) y finaliza.
+		\end{enumerate}
+		
+		\subsubsection{Uso de ESP32}
+		Copiar el ejemplo del Arduino IDE usando las librerías necesarias y sustituyendo \texttt{<TU\_SSID>}, \texttt{<TU\_PASSWORD>} y \texttt{<IP\_BROKER>} deberías ser capaz de conectar tanto al wifi como al protocolo MQTT, y mientras se mantiene en uso mosquitto, el esp32 ya debería ser capaz de enviar los mensajes deseados según su programación.
+		
 	
 \end{umaappendices}
 

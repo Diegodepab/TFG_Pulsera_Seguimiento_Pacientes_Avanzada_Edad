@@ -3,7 +3,7 @@
 \contentsline {subsection}{\numberline {1.1}Motivatión}{8}{subsection.1.1}%
 \contentsline {subsection}{\numberline {1.2}Objetivos}{9}{subsection.1.2}%
 \contentsline {subsubsection}{\numberline {1.2.1}Objetivo general}{9}{subsubsection.1.2.1}%
-\contentsline {subsubsection}{\numberline {1.2.2}Objetivos específicos}{9}{subsubsection.1.2.2}%
+\contentsline {subsubsection}{\numberline {1.2.2}Objetivos específicos}{10}{subsubsection.1.2.2}%
 \contentsline {subsection}{\numberline {1.3}Estructura de la memoria}{10}{subsection.1.3}%
 \contentsline {section}{\numberline {2}Marco teórico}{14}{section.2}%
 \contentsline {subsection}{\numberline {2.1}Ejemplos similares de dispositivos y teleasistencia médica}{14}{subsection.2.1}%
@@ -58,6 +58,7 @@
 \contentsline {paragraph}{3. Exploración y gestión de datos}{43}{paragraph*.7}%
 \contentsline {subsection}{\numberline {A.5}Publicación de mensajes MQTT desde un ESP32}{44}{subsection.alph1.Alph1.5}%
 \contentsline {subsubsection}{\numberline {A.5.1}Requisitos previos}{44}{subsubsection.alph1.Alph1.5.1}%
-\contentsline {subsubsection}{\numberline {A.5.2}Comprobación de recepción de mensajes}{44}{subsubsection.alph1.Alph1.5.2}%
+\contentsline {subsubsection}{\numberline {A.5.2}Preparar y ejecutar el broker MQTT}{44}{subsubsection.alph1.Alph1.5.2}%
 \contentsline {subsubsection}{\numberline {A.5.3}Configuración de Mosquitto}{45}{subsubsection.alph1.Alph1.5.3}%
-\contentsline {subsubsection}{\numberline {A.5.4}Apertura del puerto 1883 en el firewall de Windows}{45}{subsubsection.alph1.Alph1.5.4}%
+\contentsline {subsubsection}{\numberline {A.5.4}Apertura del puerto 1883 en el cortafuegos de Windows}{46}{subsubsection.alph1.Alph1.5.4}%
+\contentsline {subsubsection}{\numberline {A.5.5}Uso de ESP32}{46}{subsubsection.alph1.Alph1.5.5}%
