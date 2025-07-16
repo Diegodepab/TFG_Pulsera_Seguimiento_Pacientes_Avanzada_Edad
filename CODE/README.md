@@ -54,15 +54,14 @@ Cada subcarpeta contiene un sketch independiente para probar una función concre
 
 - **Hardware**: TTGO T‑Display ESP32 (16 MB), GY‑MAX30102, MPU‑6050.  
 - **Librerías Arduino**:  
-#include <Wire.h>
-#include <TFT_eSPI.h>
-#include <MPU6050_light.h>
-#include <MAX30105.h>
-#include "spo2_algorithm.h"
-
-#include <WiFi.h>
-#include <PubSubClient.h>
-#include <time.h>
+  - #include <Wire.h>
+  - #include <TFT_eSPI.h>
+  - #include <MPU6050_light.h>
+  - #include <MAX30105.h>
+  - #include "spo2_algorithm.h"
+  - #include <WiFi.h>
+  - #include <PubSubClient.h
+  - #include <time.h>
 
 # Estructura del trabajo
 /
