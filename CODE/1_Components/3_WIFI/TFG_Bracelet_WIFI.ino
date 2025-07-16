@@ -4,13 +4,13 @@
 #include <PubSubClient.h>
 
 // ——— Configuración Wi-Fi y NTP —————————————————————————————————————
-const char* SSID     = ""; // TFGDiegoDePablo
-const char* PASSWORD = ""; // TFGde10!
+const char* SSID     = "TFGDiegoDePablo";
+const char* PASSWORD = "TFGde10!";
 const char* NTP1     = "pool.ntp.org";
 const char* NTP2     = "time.nist.gov";
 
 // ——— Configuración MQTT (Mosquitto local) ——————————————————————————
-const char* MQTT_BROKER = "";  // IP fija de tu PC en la LAN example "192.168.139.238"
+const char* MQTT_BROKER = "192.168.135.238";  // IP fija de tu PC en la LAN
 const int   MQTT_PORT   = 1883;
 const char* MQTT_TOPIC  = "pulsera/test";
 
