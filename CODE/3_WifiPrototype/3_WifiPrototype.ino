@@ -4,33 +4,17 @@
 #include <MAX30105.h>
 #include "spo2_algorithm.h"
 
+#include <WiFi.h>
+#include <PubSubClient.h>
+#include <time.h>
+
 // Frames for display animation
-#include "frame_000.h"
 #include "frame_001.h"
-#include "frame_002.h"
-#include "frame_003.h"
-#include "frame_004.h"
-#include "frame_005.h"
-#include "frame_006.h"
-#include "frame_007.h"
-#include "frame_008.h"
-#include "frame_009.h"
 
 // Create objects for display and sensors
 TFT_eSPI tft = TFT_eSPI();
 MPU6050 mpu(Wire);
 MAX30105 particleSensor;
-
-// Animation frames array
-const unsigned short* frames[] = {
-  frame_000, frame_001, frame_002, frame_003, frame_004,
-  frame_005, frame_006, frame_007, frame_008, frame_009
-};
-
-// Timing for animation
-int frameIndex = 0;
-unsigned long previousMillis = 0;
-const long FRAME_INTERVAL = 100; // ms between frames
 
 // Button pins
 const int BUTTON1_PIN = 0;
@@ -41,8 +25,7 @@ bool bothButtonsPressed = false;
 // MPU-6050 variables
 float prevAccX = 0, prevAccY = 0, prevAccZ = 0;
 int stepCount = 0;
-bool isStepDetected = false;
-const float FALL_THRESHOLD = 5;
+const float FALL_THRESHOLD =3.5;
 
 // Parámetros para step detection mejorada
 const int WINDOW_SIZE = 20;           // tamaño de buffer para media móvil
@@ -75,30 +58,71 @@ static uint16_t chunkIndex        = 0;
 static uint32_t tempIR[FreqS];
 static uint32_t tempRed[FreqS];
 
-// Prototipos (encima de setup/loop)
 void shiftBuffers(uint16_t shiftCount);
 void displayRealtime(uint32_t hr, uint32_t sp);
+
+// ——— Configuración Wi-Fi y NTP —————————————————————————————————————
+const char* SSID     = "TFGDiegoDePablo";
+const char* PASSWORD = "TFGde10!";
+const char* NTP1     = "pool.ntp.org";
+const char* NTP2     = "time.nist.gov";
+
+// ——— Configuración MQTT (Mosquitto local) ——————————————————————————
+const char* MQTT_BROKER = "192.168.135.238";  // IP fija de tu PC en la LAN
+const int   MQTT_PORT   = 1883;
+const char* MQTT_TOPIC  = "pulsera/test";
+
+WiFiClient   wifiClient;
+PubSubClient mqtt(wifiClient);
+
+// Para temporizar envío cada minuto
+unsigned long lastMinuteMillis = 0;
+enum AlertState { NONE, SINGLE, BOTH };
+AlertState alertState       = NONE;
+unsigned long alertStart    = 0;
+const unsigned long SINGLE_DURATION = 500;   // ms que dura el amarillo
+const unsigned long BOTH_THRESHOLD  = 2500;  // ms para pasar a rojo
+const unsigned long BOTH_DURATION   = 2000;  // ms que dura el rojo
+
+
 
 // Function prototypes
 void initDisplay();
 void initMPU();
 void initMAX();
-void handleButtonsAndAnimation();
+void handleButtonsAndInputs();
 void handleMPU();
 void handleMAX();
 
 void setup() {
   Serial.begin(115200);
+  tft.begin();
+  tft.setRotation(0);
+  tft.fillScreen(TFT_WHITE);
+  // Inicializa tus sensores...
   initDisplay();
   initMPU();
   initMAX();
+
+  // Conecta red, hora y MQTT
+  connectWiFi();
+  initTime();
+  connectMQTT();
+
+  lastMinuteMillis = millis();
 }
 
 void loop() {
-  handleButtonsAndAnimation();
+  handleButtonsAndInputs();
   mpu.update();
   handleMPU();
   handleMAX();
+  // cada 60 000 ms
+  if (millis() - lastMinuteMillis >= 60000) {
+  lastMinuteMillis += 60000;
+  sendMetrics();    // reutiliza la misma función
+  }
+
 }
 
 // Initialize TFT display and button inputs
@@ -107,6 +131,7 @@ void initDisplay() {
   tft.setRotation(0);
   tft.setSwapBytes(true);
   tft.fillScreen(TFT_WHITE);
+  tft.pushImage(0, 0, 160, 235, frame_001);  // fondo fijo
 
   pinMode(BUTTON1_PIN, INPUT_PULLUP);
   pinMode(BUTTON2_PIN, INPUT_PULLUP);
@@ -150,49 +175,77 @@ void initMAX() {
   Serial.println("MAX30102 listo.");
 }
 
-// Handle button inputs and display animation or alerts
-void handleButtonsAndAnimation() {
-  unsigned long currentMillis = millis();
+// Handle button inputs and simple screen refresh (no animation)
+void handleButtonsAndInputs() {
+  unsigned long now = millis();
   bool b1 = digitalRead(BUTTON1_PIN) == LOW;
   bool b2 = digitalRead(BUTTON2_PIN) == LOW;
 
-  // Both buttons pressed -> long-press alert
+  // 1) Detectar pulsaciones y actualizar estado
   if (b1 && b2) {
-    if (!bothButtonsPressed) {
-      buttonPressStart = currentMillis;
-      bothButtonsPressed = true;
-    } else if (currentMillis - buttonPressStart >= 2500) {
-      tft.fillScreen(TFT_RED);
-      tft.setTextColor(TFT_WHITE);
+    // Si acabamos de entrar en BOTH (o en SINGLE por cuenta atrás), iniciamos o avanzamos
+    if (alertState != BOTH) {
+      if (alertState == NONE) alertStart = now;
+      if (now - alertStart >= BOTH_THRESHOLD) {
+        alertState = BOTH;
+        alertStart = now;              
+        
+        tft.fillScreen(TFT_RED);
+        tft.setTextColor(TFT_WHITE);
+        tft.setTextSize(2);
+        tft.drawString("ALERTA:", 30, 90);
+        tft.drawString("Ambos botones",  1, 120);
+        tft.drawString("Presionados!",    1, 150);
+        sendMQTT("ALERTA_BOTONES", "\"type\":\"long_press\"");
+        Serial.println("ALERTA: botones presionados");
+      } else {
+        // durante la cuenta atrás seguimos mostrando amarillo
+        if (alertState != SINGLE) {
+          alertState = SINGLE;
+          alertStart = now;   // inicia el contador de duración amarillo
+          tft.fillScreen(TFT_YELLOW);
+          tft.setTextColor(TFT_BLACK);
+          tft.setTextSize(2);
+          tft.drawString("Boton",         30, 100);
+          tft.drawString("Presionado!",   10, 130);
+          Serial.println("Aviso: 1 boton presionado");
+        }
+      }
+    }
+  }
+  else if (b1 || b2) {
+    // un solo botón, siempre amarillo, y reiniciamos duración
+    if (alertState != SINGLE) {
+      alertState = SINGLE;
+      alertStart = now;
+      tft.fillScreen(TFT_YELLOW);
+      tft.setTextColor(TFT_BLACK);
       tft.setTextSize(2);
-      tft.drawString("ALERTA:", 30, 90);
-      tft.drawString("Ambos botones", 1, 120);
-      tft.drawString("Presionados!", 1, 150);
-      Serial.println("ALERTA: botones presionados");
-      bothButtonsPressed = false;
-      delay(2000); 
+      tft.drawString("Boton",         30, 100);
+      tft.drawString("Presionado!",   10, 130);
+      Serial.println("Aviso: 1 boton presionado");
+    } else {
+      // ya estaba en SINGLE, solo reiniciamos el timer
+      alertStart = now;
     }
-  } else {
-    bothButtonsPressed = false;
   }
-
-  // Single button press -> warning state
-  if (b1 || b2) {
-    tft.fillScreen(TFT_YELLOW);
-    tft.setTextColor(TFT_BLACK);
-    tft.setTextSize(2);
-    tft.drawString("Boton", 30, 100);
-    tft.drawString("Presionado!", 10, 130);
-  }
-  // No buttons pressed -> background animation
-  else if (currentMillis - previousMillis >= FRAME_INTERVAL) {
-      previousMillis = currentMillis;
-      tft.pushImage(0, 0, 160, 235, frames[frameIndex]);
-      frameIndex = (frameIndex + 1) % 10;
-
-      displayRealtime();  
+  else {
+    // No quedan botones pulsados
+    if (alertState == SINGLE && now - alertStart >= SINGLE_DURATION) {
+      // tras 500 ms de amarillo, volvemos al fondo
+      alertState = NONE;
+      tft.pushImage(0, 0, 160, 235, frame_001);
+      displayRealtime();
     }
+    else if (alertState == BOTH && now - alertStart >= BOTH_DURATION) {
+      // tras 2000 ms de rojo, volvemos al fondo
+      alertState = NONE;
+      tft.pushImage(0, 0, 160, 235, frame_001);
+      displayRealtime();
+    }
+  }
 }
+
 
 // Read MPU data, detect steps/falls, and update display/Serial
 void handleMPU() {
@@ -208,9 +261,15 @@ void handleMPU() {
     tft.fillScreen(TFT_RED);
     tft.setTextColor(TFT_WHITE);
     tft.setTextSize(2);
-    tft.drawString("ALERTA: CAIDA", 0, 90);
+    tft.drawString("ALERTA", 10, 90);
+    tft.drawString("CAIDA", 10, 110);
     Serial.println("ALERTA: Caida detectada");
-    delay(500);
+    sendMQTT("ALERTA_CAIDA", "\"dx\":" + String(dX)
+                          + ",\"dy\":" + String(dY)
+                          + ",\"dz\":" + String(dZ));
+    delay(2000);
+    tft.pushImage(0, 0, 160, 235, frame_001);  // fondo fijo
+    displayRealtime();
 
   }
 
@@ -229,11 +288,8 @@ void handleMPU() {
   if (zFiltered > STEP_THRESHOLD
       && (now - lastStepMillis) > MIN_STEP_INTERVAL) {
     stepCount++;
-    isStepDetected = true;
     lastStepMillis = now;
-  } else {
-    isStepDetected = false;
-  }
+  } 
   prevAccX = accX;
   prevAccY = accY;
   prevAccZ = accZ;
@@ -243,10 +299,8 @@ void handleMPU() {
   tft.setTextSize(2);
   tft.setCursor(15, 200);
   tft.printf("Pasos: %d", stepCount);
-  tft.setCursor(15, 220);
-  if (isStepDetected) {
-    tft.printf("Paso detectado!");
-  }
+  tft.setCursor(10, 220);
+
 }
 
 // Acquire data from MAX30102, compute HR/SpO2, and output to Serial
@@ -269,16 +323,11 @@ void handleMAX() {
     if (maxState == SHOW_RESULTS && millis() - fingerRemovedMillis > 3000) {
       Serial.printf("RESULTADOS FINALES - AvgHR=%ld BPM AvgSpO2=%ld %%\n",
                     lastAvgHR, lastAvgSpO2);
-      // Show final average and stay on screen
-      tft.fillRect(0, 0, 160, 240, TFT_BLACK);
-      tft.setTextColor(TFT_WHITE);
-      tft.setTextSize(2);
-      tft.setCursor(20, 60);
-      tft.printf("HR avg: %ld BPM", lastAvgHR);
-      tft.setCursor(20, 90);
-      tft.printf("SpO2 avg: %ld %%", lastAvgSpO2);
       maxState = WAITING;
       initialFillIndex = chunkIndex = 0;
+      tft.fillRect(10, 220, 140, 16, TFT_WHITE);
+      sendMetrics(); 
+
     }
     return;
   }
@@ -291,8 +340,6 @@ void handleMAX() {
     firstFill = true;
     initialFillIndex = chunkIndex = 0;
     Serial.println("Dedo detectado: comenzando medicion");
-    // Clean only the data area to avoid residue
-    tft.fillRect(0, 0, 160, 240, TFT_BLACK);
   }
 
   // Initial buffer filling (sample by sample)
@@ -370,21 +417,96 @@ void shiftBuffers(uint16_t shiftCount) {
 
 
 void displayRealtime() {
-
   tft.setTextSize(2);
   tft.setTextColor(TFT_BLACK, TFT_WHITE);
 
+
+  tft.fillRect(80, 35, 60, 16, TFT_WHITE);
   tft.setCursor(80, 35);
   tft.printf("%ld", lastAvgHR);
-  
 
+  tft.fillRect(80, 80, 60, 16, TFT_WHITE);
   tft.setCursor(80, 80);
   tft.printf("%ld%%", lastAvgSpO2);
+
 
   if (maxState == ANALYSING) {
 
     tft.setCursor(10, 220);
     tft.printf("ANALIZANDO ...");
+    
   }
 }
 
+// — Conexión Wi-Fi y pantalla TFT
+void connectWiFi() {
+  tft.fillScreen(TFT_BLACK);
+  tft.drawString("Conectando WiFi...", 10, 50);
+  WiFi.begin(SSID, PASSWORD);
+  int attempts = 0;
+  while (WiFi.status() != WL_CONNECTED && attempts++ < 20) {
+    delay(500); Serial.print(".");
+  }
+  if (WiFi.status() == WL_CONNECTED) {
+    tft.drawString("WiFi OK: " + WiFi.localIP().toString(), 10, 80);
+  } else {
+    tft.fillScreen(TFT_RED);
+    tft.drawString("WiFi FALLO", 10, 50);
+    while (true) delay(1000);
+  }
+}
+
+void initTime() {
+  configTime(0, 0, NTP1, NTP2);
+  while (time(nullptr) < 100000) { delay(200); }
+}
+
+// Devuelve timestamp en ISO 8601 UTC
+String getISOTime() {
+  time_t now = time(nullptr);
+  struct tm ts; gmtime_r(&now, &ts);
+  char buf[25];
+  strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%SZ", &ts);
+  return String(buf);
+}
+
+void connectMQTT() {
+  mqtt.setServer(MQTT_BROKER, MQTT_PORT);
+  while (!mqtt.connected()) {
+    if (mqtt.connect("ESP32Client")) {
+      Serial.println("MQTT conectado");
+    } else {
+      delay(2000);
+    }
+  }
+}
+
+// Envía un payload JSON al topic
+void publishJSON(const String& payload) {
+  if (!mqtt.connected()) connectMQTT();
+  mqtt.publish(MQTT_TOPIC, payload.c_str());
+}
+
+// Construye y envía un JSON con tipo y datos arbitrarios
+void sendMQTT(const char* eventType, const String& data) {
+  String js = "{";
+  js += "\"ts\":\"" + getISOTime() + "\",";
+  js += "\"event\":\"" + String(eventType) + "\",";
+  js += data;
+  js += "}";
+  publishJSON(js);
+  Serial.println("MQTT >> " + js);
+}
+
+void sendMetrics() {
+  // Construye el JSON con los cuatro campos
+  String payload = "{";
+  payload += "\"step_count\":" + String(stepCount)   + ",";
+  payload += "\"bpm\":"        + String(lastAvgHR)   + ",";
+  payload += "\"spo2\":"       + String(lastAvgSpO2) + ",";
+  payload += "\"ts\":\""       + getISOTime()        + "\"";
+  payload += "}";
+  // Publica en el topic definido
+  publishJSON(payload);
+  Serial.println("MQTT METRICS >> " + payload);
+}
