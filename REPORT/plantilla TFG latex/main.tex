@@ -961,6 +961,17 @@ Muchas gracias.
 			\item Pon un nombre a la regla (por ejemplo, \texttt{MQTT TCP 1883}) y finaliza.
 		\end{enumerate}
 		
+		También se puede hacer abriendo el power shell como administrador y usando el siguiente código:
+		
+		\begin{verbatim}
+			netsh advfirewall firewall add rule `
+			name="MQTT Inbound" `
+			dir=in action=allow `
+			protocol=TCP localport=1883 `
+			profile=Domain,Private,Public
+		
+		\end{verbatim}
+		
 		\subsubsection{Uso de ESP32}
 		Copiar el ejemplo del Arduino IDE usando las librerías necesarias y sustituyendo \texttt{<TU\_SSID>}, \texttt{<TU\_PASSWORD>} y \texttt{<IP\_BROKER>} deberías ser capaz de conectar tanto al wifi como al protocolo MQTT, y mientras se mantiene en uso mosquitto, el esp32 ya debería ser capaz de enviar los mensajes deseados según su programación.
 		
