@@ -63,13 +63,3 @@ Cada subcarpeta contiene un sketch independiente para probar una función concre
   - #include <PubSubClient.h
   - #include <time.h>
 
-# Estructura del trabajo
-/
-├─ 1_Components/
-│   ├─ 0_Creation_of_wallpaper_for_the_band/
-│   ├─ 1_GY-MAX30102_Azul/
-│   ├─ 2_mpu650_test/
-│   └─ 3_WIFI/
-├─ 2_Prototype/
-├─ 3_WifiPrototype/
-└─ README.md
