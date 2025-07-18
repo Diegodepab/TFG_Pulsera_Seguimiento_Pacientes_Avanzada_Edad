@@ -68,7 +68,7 @@ const char* NTP1     = "pool.ntp.org";
 const char* NTP2     = "time.nist.gov";
 
 // ——— Configuración MQTT (Mosquitto local) ——————————————————————————
-const char* MQTT_BROKER = "192.168.135.238";  // IP fija de tu PC en la LAN
+const char* MQTT_BROKER = "192.168.33.238";  // IP fija de tu PC en la LAN
 const int   MQTT_PORT   = 1883;
 const char* MQTT_TOPIC  = "pulsera/test";
 
@@ -84,8 +84,6 @@ const unsigned long SINGLE_DURATION = 500;   // ms que dura el amarillo
 const unsigned long BOTH_THRESHOLD  = 2500;  // ms para pasar a rojo
 const unsigned long BOTH_DURATION   = 2000;  // ms que dura el rojo
 
-
-
 // Function prototypes
 void initDisplay();
 void initMPU();
@@ -93,18 +91,20 @@ void initMAX();
 void handleButtonsAndInputs();
 void handleMPU();
 void handleMAX();
+void connectWiFi();
+void connectMQTT();
+void displayClock();
+
 
 void setup() {
   Serial.begin(115200);
   tft.begin();
   tft.setRotation(0);
   tft.fillScreen(TFT_WHITE);
-  // Inicializa tus sensores...
   initDisplay();
   initMPU();
   initMAX();
 
-  // Conecta red, hora y MQTT
   connectWiFi();
   initTime();
   connectMQTT();
@@ -113,14 +113,15 @@ void setup() {
 }
 
 void loop() {
+  displayClock(); 
   handleButtonsAndInputs();
   mpu.update();
   handleMPU();
   handleMAX();
-  // cada 60 000 ms
+  // 60 000 ms
   if (millis() - lastMinuteMillis >= 60000) {
   lastMinuteMillis += 60000;
-  sendMetrics();    // reutiliza la misma función
+  sendMetrics();   
   }
 
 }
@@ -438,20 +439,18 @@ void displayRealtime() {
   }
 }
 
-// — Conexión Wi-Fi y pantalla TFT
+// — Conection Wi-Fi 
 void connectWiFi() {
-  tft.fillScreen(TFT_BLACK);
-  tft.drawString("Conectando WiFi...", 10, 50);
   WiFi.begin(SSID, PASSWORD);
   int attempts = 0;
   while (WiFi.status() != WL_CONNECTED && attempts++ < 20) {
     delay(500); Serial.print(".");
   }
   if (WiFi.status() == WL_CONNECTED) {
-    tft.drawString("WiFi OK: " + WiFi.localIP().toString(), 10, 80);
+    initDisplay();
   } else {
-    tft.fillScreen(TFT_RED);
-    tft.drawString("WiFi FALLO", 10, 50);
+    tft.fillScreen(TFT_YELLOW);
+    tft.drawString("Buscando conexión", 10, 50);
     while (true) delay(1000);
   }
 }
@@ -461,7 +460,7 @@ void initTime() {
   while (time(nullptr) < 100000) { delay(200); }
 }
 
-// Devuelve timestamp en ISO 8601 UTC
+// ISO 8601 UTC
 String getISOTime() {
   time_t now = time(nullptr);
   struct tm ts; gmtime_r(&now, &ts);
@@ -474,20 +473,17 @@ void connectMQTT() {
   mqtt.setServer(MQTT_BROKER, MQTT_PORT);
   while (!mqtt.connected()) {
     if (mqtt.connect("ESP32Client")) {
-      Serial.println("MQTT conectado");
     } else {
       delay(2000);
     }
   }
 }
 
-// Envía un payload JSON al topic
 void publishJSON(const String& payload) {
   if (!mqtt.connected()) connectMQTT();
   mqtt.publish(MQTT_TOPIC, payload.c_str());
 }
 
-// Construye y envía un JSON con tipo y datos arbitrarios
 void sendMQTT(const char* eventType, const String& data) {
   String js = "{";
   js += "\"ts\":\"" + getISOTime() + "\",";
@@ -499,14 +495,27 @@ void sendMQTT(const char* eventType, const String& data) {
 }
 
 void sendMetrics() {
-  // Construye el JSON con los cuatro campos
   String payload = "{";
   payload += "\"step_count\":" + String(stepCount)   + ",";
   payload += "\"bpm\":"        + String(lastAvgHR)   + ",";
   payload += "\"spo2\":"       + String(lastAvgSpO2) + ",";
   payload += "\"ts\":\""       + getISOTime()        + "\"";
   payload += "}";
-  // Publica en el topic definido
+
   publishJSON(payload);
   Serial.println("MQTT METRICS >> " + payload);
+}
+
+void displayClock() {
+  time_t now = time(nullptr);
+  struct tm ts;
+  localtime_r(&now, &ts);
+
+  char buf[6];
+  sprintf(buf, "%02d:%02d", ts.tm_hour, ts.tm_min);   //  “HH:MM”
+
+  tft.setTextSize(2);
+  tft.setTextColor(TFT_BLACK, TFT_WHITE);
+  tft.setCursor(40, 5);   
+  tft.print(buf);
 }
