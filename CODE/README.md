@@ -2,10 +2,27 @@
 
 Este documento recoge los **hitos y versiones** más relevantes del firmware de la pulsera de seguimiento de paciente, con dos versiones finales consolidadas.
 
----
 
+# Sobre el hardware usado
+
+![esquema_prototipo](https://github.com/user-attachments/assets/c1c0bda9-d543-4e63-9689-f735c7d1760e)
+
+
+## Componentes principales
+
+- **TTGO T-Display (16 MB)**  
+  Microcontrolador ESP32 con 16 MB de flash, Wi‑Fi/Bluetooth integrado, pantalla TFT 1.14″ y dos botones.  
+  _Uso:_ gestión de la interfaz, almacenamiento de imágenes animadas, conexión a red y control de usuario.
+
+- **MPU‑6050**  
+  Acelerómetro de 3 ejes + giroscopio.  
+  _Uso:_ medir movimientos (X, Y, Z) para conteo de pasos y detección de posibles caídas.
+
+- **GY‑MAX30102**  
+  Sensor óptico de frecuencia cardíaca y oximetría (SpO₂).  
+  _Uso:_ lectura de pulsaciones por minuto (BPM) y nivel de oxigenación sanguínea.
 ## 1. Versión por Componentes (`1_Components`)
-
+https://github.com/Diegodepab/TFG_Pulsera_Seguimiento_Pacientes_Avanzada_Edad/blob/main/REPORT/plantilla%20TFG%20latex/images/esquema_prototipo.jpg
 Cada subcarpeta contiene un sketch independiente para probar una función concreta:
 
 - **0_Creation_of_wallpaper_for_the_band**  
