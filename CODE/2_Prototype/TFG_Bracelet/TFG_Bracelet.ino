@@ -3,6 +3,7 @@
 #include <MPU6050_light.h>
 #include <MAX30105.h>
 #include "spo2_algorithm.h"
+#include <time.h>
 
 // Frames for display animation
 #include "frame_000.h"
@@ -69,15 +70,22 @@ enum MAXState { WAITING, ANALYSING, SHOW_RESULTS };
 MAXState maxState = WAITING;
 bool firstFill = true;
 
-// Variables auxiliares (declarar al inicio del archivo, junto a globals)
+// auxiliar
 static uint16_t initialFillIndex = 0;
 static uint16_t chunkIndex        = 0;
 static uint32_t tempIR[FreqS];
 static uint32_t tempRed[FreqS];
 
-// Prototipos (encima de setup/loop)
+// buffers
 void shiftBuffers(uint16_t shiftCount);
 void displayRealtime(uint32_t hr, uint32_t sp);
+
+//  clock time ms Globals
+unsigned long startMillis;
+unsigned long previousClockMillis = 0;
+
+// hora de compilación
+int initH, initM, initS;
 
 // Function prototypes
 void initDisplay();
@@ -86,16 +94,20 @@ void initMAX();
 void handleButtonsAndAnimation();
 void handleMPU();
 void handleMAX();
+void displayClock();
 
 void setup() {
   Serial.begin(115200);
   initDisplay();
   initMPU();
   initMAX();
+  startMillis = millis();
+  sscanf(__TIME__, "%d:%d:%d", &initH, &initM, &initS);
 }
 
 void loop() {
   handleButtonsAndAnimation();
+  displayClock();
   mpu.update();
   handleMPU();
   handleMAX();
@@ -386,5 +398,27 @@ void displayRealtime() {
     tft.setCursor(10, 220);
     tft.printf("ANALIZANDO ...");
   }
+}
+
+void displayClock() {
+  unsigned long now = millis();
+
+  unsigned long elapsed = (now - startMillis) / 1000;
+  unsigned long totalSeconds = initH*3600UL
+                              + initM*60UL
+                              + initS
+                              + elapsed;
+
+  int hours   = (totalSeconds / 3600) % 24;
+  int minutes = (totalSeconds / 60)   % 60;
+  int seconds = totalSeconds          % 60;
+
+  char buf[9];
+  sprintf(buf, "%02d:%02d", hours, minutes);
+
+  tft.setTextSize(2);
+  tft.setTextColor(TFT_BLACK, TFT_WHITE);
+  tft.setCursor(40, 5);   
+  tft.print(buf);
 }
 

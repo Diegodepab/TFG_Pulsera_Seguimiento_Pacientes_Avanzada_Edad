@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  nginx:
+    build:
+      context: ../../../
+      dockerfile: devops/docker/nginx/Dockerfile
+      cache_from:
+        - bracelet-nginx:latest
+        - pixelcrush/bracelet-nginx:latest
+        - pixelcrush/bracelet-nginx:${NGINX_VERSION}
+    image: bracelet-nginx:latest
+    volumes:
+      - ./conf/ssl-dev:/etc/nginx/conf.d/ssl-dev
+      - ./conf/default.conf.dev.template:/etc/nginx/templates/default.conf.template
+      - ../../../demos/static:/usr/share/nginx/platform-static-demo
+
+  db:
+    command: |
+      -c 'log_statement=all'
+      -c 'log_min_duration_statement=-1'
+      -c 'log_connections=on'
+      -c 'log_disconnections=on'
+      -c 'log_duration=on'
+
+  api:
+    build:
+      context: ../../../
+      dockerfile: devops/docker/api/Dockerfile
+      cache_from:
+        - bracelet-api:latest
+        - pixelcrush/bracelet-api:latest
+        - pixelcrush/bracelet-api:${API_VERSION}
+    image: bracelet-api:latest
+    environment:
+      PYCHARM_HOST: ${API_PYCHARM_HOST}
+      PYDEV_HOSTNAME: ${API_PYDEV_HOSTNAME}
+      PYDEV_PORT: ${API_PYCHARM_PORT}
+      API_SENTRY_DEBUG: ${API_SENTRY_DEBUG}
+    command: /entrypoint.sh
+    volumes:
+      - ../../../backend/api:/code
+      - ../../../backend/bracelet-lib:/bracelet-lib
+      - ../api/dbg-entrypoint.sh:/entrypoint.sh
+
+  platform:
+    build:
+      context: ../../../
+      dockerfile: devops/docker/platform/Dockerfile
+      cache_from:
+        - bracelet-platform:latest
+        - pixelcrush/bracelet-platform:latest
+        - pixelcrush/bracelet-platform:${PLATFORM_VERSION}
+    image: bracelet-platform:latest
+    command: /entrypoint.sh
+    volumes:
+      - ../../../frontend/platform:/code:cached
+      - ../platform/dbg-entrypoint.sh:/entrypoint.sh
+    cap_add:
+      - SYS_PTRACE
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "10"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - VITE_FORCE_POLLING=true
+    ports:
+      - "3000:3000"
