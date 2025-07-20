@@ -148,7 +148,7 @@ Muchas gracias.
 			\item \textbf{Front-end (Svelte):} Interfaz web intuitiva destinada a médicos, familiares y cuidadores, que muestre gráficas de evolución de parámetros vitales, notificaciones de alertas y resúmenes de actividad física, con opciones para configurar umbrales y contactos de emergencia.
 		\end{itemize}
 		
-		\item Integrar la comunicación Wi-Fi entre la pulsera y la plataforma, asegurando un flujo de datos seguro y en tiempo real utilizando el protocolo MQTT.
+		\item Integrar la comunicación Wi-Fi entre la pulsera y la plataforma, asegurando un flujo de datos seguro utilizando el protocolo MQTT.
 		
 		
 	\end{itemize}
@@ -209,7 +209,7 @@ Muchas gracias.
 
 	\subsection{Ejemplos similares de dispositivos y teleasistencia médica}
 	
-	Actualmente existen múltiples propuestas para pulseras o equipos de seguimiento de pacientes de avanzada edad, el mayor problema de las soluciones es el alto coste por usuarios y dificultad en la globalización de un sistema que pueda ser adaptado a cualquier paciente.
+	Actualmente existen múltiples propuestas para pulseras o equipos de seguimiento de pacientes de avanzada edad, el mayor problema de las soluciones es la dificultad en la globalización de un sistema que pueda ser adaptado a cualquier paciente.
 	
 	\subsubsection{SeniorDomo}
 	
@@ -239,7 +239,7 @@ Muchas gracias.
 	|\mathbf{a}| = \sqrt{a_x^2 + a_y^2 + a_z^2}
 	\]
 	
-	donde \(a_x\), \(a_y\) y \(a_z\) son las componentes de aceleración en los ejes ortogonales X, Y y Z. Según los datos empíricos del estudio, las caídas provocan picos transitorios de aceleración de hasta 12 g, mientras que el valor mínimo de aceleración observado en una caída es de aproximadamente 3 g. Las actividades de la vida diaria (ADL) raramente superan los 3 g, aunque movimientos bruscos como correr o sentarse rápidamente pueden acercarse a este umbral. Debido al solapamiento entre los rangos de aceleración de caídas y ADL, el umbral de detección debe ajustarse cuidadosamente para minimizar falsos positivos y garantizar la robustez del algoritmo \cite{ucm2015}.
+	donde \(a_x\), \(a_y\) y \(a_z\) son las componentes de aceleración en los ejes ortogonales X, Y y Z. Según los datos empíricos del estudio, las caídas provocan picos transitorios de aceleración de hasta 12 g, mientras que el valor mínimo de aceleración observado en una caída es de aproximadamente 3 g. Las actividades de la vida diaria (ADL) raramente superan los 3 g, aunque movimientos bruscos como correr o sentarse rápidamente pueden acercarse a este umbral. Debido al solapamiento entre los rangos de aceleración de caídas y ADL, el umbral de detección debe ajustarse cuidadosamente a cada paciente para minimizar falsos positivos y garantizar la robustez del algoritmo \cite{ucm2015}.
 	
 	\subsubsection{Sistemas basados en aprendizaje automático}
 	
@@ -530,9 +530,104 @@ Muchas gracias.
 	\end{figure}
 	
 	
-	\subsection{Desarrollo de firmware}
+	\subsection{Desarrollo de software del prototipo}
 	
-	Aqui iría toda la explicación de Arduino
+	Ya conociendo los componentes elegidos para este proyecto se puede describir el código usado en arduino. El código fuente del prototipo está disponible como material complementario en la carpeta \texttt{CODE} de este repositorio:  
+	\url{https://github.com/Diegodepab/TFG_Pulsera_Seguimiento_Pacientes_Avanzada_Edad/tree/main/COD}
+	
+	Uno de los principales objetivos del prototipo es explorar una variedad amplia de funciones probando su viabilidad, además se tuvo un enfoque basado en componentes donde sin importar lo amplio del código se busca minimizar la cohesión diseñando módulos de tal manera que tengan menos dependencias internas entre sí, favoreciendo un futuro donde sustituciones o problemas en un sensor no afecten el funcionamiento global de la pulsera.
+	
+	El prototipo se divide en las siguientes funcionalidades:
+	
+	\subsubsection{Fondos animados y botones de la pantalla (\texttt{handleButtonsAndAnimation})}
+	
+	Para gestionar la pantalla TFT y los botones integrados del ESP32 hemos elegido la librería \texttt{TFT\_eSPI}. Esta biblioteca está optimizada para controladores comunes ILI9xxx y ofrece:
+	\begin{itemize}
+		\item \textbf{PushImage eficiente:} permite enviar directamente mapas de bits desde \texttt{PROGMEM} sin consumir RAM.  
+		\item \textbf{Configuración SPI sencilla:} abstrae la inicialización de pines y velocidad de bus.  
+		\item \textbf{Funciones gráficas básicas:} dibujo de texto, rectángulos y cambio rápido de colores.
+	\end{itemize}
+	
+	La rutina \texttt{handleButtonsAndAnimation()} unifica dos tareas clave:
+	\begin{enumerate}
+		\item \textbf{Animación de fondo:}
+		\begin{itemize}
+			\item Se incluyen diez frames estáticos (\texttt{frame\_000.h}…\texttt{frame\_009.h}) generados previamente con un script Python que convierte GIFs en arrays de 16‑bit.  
+			\item Mediante \texttt{millis()} y la constante \texttt{FRAME\_INTERVAL = 100\,ms}, cada ciclo se llama a  
+			\texttt{tft.pushImage(0,0,160,235,frames[frameIndex])} para avanzar al siguiente frame.  
+		\end{itemize}
+		\item \textbf{Gestión de botones de emergencia:}
+		\begin{itemize}
+			\item Pines \texttt{GPIO0} y \texttt{GPIO35} configurados con \texttt{INPUT\_PULLUP}.  
+			%%\item Pulsación simultánea >2 s entra en estado “BOTH”: fondo rojo + publicación MQTT de alerta.  
+			%% \item Pulsación de uno solo muestra un aviso amarillo de corta duración (500 ms) para minimizar falsos positivos.  
+			\item Al liberar botones se restaura automáticamente el fondo animado.
+		\end{itemize}
+	\end{enumerate}
+	
+	
+	\subsubsection{Reloj y sincronización NTP (\texttt{displayClock}, \texttt{initTime})}
+	
+	Esta funcionalidad añade un reloj en pantalla y timestamps fiables para los datos:
+	\begin{itemize}
+		\item \textbf{Conexión Wi‑Fi:} \texttt{WiFi.begin(SSID,PASSWORD)} con reconexión automática.  
+		\item \textbf{Sincronización NTP:} mediante \texttt{configTime(0,0,NTP1,NTP2)} se obtiene la hora UTC de servidores públicos.  
+		%%\item \textbf>Formateo ISO 8601:} la función \texttt{getISOTime()} devuelve una cadena “YYYY‑MM‑DDThh:mm:ssZ” para incluir en mensajes MQTT.  
+	\item \textbf{Visualización “HH:MM”:} cada iteración de \texttt{loop()} se llama a \texttt{displayClock()}, que dibuja la hora en la esquina superior con \texttt{tft.print()}.
+	\end{itemize}
+	
+	
+	\subsubsection{Sensor de pulso y oxímetro MAX30102 (\texttt{handleMAX})}
+	
+%%	Para medir frecuencia cardíaca (HR) y saturación de oxígeno (SpO₂):
+%%	\begin{itemize}
+%%	\item \textbf{Inicialización 400 kHz:} \texttt{particleSensor.begin(Wire,I2C\_SPEED\_FAST)} y \texttt{particleSensor.setup(...)} para modo IR+RED.  
+%%	\item \textbf{Máquina de estados:} 
+	\begin{itemize}
+		\item \texttt{WAITING}: sin dedo detectado.  
+		\item \texttt{ANALYSING}: recogida de \texttt{BUFFER\_SIZE} muestras.  
+		\item \texttt{SHOW\_RESULTS}: tras retirar dedo, mostrar promedios finales.  
+	\end{itemize}
+	 \textbf{Procesado de muestras:} 
+	\begin{itemize}
+		\item Relleno inicial muestra a muestra.
+		\item Agrupación en bloques de \texttt{FreqS}, desplazamiento de buffers con \texttt{shiftBuffers()}, luego cálculo con \texttt{maxim\_heart\_rate\_and\_oxygen\_saturation()}.  
+		\item Filtrado incremental y promedio de valores válidos (\texttt{validHR}, \texttt{validSPO2}).  
+	\end{itemize}
+	\textbf{Salida:} actualización en pantalla con \texttt{displayRealtime()} y envío por Serial/MQTT.
+
+	
+	
+	\subsubsection{Acelerómetro y giroscopio MPU‑6050 (\texttt{handleMPU})}
+	
+	Para conteo de pasos y detección de caídas:
+	\begin{itemize}
+	\item \textbf{Inicialización I\textsuperscript{2}C:} \texttt{Wire.begin(21,22)} y calibración con \texttt{mpu.calcOffsets()}.  
+	\item \textbf{Detección de caídas:} si la variación absoluta en X, Y o Z supera \texttt{FALL\_THRESHOLD = 3.5\,g}, se muestra alerta roja y se notifica por MQTT.  
+	\item \textbf{Conteo de pasos:}
+	\begin{itemize}
+		\item Buffer circular de tamaño 20 en eje Z para media móvil.  
+	%%	\item Cálculo de \(\text{zFiltered} = \text{accZ} - \text{media móvil}\).  
+	%%	\item Cuando \(\text{zFiltered} > \text{STEP\_THRESHOLD}=1.2\,g\) y han pasado \(\geq 300\,ms\) desde el último paso, se incrementa \texttt{stepCount}.  
+	\end{itemize}
+	\item \textbf{Visualización:} el contador de pasos y estado de detección se actualizan en pantalla en tiempo real.
+	\end{itemize}
+	
+	
+	\subsubsection{Conectividad MQTT y envío de datos (\texttt{sendMQTT}, \texttt{sendMetrics})}
+	
+	Para integrar la pulsera con una plataforma de monitoreo:
+	\begin{itemize}
+	\item \textbf{Cliente MQTT:} \texttt{PubSubClient} sobre \texttt{WiFiClient} con reconexión automática.  
+	\item \textbf{Eventos de alerta:} 
+	\begin{itemize}
+		\item \texttt{ALERTA\_BOTONES} y \texttt{ALERTA\_CAIDA} se disparan en los manejadores de botones y MPU, incluyendo coordenadas o tipo de pulsación.  
+	\end{itemize}
+%%	\item \textbf{Métricas periódicas:} cada 60 s \texttt{sendMetrics()} publica un JSON con el formato usado en el backend de la plataforma.  
+	\item \textbf{Formato JSON estándar:} incluye siempre el campo \texttt{ts} con timestamp ISO y los valores medidos, facilitando la ingesta en cualquier broker o dashboard.
+	\end{itemize}
+	
+	 
 	
 	\subsection{Ejemplo en funcionamiento}
 	
@@ -555,7 +650,7 @@ Muchas gracias.
 	
 	Una vez obtenidas las variables  
 	\texttt{API\_S3\_ACCESS\_KEY\_ID} y  
-	\texttt{API\_S3\_SECRET\_ACCESS\_KEY}, su integración en una QUEDA PENDIENTE ESTO TENGO QUE HACERLO EN EL FUTUROOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO \cite{mhealth}.
+	\texttt{API\_S3\_SECRET\_ACCESS\_KEY}, su integración en una  \cite{mhealth}.
 	
 \section{Configuración e interconexión entre las partes}
 	\subsection{Protocolos de comunicación}
@@ -737,13 +832,7 @@ Muchas gracias.
 	\bibitem{MAX86150Datasheet}
 	Maxim Integrated. MAX86150 Pulse Oximeter and Heart-Rate Sensor IC with ECG [Internet]. 2019 [citado 20 may 2025]. Disponible en: \url{https://datasheets.maximintegrated.com/en/ds/MAX86150.pdf}
 	
-	%%%%%%%%apendice
-	
-	\bibitem{PubSubClient}
-	O’Leary N. PubSubClient: Arduino MQTT client library [Internet]. 2013 [citado 15 jul 2025]. Disponible en: \url{https://github.com/knolleary/pubsubclient}
 
-	\bibitem{Mosquitto}
-	Eclipse Foundation. Eclipse Mosquitto [Internet]. 2025 [citado 15 jul 2025]. Disponible en: \url{https://mosquitto.org/}
 
 	
 \end{thebibliography}
@@ -889,92 +978,94 @@ Muchas gracias.
 			\item Navegar filas, filtrar y ordenar.
 			\item Editar registros directamente.
 			\item Ejecutar consultas SQL personalizadas en la pestaña \emph{SQL Editor}.
-		\end{itemize}
+	\end{itemize}
 		\item Para ejecutar scripts o migraciones, utiliza la ventana de SQL y los atajos de DBeaver (por defecto \texttt{Ctrl+Enter} para ejecutar la sentencia seleccionada).
 	\end{itemize}
 
 	\subsection{Publicación de mensajes MQTT desde un ESP32}
-	
-	En este apartado se describe cómo montar un entorno para manejar el protocolo MQTT en un PC (Windows o Linux) con Mosquitto y cómo configurar un ESP32 para que publique mensajes.
-	
-	\subsubsection{Requisitos previos}
-	\begin{itemize}
-		\item Tener Mosquitto \cite{Mosquitto} instalado en el sistema operativo anfitrión (Windows o Linux), o bien en una terminal WSL (Windows Subsystem for Linux).
-		\item Asegurarse de que el broker Mosquitto está escuchando en el puerto TCP 1883 y permite conexiones desde cualquier interfaz de red.
-		\item Disponer de una placa ESP32 con soporte Wi‑Fi y el Arduino IDE (v1.8.x o superior) con el core ESP32 instalado.
-		\item Instalar en el IDE las librerías: WiFi.h y PubSubClient (cliente MQTT de Nick O'Leary, bastante útil para el protocolo MQTT \cite{PubSubClient}).
-
-	\end{itemize}
+		\label{sec:pub_mqtt_esp32}
 		
-	\subsubsection{Preparar y ejecutar el broker MQTT}
-		Se puede usar Mosquitto para trabajar con el protocolo, para ello se recomienta probar enviar un mensaje desde el propio dispositivo tanto en localhost como en una red de área local 
-		por ejemplo  
-		En \textbf{Linux} o WSL:
-
-			\begin{verbatim}
-				mosquitto_sub -h localhost -t pulsera/test -v
-			\end{verbatim}
-		y en otra pestaña enviar 
+		En esta sección se describe cómo montar un entorno para manejar el protocolo MQTT en un PC (Windows o Linux) con Mosquitto y cómo configurar un ESP32 para que publique mensajes.
 		
-			\begin{verbatim}
-			mosquitto_sub  -h localhost -t pulsera/test -m 
-			"Test local OK"
-			\end{verbatim}
-			
-		Se recomienda repetir la prueba con la dirección IPv4
-		
-		\subsubsection{Configuración de Mosquitto}
-		Si no acepta conexiones externas, lo recomendable es edita su configuración, tan sencillo como modificar o utilizar otro archivo en lugar de mosquitto.conf que simplifique el servicio de listener, por ejemplo:
-		
+		\paragraph{Requisitos previos}
 		\begin{itemize}
-			\item En Linux, añade al inicio de \texttt{/etc/mosquitto/mosquitto.conf}:
-			\begin{verbatim}
-				listener 1883 0.0.0.0
-				allow_anonymous true
-			\end{verbatim}
-			y luego:
-			\begin{verbatim}
-				sudo systemctl restart mosquitto
-			\end{verbatim}
-			\item En Windows, crea un archivo \texttt{user\_mosq.conf} con:
-			\begin{verbatim}
-				listener 1883
-				allow_anonymous true
-			\end{verbatim}
-			y arranca Mosquitto en PowerShell:
-			\begin{verbatim}
-				cd "C:\Program Files\mosquitto"
-				.\mosquitto.exe -c .\user_mosq.conf -v
-			\end{verbatim}
+			\item \textbf{Mosquitto Broker o similares:} instalado en el sistema anfitrión Windows, Linux o en WSL.\footnote{\url{https://mosquitto.org/}} 
+			\item El broker de escucha debe tener permisos para escuchar (recomendablemente el puerto TCP 1883), existen antivirus, cortafuegos y demás sistemas de protección del dispositivo que complican el uso de los puertos a aplicaciones de terceros.
+			\item \textbf{Placa ESP32:} con soporte Wi‑Fi y capacidad de correr el código.
+			\item \textbf{Red Wi‑Fi} recomendable una red estable preferiblemente compatible con estándares de diversas generaciones (hay múltiples esp32 que son incompatibles con el estándar 802.11ax)
+			\item \textbf{Librerías Arduino:}
+			\begin{itemize}
+				\item \texttt{WiFi.h} (incluida en el core ESP32).
+				\item \texttt{PubSubClient} (cliente MQTT de Nick O’Leary).\footnote{\url{https://github.com/knolleary/pubsubclient}}
+			\end{itemize}
 		\end{itemize}
 		
-		\subsubsection{Apertura del puerto 1883 en el cortafuegos  de Windows}
-		Un fallo muy común es problemas con el cortafuegos (firewall) para permitir conexiones entrantes en Windows para ello se recomienda añadir una regla de entrada:
+		\subsubsection{Preparación y prueba del broker MQTT}
+		Una vez tengas mosquitto configurado y funcionando, abre una terminal para suscribirse a un topic MQTT que sirva para recibir y mostrar los mensajes:
+		\begin{Terminal}{Suscripción en Linux/WSL/Powershell}
+			mosquitto/sub -h localhost -t pulsera/test -v
+		\end{Terminal}
+		Para comprobar que Mosquitto esta funcionando se puede hacer una prueba enviando un mensaje en el localhost. 
+		\begin{Terminal}{Publicación de prueba}
+			mosquitto\_pub -h localhost -t pulsera/test -m "Test local OK"
+		\end{Terminal}
+
+		Si todo esta en orden la terminal donde compilaste el broker mostrará el mensaje "Test local OK", ahora repite la prueba usando la dirección IPv4 de tu equipo.
 		
-		\begin{enumerate}
-			\item Pulsa \texttt{Win + R}, escribe \texttt{wf.msc} y pulsa Enter.
-			\item Selecciona \textbf{Reglas de entrada} y haz clic en \textbf{Nueva regla\ldots}.
-			\item Elige \textbf{Puerto}, selecciona TCP y especifica \texttt{1883}.
-			\item Marca \textbf{Permitir la conexión} y pulsa \textbf{Siguiente}.
-			\item Selecciona los perfiles deseados (\emph{Dominio}, \emph{Privado}, \emph{Público}) y pulsa \textbf{Siguiente}.
-			\item Pon un nombre a la regla (por ejemplo, \texttt{MQTT TCP 1883}) y finaliza.
-		\end{enumerate}
+		\subsubsection{Configuración de Mosquitto}
+		Si el broker no acepta conexiones externas, edita su configuración para escuchar en todas las interfaces y permitir conexiones anónimas:
 		
-		También se puede hacer abriendo el power shell como administrador y usando el siguiente código:
+		\begin{itemize}
+			\item  \textit{En las configuraciones por defecto}: añade al inicio de \texttt{/etc/mosquitto/mosquitto.conf}:
+			\begin{Terminal}{mosquitto.conf}
+				listener 1883 0.0.0.0 
+				 
+				allow\_anonymous true
+			\end{Terminal}
+			Luego reinicia el servicio:
+			\begin{Terminal}{Reiniciar Mosquitto}
+				sudo systemctl restart mosquitto
+			\end{Terminal}
+			
+			\item \textit{En caso de configuraciones personales:} crea un archivo \texttt{user\_mosq.conf} con:
+			\begin{Terminal}{user\_mosq.conf}
+				listener 1883  
+				allow\_anonymous true
+			\end{Terminal}
+			Y arranca Mosquitto en PowerShell:
+			\begin{Terminal}{user\_mosq.conf}
+				cd "C:\ Program Files\ mosquitto"  
+				
+				.\ mosquitto.exe -c .\ user\_mosq.conf -v
+			\end{Terminal}
+		\end{itemize}
 		
-		\begin{verbatim}
+		\paragraph{Apertura del puerto 1883 en el cortafuegos de Windows}
+			\begin{enumerate}
+				\item Pulsa \texttt{Win + R}, escribe \texttt{wf.msc} y pulsa Enter.
+				\item Selecciona \textit{Reglas de entrada} y haz clic en \textit{Nueva regla…}.
+				\item Elige \textit{Puerto}, selecciona TCP y especifica \texttt{1883}.
+				\item Marca \textit{Permitir la conexión} y pulsa \textit{Siguiente}.
+				\item Selecciona los perfiles deseados (Dominio, Privado, Público) y pulsa \textit{Siguiente}.
+				\item Pon un nombre a la regla (por ejemplo, \texttt{MQTT TCP 1883}) y finaliza.
+			\end{enumerate}
+
+		
+		También puedes hacerlo por PowerShell ejecutando como administrador:
+		\begin{Terminal}{PowerShell (administrador)}
 			netsh advfirewall firewall add rule `
-			name="MQTT Inbound" `
-			dir=in action=allow `
-			protocol=TCP localport=1883 `
+			
+			name="MQTT Inbound" 
+			
+			dir=in action=allow 
+			
+			protocol=TCP localport=1883
+			
 			profile=Domain,Private,Public
-		
-		\end{verbatim}
+		\end{Terminal}
 		
 		\subsubsection{Uso de ESP32}
-		Copiar el ejemplo del Arduino IDE usando las librerías necesarias y sustituyendo \texttt{<TU\_SSID>}, \texttt{<TU\_PASSWORD>} y \texttt{<IP\_BROKER>} deberías ser capaz de conectar tanto al wifi como al protocolo MQTT, y mientras se mantiene en uso mosquitto, el esp32 ya debería ser capaz de enviar los mensajes deseados según su programación.
-		
-	
+		Usa código del repositorio github o de ejemplos de las librerías y sustituyendo \texttt{<SSID>}, \texttt{<contraseña del Wi-fi>} y \texttt{<IP del BROKER>} deberías ser capaz de conectar tanto al wifi como al protocolo MQTT, y mientras se mantiene en uso mosquitto, el esp32 ya debería ser capaz de enviar los mensajes deseados según su programació
 \end{umaappendices}
 
 

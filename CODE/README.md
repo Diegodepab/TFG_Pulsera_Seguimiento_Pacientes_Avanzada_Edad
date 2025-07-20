@@ -1,4 +1,4 @@
-# Historial de Firmware de la Pulsera
+# Historial de Software de la pulsera
 
 Este documento recoge los **hitos y versiones** más relevantes del firmware de la pulsera de seguimiento de paciente, con dos versiones finales consolidadas.
 

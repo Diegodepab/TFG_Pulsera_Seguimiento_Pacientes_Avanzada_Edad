@@ -68,7 +68,7 @@ const char* NTP1     = "pool.ntp.org";
 const char* NTP2     = "time.nist.gov";
 
 // ——— Configuración MQTT (Mosquitto local) ——————————————————————————
-const char* MQTT_BROKER = "192.168.33.238";  // IP fija de tu PC en la LAN
+const char* MQTT_BROKER = "192.168.248.238";  // IP fija de tu PC en la LAN
 const int   MQTT_PORT   = 1883;
 const char* MQTT_TOPIC  = "pulsera/test";
 
@@ -449,7 +449,7 @@ void connectWiFi() {
   if (WiFi.status() == WL_CONNECTED) {
     initDisplay();
   } else {
-    tft.fillScreen(TFT_YELLOW);
+    tft.fillScreen(TFT_RED);
     tft.drawString("Buscando conexión", 10, 50);
     while (true) delay(1000);
   }
