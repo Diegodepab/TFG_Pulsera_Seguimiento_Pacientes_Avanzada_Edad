@@ -1,6 +1,6 @@
 # Historial de Software de la pulsera
 
-Este documento recoge los **hitos y versiones** más relevantes del firmware de la pulsera de seguimiento de paciente, con dos versiones finales consolidadas.
+Este documento recoge los **hitos y versiones** más relevantes del software de la pulsera de seguimiento de paciente, con dos versiones finales consolidadas.
 
 
 # Sobre el hardware usado
@@ -22,7 +22,6 @@ Este documento recoge los **hitos y versiones** más relevantes del firmware de 
   Sensor óptico de frecuencia cardíaca y oximetría (SpO₂).  
   _Uso:_ lectura de pulsaciones por minuto (BPM) y nivel de oxigenación sanguínea.
 ## 1. Versión por Componentes (`1_Components`)
-https://github.com/Diegodepab/TFG_Pulsera_Seguimiento_Pacientes_Avanzada_Edad/blob/main/REPORT/plantilla%20TFG%20latex/images/esquema_prototipo.jpg
 Cada subcarpeta contiene un sketch independiente para probar una función concreta:
 
 - **0_Creation_of_wallpaper_for_the_band**  
