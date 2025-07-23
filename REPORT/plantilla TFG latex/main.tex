@@ -533,101 +533,95 @@ Muchas gracias.
 	\subsection{Desarrollo de software del prototipo}
 	
 	Ya conociendo los componentes elegidos para este proyecto se puede describir el código usado en arduino. El código fuente del prototipo está disponible como material complementario en la carpeta \texttt{CODE} de este repositorio:  
-	\url{https://github.com/Diegodepab/TFG_Pulsera_Seguimiento_Pacientes_Avanzada_Edad/tree/main/COD}
+	\url{https://github.com/Diegodepab/TFG_Pulsera_Seguimiento_Pacientes_Avanzada_Edad/tree/main/CODE}
 	
 	Uno de los principales objetivos del prototipo es explorar una variedad amplia de funciones probando su viabilidad, además se tuvo un enfoque basado en componentes donde sin importar lo amplio del código se busca minimizar la cohesión diseñando módulos de tal manera que tengan menos dependencias internas entre sí, favoreciendo un futuro donde sustituciones o problemas en un sensor no afecten el funcionamiento global de la pulsera.
 	
 	El prototipo se divide en las siguientes funcionalidades:
 	
-	\subsubsection{Fondos animados y botones de la pantalla (\texttt{handleButtonsAndAnimation})}
+		\subsubsection{Uso del sensor GY‑MAX30102}
+	Para gestionar el sensor GY‑MAX30102 se utiliza la librería \texttt{MAX30105.h}, que simplifica la configuración y lectura del señales. En el código, se realiza:
 	
-	Para gestionar la pantalla TFT y los botones integrados del ESP32 hemos elegido la librería \texttt{TFT\_eSPI}. Esta biblioteca está optimizada para controladores comunes ILI9xxx y ofrece:
-	\begin{itemize}
-		\item \textbf{PushImage eficiente:} permite enviar directamente mapas de bits desde \texttt{PROGMEM} sin consumir RAM.  
-		\item \textbf{Configuración SPI sencilla:} abstrae la inicialización de pines y velocidad de bus.  
-		\item \textbf{Funciones gráficas básicas:} dibujo de texto, rectángulos y cambio rápido de colores.
-	\end{itemize}
-	
-	La rutina \texttt{handleButtonsAndAnimation()} unifica dos tareas clave:
 	\begin{enumerate}
-		\item \textbf{Animación de fondo:}
-		\begin{itemize}
-			\item Se incluyen diez frames estáticos (\texttt{frame\_000.h}…\texttt{frame\_009.h}) generados previamente con un script Python que convierte GIFs en arrays de 16‑bit.  
-			\item Mediante \texttt{millis()} y la constante \texttt{FRAME\_INTERVAL = 100\,ms}, cada ciclo se llama a  
-			\texttt{tft.pushImage(0,0,160,235,frames[frameIndex])} para avanzar al siguiente frame.  
-		\end{itemize}
-		\item \textbf{Gestión de botones de emergencia:}
-		\begin{itemize}
-			\item Pines \texttt{GPIO0} y \texttt{GPIO35} configurados con \texttt{INPUT\_PULLUP}.  
-			%%\item Pulsación simultánea >2 s entra en estado “BOTH”: fondo rojo + publicación MQTT de alerta.  
-			%% \item Pulsación de uno solo muestra un aviso amarillo de corta duración (500 ms) para minimizar falsos positivos.  
-			\item Al liberar botones se restaura automáticamente el fondo animado.
-		\end{itemize}
+		\item \textbf{Inicialización:} Se comprueba el funcionamiento y conexión del sensor, además se ajusta brillo, modo y frecuencia de muestreo.
+		\item \textbf{Lectura:} El sensor verifica constantemente si puede realizar un análisis sin sin detener el flujo principal.
+		\item \textbf{Extracción de muestras:} El MAX30102, equipado con LEDs rojo e infrarrojo, al colocarse en la piel (dedo o muñeca) mide la luz reflejada para calcular la saturación captando el distinto comportamiento que la sangre tiene ante la luz.
+		\item \textbf{Evaluación de muestras:} Se usa la librería para traducir las señales a ritmo cardíaco y saturación de oxígeno, además de descartar las lecturas inválidas.
+		\item \textbf{Procesado:} las lecturas válidas se copian en buffers y se hace una media para calcular frecuencia cardíaca y SpO\textsubscript{2} más acertados posibles.
+		\item \textbf{Salida:} Se actualiza la pantalla con los valores procesados, y opcionalmente se envían.
 	\end{enumerate}
 	
+	\subsubsection{Uso del sensor MPU‑6050}
+	Se emplea la librería \texttt{MPU6050\_light.h} para obtener aceleraciones y aplicar ajustes de calibración, ofreciendo dos funciones:
 	
-	\subsubsection{Reloj y sincronización NTP (\texttt{displayClock}, \texttt{initTime})}
+	\begin{enumerate}
+		\item \textbf{Detección de caída:}
+		\begin{enumerate}
+			\item Se toma consideración la magnitud máxima del vector de aceleración junto a un umbral que se recomendaría modificar por usuario, además se da importancia a cambios bruscos en dos ejes.
+			\item Si se supera, se muestra alerta y se envía el evento por MQTT.
+		\end{enumerate}
+		\item \textbf{Podómetro:}
+		\begin{enumerate}
+			\item Se aplica un filtro de media móvil (ventana fija) sobre la señal Z.
+			\item Se detecta un paso cuando la señal filtrada supera el umbral y ha pasado el intervalo mínimo entre pasos.
+			\item Se incrementa el contador de pasos y se actualiza la pantalla.
+		\end{enumerate}
+	\end{enumerate}
 	
-	Esta funcionalidad añade un reloj en pantalla y timestamps fiables para los datos:
-	\begin{itemize}
-		\item \textbf{Conexión Wi‑Fi:} \texttt{WiFi.begin(SSID,PASSWORD)} con reconexión automática.  
-		\item \textbf{Sincronización NTP:} mediante \texttt{configTime(0,0,NTP1,NTP2)} se obtiene la hora UTC de servidores públicos.  
-		%%\item \textbf>Formateo ISO 8601:} la función \texttt{getISOTime()} devuelve una cadena “YYYY‑MM‑DDThh:mm:ssZ” para incluir en mensajes MQTT.  
-	\item \textbf{Visualización “HH:MM”:} cada iteración de \texttt{loop()} se llama a \texttt{displayClock()}, que dibuja la hora en la esquina superior con \texttt{tft.print()}.
-	\end{itemize}
-	
-	
-	\subsubsection{Sensor de pulso y oxímetro MAX30102 (\texttt{handleMAX})}
-	
-%%	Para medir frecuencia cardíaca (HR) y saturación de oxígeno (SpO₂):
-%%	\begin{itemize}
-%%	\item \textbf{Inicialización 400 kHz:} \texttt{particleSensor.begin(Wire,I2C\_SPEED\_FAST)} y \texttt{particleSensor.setup(...)} para modo IR+RED.  
-%%	\item \textbf{Máquina de estados:} 
-	\begin{itemize}
-		\item \texttt{WAITING}: sin dedo detectado.  
-		\item \texttt{ANALYSING}: recogida de \texttt{BUFFER\_SIZE} muestras.  
-		\item \texttt{SHOW\_RESULTS}: tras retirar dedo, mostrar promedios finales.  
-	\end{itemize}
-	 \textbf{Procesado de muestras:} 
-	\begin{itemize}
-		\item Relleno inicial muestra a muestra.
-		\item Agrupación en bloques de \texttt{FreqS}, desplazamiento de buffers con \texttt{shiftBuffers()}, luego cálculo con \texttt{maxim\_heart\_rate\_and\_oxygen\_saturation()}.  
-		\item Filtrado incremental y promedio de valores válidos (\texttt{validHR}, \texttt{validSPO2}).  
-	\end{itemize}
-	\textbf{Salida:} actualización en pantalla con \texttt{displayRealtime()} y envío por Serial/MQTT.
 
+	\subsubsection{Medición de tiempo}
+	Para gestionar la fecha y hora de la pulsera se emplea la librería \texttt{<time.h>}, que facilita la sincronización NTP (De sus siglas en inglés Network Time Protocol, protocolo que mantiene los relojes de los sistemas informáticos alineados con gran precisión).
 	
+	La inicialización y uso se estructura en tres funciones clave:
+	\begin{enumerate}
+		\item En caso de tener conexión Wi-Fi obtiene la hora de España y sincroniza, en caso contrario usa la hora cargada.
+		\item Se muestra la hora y minuto en la parte superior de la pantalla.
+		\item Se guarda un registro de los datos con la hora antes de ser enviados, para tener un mayor control de las mediciones y ver la evolución temporal de los datos.
+	\end{enumerate}
 	
-	\subsubsection{Acelerómetro y giroscopio MPU‑6050 (\texttt{handleMPU})}
+	\subsubsection{Conexión Wi‑Fi}
+	Se emplea la librería \texttt{WiFi.h} para conectar la pulsera a la red:
 	
-	Para conteo de pasos y detección de caídas:
-	\begin{itemize}
-	\item \textbf{Inicialización I\textsuperscript{2}C:} \texttt{Wire.begin(21,22)} y calibración con \texttt{mpu.calcOffsets()}.  
-	\item \textbf{Detección de caídas:} si la variación absoluta en X, Y o Z supera \texttt{FALL\_THRESHOLD = 3.5\,g}, se muestra alerta roja y se notifica por MQTT.  
-	\item \textbf{Conteo de pasos:}
-	\begin{itemize}
-		\item Buffer circular de tamaño 20 en eje Z para media móvil.  
-	%%	\item Cálculo de \(\text{zFiltered} = \text{accZ} - \text{media móvil}\).  
-	%%	\item Cuando \(\text{zFiltered} > \text{STEP\_THRESHOLD}=1.2\,g\) y han pasado \(\geq 300\,ms\) desde el último paso, se incrementa \texttt{stepCount}.  
-	\end{itemize}
-	\item \textbf{Visualización:} el contador de pasos y estado de detección se actualizan en pantalla en tiempo real.
-	\end{itemize}
+	\begin{enumerate}
+		\item \textbf{Inicio de conexión:}
+		\begin{enumerate}
+			\item En el código se da el SSID (Service Set Identifier) que es el nombre público de la red Wi‑Fi y la contraseña para entablar conexión.
+			\item Si conecta, se muestra la dirección IP en el monitor serie y continua con demás funciones que ameritan internet.
+		\end{enumerate}
+		\item \textbf{Gestión de fallo:}
+		\begin{enumerate}
+			\item Si no conecta en el tiempo límite, muestra un mensaje de error en pantalla. Intentando conectarse cada vez que tenga un nuevo dato que deba enviar (En el prototipo se mandan valores cada minuto o cada situación de alarma)
+		\end{enumerate}
+	\end{enumerate}
 	
+	\subsubsection{Conectividad MQTT y envío de datos}
+	Se utiliza la librería \texttt{PubSubClient.h} sobre TCP/IP para publicar eventos y métricas:
 	
-	\subsubsection{Conectividad MQTT y envío de datos (\texttt{sendMQTT}, \texttt{sendMetrics})}
+	\begin{enumerate}
+	\item \textbf{Inicialización y conexión:} Intenta acceder al broker y puerto indicados, instentando suscribirse como cliente, en caso de no 
+	\item \textbf{Publicación de mensajes:} Al tener información que enviar crea un JSON con marca de tiempo, tipo de evento y los datos que contiene, en un formato claro para fácilitar su envío a una base de datos.
+	\end{enumerate}
 	
-	Para integrar la pulsera con una plataforma de monitoreo:
-	\begin{itemize}
-	\item \textbf{Cliente MQTT:} \texttt{PubSubClient} sobre \texttt{WiFiClient} con reconexión automática.  
-	\item \textbf{Eventos de alerta:} 
-	\begin{itemize}
-		\item \texttt{ALERTA\_BOTONES} y \texttt{ALERTA\_CAIDA} se disparan en los manejadores de botones y MPU, incluyendo coordenadas o tipo de pulsación.  
-	\end{itemize}
-%%	\item \textbf{Métricas periódicas:} cada 60 s \texttt{sendMetrics()} publica un JSON con el formato usado en el backend de la plataforma.  
-	\item \textbf{Formato JSON estándar:} incluye siempre el campo \texttt{ts} con timestamp ISO y los valores medidos, facilitando la ingesta en cualquier broker o dashboard.
-	\end{itemize}
+
+	\subsubsection{Fondos animados y botones de la pantalla}
+	Para gestionar la pantalla y los botones integrados del TTGO T-Display se usa la librería \texttt{TFT\_eSPI}, la cual está optimizada y permite enviar directamente mapas de bits desde \texttt{PROGMEM} sin consumir RAM, abstrae la inicialización de pines y velocidad de bus.
 	
-	 
+	La función \texttt{handleButtonsAndAnimation()} unifica dos tareas clave:
+	\begin{enumerate}
+		\item \textbf{Gestión de botones de emergencia:}
+		\begin{enumerate}
+			\item Los botones integrados se encuentran en los pines \texttt{GPIO0} y \texttt{GPIO35}. 
+			\item Pulsación simultáneade ambos botones por más de 2 segundos muestra en pantalla  que se ha presionado ambos botones y realiza una publicación MQTT de alerta.  
+			\item Al pasar 2 segundos la pulsera vuelve a la normalidad.
+		\end{enumerate}
+		\item \textbf{Animación de fondo}, esta función fue simplificada en el prototipo final por limites de espacio, pero se usa en el ejemplo de pulsera sin conexión Wi-Fi.  
+		\begin{enumerate}
+			\item Se incluyen diez frames estáticos (\texttt{frame\_000.h}…\texttt{frame\_009.h}) generados previamente con un script Python que convierte GIFs en arrays de 16‑bit.  
+			\item Dichos frames serán cambiados cada 100 ms dando una apariencia de movimiento real.
+		\end{enumerate}
+	\end{enumerate}
+	
+
 	
 	\subsection{Ejemplo en funcionamiento}
 	

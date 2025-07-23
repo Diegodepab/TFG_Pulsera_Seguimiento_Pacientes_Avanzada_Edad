@@ -26,17 +26,18 @@ bool bothButtonsPressed = false;
 float prevAccX = 0, prevAccY = 0, prevAccZ = 0;
 int stepCount = 0;
 const float FALL_THRESHOLD =3.5;
+bool mpuOk = true;
 
-// Parámetros para step detection mejorada
-const int WINDOW_SIZE = 20;           // tamaño de buffer para media móvil
-float zBuffer[WINDOW_SIZE] = {0};     // buffer circular de muestras de accZ
+const int WINDOW_SIZE = 20;         
+float zBuffer[WINDOW_SIZE] = {0};
 int   zIndex = 0;
-float zSum = 0;                       // suma de valores en buffer
+float zSum = 0; 
 unsigned long lastStepMillis = 0;
-const unsigned long MIN_STEP_INTERVAL = 300;  // ms entre pasos
-const float STEP_THRESHOLD = 1.2;     // umbral de pico en g (ajustable)
+const unsigned long MIN_STEP_INTERVAL = 300;
+const float STEP_THRESHOLD = 1.2; 
 
-// MAX30102 (pulse oximeter) variables
+// MAX30102 (pulse oximeter) 
+bool maxOk = true;
 int32_t spo2 = 0;
 int8_t validSPO2 = 0;
 int32_t heartRate = 0;
@@ -52,7 +53,6 @@ enum MAXState { WAITING, ANALYSING, SHOW_RESULTS };
 MAXState maxState = WAITING;
 bool firstFill = true;
 
-// Variables auxiliares (declarar al inicio del archivo, junto a globals)
 static uint16_t initialFillIndex = 0;
 static uint16_t chunkIndex        = 0;
 static uint32_t tempIR[FreqS];
@@ -61,21 +61,24 @@ static uint32_t tempRed[FreqS];
 void shiftBuffers(uint16_t shiftCount);
 void displayRealtime(uint32_t hr, uint32_t sp);
 
-// ——— Configuración Wi-Fi y NTP —————————————————————————————————————
+// ———  Wi-Fi y NTP ————————————————————————————————————————————————
 const char* SSID     = "TFGDiegoDePablo";
 const char* PASSWORD = "TFGde10!";
 const char* NTP1     = "pool.ntp.org";
 const char* NTP2     = "time.nist.gov";
 
 // ——— Configuración MQTT (Mosquitto local) ——————————————————————————
-const char* MQTT_BROKER = "192.168.248.238";  // IP fija de tu PC en la LAN
+const char* MQTT_BROKER = "192.168.248.238";  // IP cambiala
 const int   MQTT_PORT   = 1883;
 const char* MQTT_TOPIC  = "pulsera/test";
 
 WiFiClient   wifiClient;
 PubSubClient mqtt(wifiClient);
 
-// Para temporizar envío cada minuto
+bool wifiConnected   = false;
+bool mqttConnected   = false;
+
+
 unsigned long lastMinuteMillis = 0;
 enum AlertState { NONE, SINGLE, BOTH };
 AlertState alertState       = NONE;
@@ -102,12 +105,13 @@ void setup() {
   tft.setRotation(0);
   tft.fillScreen(TFT_WHITE);
   initDisplay();
-  initMPU();
-  initMAX();
 
   connectWiFi();
   initTime();
   connectMQTT();
+
+  initMPU();
+  initMAX();
 
   lastMinuteMillis = millis();
 }
@@ -140,20 +144,18 @@ void initDisplay() {
 
 // Initialize MPU-6050 sensor
 void initMPU() {
-  Wire.begin(21, 22);  // SDA=21, SCL=22
+  Wire.begin(21, 22);
   Serial.println("Iniciando MPU-6050...");
   byte status = mpu.begin();
   if (status != 0) {
-    Serial.print("Error iniciando MPU-6050: ");
-    Serial.println(status);
-    while (1); // Halt on error
+    Serial.printf("Error iniciando MPU: %d\n", status);
+    mpuOk = false;
+    sendMQTT("ERROR_SENSOR", "\"sensor\":\"MPU6050\"");  // notifica fallo
+  } else {
+    Serial.println("MPU-6050 listo.");
+    mpu.calcOffsets(true, true);
   }
-  Serial.println("Calibrando MPU-6050...");
-  millis();
-  mpu.calcOffsets(true, true);
-  Serial.println("MPU-6050 listo.");
 }
-
 // Initialize MAX30102 sensor
 void initMAX() {
   Wire.setClock(400000);
@@ -163,6 +165,8 @@ void initMAX() {
     tft.setTextColor(TFT_WHITE);
     tft.setCursor(0, 0);
     tft.println("Sensor NO hallado");
+    maxOk = false;
+    sendMQTT("ERROR_SENSOR", "\"sensor\":\"MAX30102\"");  // notifica fallo
 
   }
   particleSensor.setup(
@@ -182,9 +186,8 @@ void handleButtonsAndInputs() {
   bool b1 = digitalRead(BUTTON1_PIN) == LOW;
   bool b2 = digitalRead(BUTTON2_PIN) == LOW;
 
-  // 1) Detectar pulsaciones y actualizar estado
+
   if (b1 && b2) {
-    // Si acabamos de entrar en BOTH (o en SINGLE por cuenta atrás), iniciamos o avanzamos
     if (alertState != BOTH) {
       if (alertState == NONE) alertStart = now;
       if (now - alertStart >= BOTH_THRESHOLD) {
@@ -215,7 +218,7 @@ void handleButtonsAndInputs() {
     }
   }
   else if (b1 || b2) {
-    // un solo botón, siempre amarillo, y reiniciamos duración
+    // Only 1 buttom adverstiment
     if (alertState != SINGLE) {
       alertState = SINGLE;
       alertStart = now;
@@ -226,20 +229,18 @@ void handleButtonsAndInputs() {
       tft.drawString("Presionado!",   10, 130);
       Serial.println("Aviso: 1 boton presionado");
     } else {
-      // ya estaba en SINGLE, solo reiniciamos el timer
+
       alertStart = now;
     }
   }
   else {
-    // No quedan botones pulsados
+    // no buttom
     if (alertState == SINGLE && now - alertStart >= SINGLE_DURATION) {
-      // tras 500 ms de amarillo, volvemos al fondo
       alertState = NONE;
       tft.pushImage(0, 0, 160, 235, frame_001);
       displayRealtime();
     }
     else if (alertState == BOTH && now - alertStart >= BOTH_DURATION) {
-      // tras 2000 ms de rojo, volvemos al fondo
       alertState = NONE;
       tft.pushImage(0, 0, 160, 235, frame_001);
       displayRealtime();
@@ -250,6 +251,10 @@ void handleButtonsAndInputs() {
 
 // Read MPU data, detect steps/falls, and update display/Serial
 void handleMPU() {
+  if (!mpuOk) {
+    initMPU();
+    return;
+  }
   float accX = mpu.getAccX();
   float accY = mpu.getAccY();
   float accZ = mpu.getAccZ();
@@ -306,6 +311,11 @@ void handleMPU() {
 
 // Acquire data from MAX30102, compute HR/SpO2, and output to Serial
 void handleMAX() {
+  if (!maxOk) {
+    initMAX();
+    return;
+  }
+
   // Update and check FIFO without blocking
   particleSensor.check();
   if (!particleSensor.available()) return;
@@ -442,22 +452,74 @@ void displayRealtime() {
 // — Conection Wi-Fi 
 void connectWiFi() {
   WiFi.begin(SSID, PASSWORD);
-  int attempts = 0;
-  while (WiFi.status() != WL_CONNECTED && attempts++ < 20) {
-    delay(500); Serial.print(".");
+  Serial.print("Conectando a WiFi...");
+  unsigned long start = millis();
+  // 5s
+  while (WiFi.status() != WL_CONNECTED && millis() - start < 5000) {
+    delay(200);
+    Serial.print(".");
   }
   if (WiFi.status() == WL_CONNECTED) {
-    initDisplay();
+    wifiConnected = true;
+    Serial.println(" OK. IP: " + WiFi.localIP().toString());
   } else {
+    wifiConnected = false;
+    Serial.println(" FALLÓ.");
+
     tft.fillScreen(TFT_RED);
-    tft.drawString("Buscando conexión", 10, 50);
-    while (true) delay(1000);
+    tft.setTextColor(TFT_WHITE);
+    tft.setTextSize(2);
+    tft.drawString("WiFi NO",  20,  80);
+    tft.drawString("conectado", 10, 110);
+    delay(2000);
+    tft.pushImage(0, 0, 160, 235, frame_001);
+    displayRealtime();
+
   }
 }
 
 void initTime() {
-  configTime(0, 0, NTP1, NTP2);
-  while (time(nullptr) < 100000) { delay(200); }
+  if (wifiConnected) {
+    configTime(0, 0, NTP1, NTP2);
+    unsigned long start = millis();
+    while (time(nullptr) < 100000 && millis() - start < 5000) {
+      delay(200);
+    }
+    if (time(nullptr) < 100000) {
+      Serial.println("WARNING: NTP timeout, usando hora de compilación");
+    } else {
+      Serial.println("NTP OK");
+      return;
+    }
+  }
+  
+  // -- Fallback: cargar __DATE__ y __TIME__ --
+  Serial.println("Inicializando hora desde compilación");
+  struct tm tm;  
+  char monthStr[4];
+  int day, year, hour, minute, second;
+
+  sscanf(__DATE__, "%3s %d %d", monthStr, &day, &year);
+  sscanf(__TIME__, "%d:%d:%d",    &hour,     &minute,  &second);
+
+  // Convert monthStr a tm.tm_mon (0–11)
+  const char* months = "JanFebMarAprMayJunJulAugSepOctNovDec";
+  tm.tm_mon = (strstr(months, monthStr) - months) / 3;
+
+  tm.tm_mday  = day;
+  tm.tm_year  = year - 1900;
+  tm.tm_hour  = hour;
+  tm.tm_min   = minute;
+  tm.tm_sec   = second;
+  tm.tm_isdst = 0;
+
+  time_t t = mktime(&tm);
+  struct timeval tv = { .tv_sec = t, .tv_usec = 0 };
+  settimeofday(&tv, nullptr);
+
+  Serial.printf("Hora inicial: %02d:%02d:%02d %02d/%02d/%04d\n",
+                tm.tm_hour, tm.tm_min, tm.tm_sec,
+                tm.tm_mday, tm.tm_mon+1, tm.tm_year+1900);
 }
 
 // ISO 8601 UTC
@@ -470,14 +532,28 @@ String getISOTime() {
 }
 
 void connectMQTT() {
+  if (!wifiConnected) {
+    mqttConnected = false;
+    return;
+  }
   mqtt.setServer(MQTT_BROKER, MQTT_PORT);
-  while (!mqtt.connected()) {
-    if (mqtt.connect("ESP32Client")) {
-    } else {
-      delay(2000);
-    }
+  Serial.print("Conectando a MQTT...");
+  if (mqtt.connect("ESP32Client")) {
+    mqttConnected = true;
+    Serial.println(" OK");
+  } else {
+    mqttConnected = false;
+    Serial.println(" FALLÓ");
+    tft.fillScreen(TFT_RED);
+    tft.setTextColor(TFT_WHITE);
+    tft.setTextSize(2);
+    tft.drawString("MQTT NO",  20,  80);
+    tft.drawString("conectado", 10, 110);
+    delay(2000);
+    tft.pushImage(0, 0, 160, 235, frame_001);
   }
 }
+
 
 void publishJSON(const String& payload) {
   if (!mqtt.connected()) connectMQTT();
@@ -495,14 +571,30 @@ void sendMQTT(const char* eventType, const String& data) {
 }
 
 void sendMetrics() {
+  if (!wifiConnected) {
+    Serial.println("WARN: Sin WiFi, reintentando conexión...");
+    connectWiFi();
+    if (!wifiConnected) {
+      Serial.println("ERROR: No hay WiFi. Métricas descartadas.");
+      return;
+    }
+  }
+  if (!mqttConnected) {
+    Serial.println("INFO: MQTT desconectado, reintentando...");
+    connectMQTT();
+    if (!mqttConnected) {
+      Serial.println("ERROR: No hay MQTT. Métricas descartadas.");
+      return;
+    }
+  }
+
   String payload = "{";
   payload += "\"step_count\":" + String(stepCount)   + ",";
   payload += "\"bpm\":"        + String(lastAvgHR)   + ",";
   payload += "\"spo2\":"       + String(lastAvgSpO2) + ",";
   payload += "\"ts\":\""       + getISOTime()        + "\"";
   payload += "}";
-
-  publishJSON(payload);
+  mqtt.publish(MQTT_TOPIC, payload.c_str());
   Serial.println("MQTT METRICS >> " + payload);
 }
 
