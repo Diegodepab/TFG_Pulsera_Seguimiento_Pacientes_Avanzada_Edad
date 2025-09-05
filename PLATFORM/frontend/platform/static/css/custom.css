@@ -1,0 +1,79 @@
+/* 1. Definición de paleta: variables compartidas */
+:root {
+  /* Colores modo claro (defaults) */
+  --bg-color: #F4F7FA;               /* Gris muy suave */  
+  --text-color: #2E3A46;             /* Gris oscuro para texto */  
+  --primary-color: #2B3A67;          /* Azul oscuro */
+  --accent-color: #3DA5D9;           /* Turquesa suave */
+  --icon-fill: #2880B9;              /* Para SVGs */
+  
+  /* Habilitar función light-dark() si se usa */
+  color-scheme: light dark;          /* Soporte para light-dark() :contentReference[oaicite:3]{index=3} */
+}
+
+/* 2. Overrides automáticos según preferencia de sistema */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #1A1F29;             /* Fondo oscuro */
+    --text-color: #ECEFF4;           /* Texto claro */
+    --primary-color: #3DA5D9;        /* Intercambiamos roles si se desea */
+    --accent-color: #6CB4EE;         /* Acento más claro */
+    --icon-fill: #88C0D0;            /* Fill para modo oscuro */
+  }
+}
+
+/* 3. Overrides manuales mediante atributo data-theme */
+[data-theme="dark"] {
+  --bg-color: #1A1F29;               /* Si se aplica dark manual */
+  --text-color: #ECEFF4;
+  --primary-color: #3DA5D9;
+  --accent-color: #6CB4EE;
+  --icon-fill: #88C0D0;
+}
+
+/* 4. Uso de variables */
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  margin: 0;
+  font-family: sans-serif;
+}
+
+.navbar {
+  position: fixed !important;
+  top: 0;
+  width: 100%;
+  padding: 0.7rem 0 !important;
+  background-color: var(--primary-color);
+  z-index: 10;
+}
+
+.nav-link {
+  color: var(--text-color) !important;
+  transition: color 0.2s ease-in-out;
+}
+.nav-link:hover {
+  color: var(--accent-color) !important;
+}
+
+.btn-active {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  transition: background-color 0.2s ease-in-out;
+}
+.btn-active:hover,
+.btn-active:active {
+  background-color: var(--accent-color);
+}
+
+.fill-callsensei {
+  fill: var(--icon-fill);
+}
+
+.pointer,
+.cursor-pointer {
+  cursor: pointer;
+}

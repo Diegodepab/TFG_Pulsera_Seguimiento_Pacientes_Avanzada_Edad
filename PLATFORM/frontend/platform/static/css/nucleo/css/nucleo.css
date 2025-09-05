@@ -1,0 +1,507 @@
+
+@font-face {
+    font-family: 'nucleo';
+    src: url('../fonts/nucleo.eot');
+    src: url('../fonts/nucleo.eot') format('embedded-opentype'), url('../fonts/nucleo.woff2') format('woff2'), url('../fonts/nucleo.woff') format('woff'), url('../fonts/nucleo.ttf') format('truetype'), url('../fonts/nucleo.svg') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/*------------------------
+    base class definition
+-------------------------*/
+.ni {
+    display: inline-block;
+    font: normal normal normal 1rem/1 'nucleo';
+    color: inherit;
+    flex-shrink: 0;
+    speak: none;
+    text-transform: none;
+    /* Better Font Rendering */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/*------------------------
+  change icon size
+-------------------------*/
+/* relative units */
+.ni-sm {
+    font-size: 0.8em;
+}
+
+.ni-lg {
+    font-size: 1.2em;
+}
+
+/* absolute units */
+.ni-16 {
+    font-size: 16px;
+}
+
+.ni-32 {
+    font-size: 32px;
+}
+
+/*------------------------
+  spinning icons
+-------------------------*/
+.ni-is-spinning {
+    animation: ni-spin 1s infinite linear;
+}
+
+@keyframes ni-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/*------------------------
+  rotated/flipped icons
+-------------------------*/
+.ni-rotate-90 {
+    transform: rotate(90deg);
+}
+
+.ni-rotate-180 {
+    transform: rotate(180deg);
+}
+
+.ni-rotate-270 {
+    transform: rotate(270deg);
+}
+
+.ni-flip-y {
+    transform: scaleY(-1);
+}
+
+.ni-flip-x {
+    transform: scaleX(-1);
+}
+
+/*------------------------
+    icons
+-------------------------*/
+
+.ni-exit_to_app::before {
+    content: "\eacc" !important;
+}
+
+.ni-badge-1::before {
+    content: "\eacd" !important;
+}
+
+.ni-active-40::before {
+    content: "\eace" !important;
+}
+
+.ni-air-baloon::before {
+    content: "\eacf" !important;
+}
+
+.ni-album-2::before {
+    content: "\ead0" !important;
+}
+
+.ni-align-center::before {
+    content: "\ead1" !important;
+}
+
+.ni-align-left-2::before {
+    content: "\ead2" !important;
+}
+
+.ni-ambulance::before {
+    content: "\ead3" !important;
+}
+
+.ni-app::before {
+    content: "\ead4" !important;
+}
+
+.ni-archive-2::before {
+    content: "\ead5" !important;
+}
+
+.ni-atom::before {
+    content: "\ead6" !important;
+}
+
+.ni-badge::before {
+    content: "\ead7" !important;
+}
+
+.ni-bag-17::before {
+    content: "\ead8" !important;
+}
+
+.ni-basket::before {
+    content: "\ead9" !important;
+}
+
+.ni-bell-55::before {
+    content: "\eada" !important;
+}
+
+.ni-bold-down::before {
+    content: "\eadb" !important;
+}
+
+.ni-bold-left::before {
+    content: "\eadc" !important;
+}
+
+.ni-bold-right::before {
+    content: "\eadd" !important;
+}
+
+.ni-bold-up::before {
+    content: "\eade" !important;
+}
+
+.ni-bold::before {
+    content: "\eadf" !important;
+}
+
+.ni-book-bookmark::before {
+    content: "\eae0" !important;
+}
+
+.ni-books::before {
+    content: "\eae1" !important;
+}
+
+.ni-box-2::before {
+    content: "\eae2" !important;
+}
+
+.ni-briefcase-24::before {
+    content: "\eae3" !important;
+}
+
+.ni-building::before {
+    content: "\eae4" !important;
+}
+
+.ni-bulb-61::before {
+    content: "\eae5" !important;
+}
+
+.ni-bullet-list-67::before {
+    content: "\eae6" !important;
+}
+
+.ni-bus-front-12::before {
+    content: "\eae7" !important;
+}
+
+.ni-button-pause::before {
+    content: "\eae8" !important;
+}
+
+.ni-button-play::before {
+    content: "\eae9" !important;
+}
+
+.ni-button-power::before {
+    content: "\eaea" !important;
+}
+
+.ni-calendar-grid-58::before {
+    content: "\eaeb" !important;
+}
+
+.ni-camera-compact::before {
+    content: "\eaec" !important;
+}
+
+.ni-caps-small::before {
+    content: "\eaed" !important;
+}
+
+.ni-cart::before {
+    content: "\eaee" !important;
+}
+
+.ni-chart-bar-32::before {
+    content: "\eaef" !important;
+}
+
+.ni-chart-pie-35::before {
+    content: "\eaf0" !important;
+}
+
+.ni-chat-round::before {
+    content: "\eaf1" !important;
+}
+
+.ni-check-bold::before {
+    content: "\eaf2" !important;
+}
+
+.ni-circle-08::before {
+    content: "\eaf3" !important;
+}
+
+.ni-cloud-download-95::before {
+    content: "\eaf4" !important;
+}
+
+.ni-cloud-upload-96::before {
+    content: "\eaf5" !important;
+}
+
+.ni-compass-04::before {
+    content: "\eaf6" !important;
+}
+
+.ni-controller::before {
+    content: "\eaf7" !important;
+}
+
+.ni-credit-card::before {
+    content: "\eaf8" !important;
+}
+
+.ni-curved-next::before {
+    content: "\eaf9" !important;
+}
+
+.ni-delivery-fast::before {
+    content: "\eafa" !important;
+}
+
+.ni-diamond::before {
+    content: "\eafb" !important;
+}
+
+.ni-email-83::before {
+    content: "\eafc" !important;
+}
+
+.ni-fat-add::before {
+    content: "\eafd" !important;
+}
+
+.ni-fat-delete::before {
+    content: "\eafe" !important;
+}
+
+.ni-fat-remove::before {
+    content: "\eaff" !important;
+}
+
+.ni-favourite-28::before {
+    content: "\eb00" !important;
+}
+
+.ni-folder-17::before {
+    content: "\eb01" !important;
+}
+
+.ni-glasses-2::before {
+    content: "\eb02" !important;
+}
+
+.ni-hat-3::before {
+    content: "\eb03" !important;
+}
+
+.ni-headphones::before {
+    content: "\eb04" !important;
+}
+
+.ni-html5::before {
+    content: "\eb05" !important;
+}
+
+.ni-istanbul::before {
+    content: "\eb06" !important;
+}
+
+.ni-key-25::before {
+    content: "\eb07" !important;
+}
+
+.ni-laptop::before {
+    content: "\eb08" !important;
+}
+
+.ni-like-2::before {
+    content: "\eb09" !important;
+}
+
+.ni-lock-circle-open::before {
+    content: "\eb0a" !important;
+}
+
+.ni-map-big::before {
+    content: "\eb0b" !important;
+}
+
+.ni-mobile-button::before {
+    content: "\eb0c" !important;
+}
+
+.ni-money-coins::before {
+    content: "\eb0d" !important;
+}
+
+.ni-note-03::before {
+    content: "\eb0e" !important;
+}
+
+.ni-notification-70::before {
+    content: "\eb0f" !important;
+}
+
+.ni-palette::before {
+    content: "\eb10" !important;
+}
+
+.ni-paper-diploma::before {
+    content: "\eb11" !important;
+}
+
+.ni-pin-3::before {
+    content: "\eb12" !important;
+}
+
+.ni-planet::before {
+    content: "\eb13" !important;
+}
+
+.ni-ruler-pencil::before {
+    content: "\eb14" !important;
+}
+
+.ni-satisfied::before {
+    content: "\eb15" !important;
+}
+
+.ni-scissors::before {
+    content: "\eb16" !important;
+}
+
+.ni-send::before {
+    content: "\eb17" !important;
+}
+
+.ni-settings-gear-65::before {
+    content: "\eb18" !important;
+}
+
+.ni-settings::before {
+    content: "\eb19" !important;
+}
+
+.ni-single-02::before {
+    content: "\eb1a" !important;
+}
+
+.ni-single-copy-04::before {
+    content: "\eb1b" !important;
+}
+
+.ni-sound-wave::before {
+    content: "\eb1c" !important;
+}
+
+.ni-spaceship::before {
+    content: "\eb1d" !important;
+}
+
+.ni-square-pin::before {
+    content: "\eb1e" !important;
+}
+
+.ni-support-16::before {
+    content: "\eb1f" !important;
+}
+
+.ni-tablet-button::before {
+    content: "\eb20" !important;
+}
+
+.ni-tag::before {
+    content: "\eb21" !important;
+}
+
+.ni-tie-bow::before {
+    content: "\eb22" !important;
+}
+
+.ni-time-alarm::before {
+    content: "\eb23" !important;
+}
+
+.ni-trophy::before {
+    content: "\eb24" !important;
+}
+
+.ni-tv-2::before {
+    content: "\eb25" !important;
+}
+
+.ni-umbrella-13::before {
+    content: "\eb26" !important;
+}
+
+.ni-user-run::before {
+    content: "\eb27" !important;
+}
+
+.ni-vector::before {
+    content: "\eb28" !important;
+}
+
+.ni-watch-time::before {
+    content: "\eb29" !important;
+}
+
+.ni-world::before {
+    content: "\eb2a" !important;
+}
+
+.ni-zoom-split-in::before {
+    content: "\eb2b" !important;
+}
+
+.ni-collection::before {
+    content: "\eb2c" !important;
+}
+
+.ni-image::before {
+    content: "\eb2d" !important;
+}
+
+.ni-shop::before {
+    content: "\eb2e" !important;
+}
+
+.ni-ungroup::before {
+    content: "\eb2f" !important;
+}
+
+.ni-world-2::before {
+    content: "\eb30" !important;
+}
+
+.ni-ui-04::before {
+    content: "\eb31" !important;
+}
+
+.ni-view::before {
+    content: "\eb32" !important;
+}
+
+.ni-hide::before {
+    content: "\eb33" !important;
+}
+
+.ni-zoom::before {
+    content: "\eb34" !important;
+}

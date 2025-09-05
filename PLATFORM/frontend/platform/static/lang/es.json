@@ -1,0 +1,834 @@
+{
+  "entity": {
+    "user": {
+      "entity-name": "Usuario",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "firstName": "Nombre",
+      "lastName": "Apellidos",
+      "phone": "Teléfono",
+      "roleName": "Rol",
+      "profileImage": "Imagen de perfil",
+      "position": "Puesto",
+      "statusName": "Estado",
+      "createTs": "Creado en",
+      "updateTs": "Actualizado en",
+      "fullName": "Nombre completo",
+      "owner": "Owner",
+      "statusType": {
+        "active": "Active",
+        "pending": "Pending",
+        "inactive": "Inactive"
+      },
+      "roleType": {
+        "admin": "Administrator",
+        "user": "User"
+      }
+    },
+    "patient": {
+      "entity-name": "Paciente",
+      "code": "Nombre",
+      "birth-date": "Fecha de nacimiento",
+      "gender": "Sexo",
+      "weight": "Peso (kg)",
+      "genderType": {
+        "male": "Masculino",
+        "female": "Femenino"
+      },
+      "updateTs": "Última actualización"
+    },
+    "instrument": {
+      "entity-name": "Instrumento",
+      "name": "Nombre",
+      "model": "Modelo"
+    },
+    "pathology": {
+      "entity-name": "Patología",
+      "name": "Nombre",
+      "updateTs": "Última actualización"
+    },
+    "chat": {
+      "participants": "Nombre",
+      "lastMessage": "Último mensaje",
+      "last": "Fecha",
+      "doctor": "Doctor",
+      "technicalService": "Servicio Técnico",
+      "noMessages": "No se ha iniciado una conversación todavía",
+      "anonymousParticipants": "Chat participantes"
+    },
+    "patient-pathology": {
+      "entity-name": "Patología del paciente",
+      "name": "Nombre de la patología",
+      "patientCode": "Nombre de paciente",
+      "detection-date": "Fecha de detección"
+    },
+    "patient-study": {
+      "date": "Fecha del estudio",
+      "count": "Número de registros",
+      "firstTime": "Primer registro",
+      "lastTime": "Último registro",
+      "lastStepCount": "Pasos totales"
+    },
+    "patient-alarms": {
+      "list": "Alertas del paciente",
+      "alert_type": "Tipo de alerta",
+      "timestamp": "Fecha y hora",
+      "urgent": "Urgente"
+    },
+    "patient-model": {
+      "entity-name": "Modelo de paciente",
+      "name": "Nombre del modelo",
+      "patientCode": "Nombre de paciente",
+      "updateTs": "Última actualización"
+    },
+    "generic-organs-model": {
+      "entity-name": "Modelo de órganos",
+      "name": "Nombre",
+      "updateTs": "Última actualización"
+    }
+  },
+  "exception": {
+    "common": {
+      "unknown": {
+        "title": "Ha ocurrido un fallo en en su dispositivo",
+        "content": "Reinicie el navegador y si el error persiste reinicie su dispositivo."
+      },
+      "404": {
+        "user": {
+          "title": "Usuario no encontrado",
+          "content": "El usuario al que se intenta acceder no se encuentra disponible."
+        }
+      },
+      "500": {
+        "generic": {
+          "title": "Error interno",
+          "content": "Ha ocurrido un error inesperado, por favor recargue la página.<br>Si el problema persiste contacte con soporte técnico."
+        },
+        "oauth": {
+          "title": "Error de autenticación",
+          "content": "Ha ocurrido un error inesperado, por favor recargue la página.<br>Si el problema persiste contacte con soporte técnico."
+        }
+      },
+      "422": {
+        "generic": {
+          "title": "Error de validación",
+          "content": "Parece que no se ha podido procesar la información.<br>Revise los datos e inténtelo de nuevo.<br>Si el problema persiste contacte con soporte técnico."
+        }
+      },
+      "409": {
+        "generic": {
+          "title": "Error de conflicto de datos",
+          "content": "Ha ocurrido un error inesperado, por favor recargue la página.<br>Si el problema persiste contacte con soporte técnico."
+        },
+        "token": {
+          "title": "Token no disponible",
+          "content": "El token recibido no se encuentra disponible. Repita el proceso e inténtelo de nuevo.<br>Si el problema persiste contacte con soporte técnico."
+        }
+      }
+    },
+    "uiCtx": {
+      "100400": {
+        "title": "Error al iniciar sesión",
+        "content": "Ha ocurrido un error durante el inicio de sesión. Revise su usuario y contraseña y vuelva a intentarlo."
+      },
+      "100401": {
+        "title": "Error al iniciar sesión",
+        "content": "Usuario o contraseña incorrectos."
+      },
+      "300404": {
+        "title": "Usuario no encontrado",
+        "content": "El correo introducido no se ha encontrado asociado a un usuario. Revise el correo y vuelva a intentarlo."
+      },
+      "400422": {
+        "title": "Contraseña incorrecta",
+        "content": "La contraseña actual es incorrecta."
+      }
+    },
+    "apiCtx": {
+      "1000": {
+        "title": "Correo electrónico duplicado",
+        "content": "Ya existe un usuario con el correo introducido."
+      },
+      "1001": {
+        "title": "Usuario ya activo",
+        "content": "Este usuario ya se encuentra activo."
+      },
+      "1002": {
+        "title": "Usuario desactivado",
+        "content": "Este usuario se encuentra desactivado."
+      },
+      "1003": {
+        "title": "Estado del usuario incorrecto",
+        "content": "El estado del usuario no es correcto según sus condiciones."
+      },
+      "1004": {
+        "title": "Credenciales inválidas",
+        "content": "Esta cuenta será bloqueada al superar el límite de intentos. Intentos restantes: {attempts_left}."
+      },
+      "1005": {
+        "title": "Usuario bloqueado",
+        "content": "Esta cuenta ha sido bloqueada debido al número de intentos fallidos al iniciar sesión. Revise el correo para más información."
+      },
+      "2000": {
+        "title": "Nombre duplicado",
+        "content": "Este nombre está ya enlazado con un paciente"
+      }
+    }
+  },
+  "alert": {
+    "common": {
+      "confirmation": {
+        "title": "¿Está seguro?"
+      },
+      "delete": {
+        "content": "¿Está seguro que desea borrar{gender, select, male { este} female { esta} other {}} {entity}? Esta operación no se podrá deshacer."
+      },
+      "disable": {
+        "content": "¿Está seguro que desea desactivar{gender, select, male { este} female { esta} other {}} {entity}? Una vez desactivada no podrá volver a usarse."
+      },
+      "button": {
+        "confirm-delete": "Sí, quiero {gender, select, male {eliminarlo} female {eliminarla} other {}}",
+        "confirm-disable": "Sí, quiero desactivarla"
+      }
+    },
+    "upload-file-warning": {
+      "title": {
+        "upload": "No se pudo guardar la información",
+        "delete": "No se pudo eliminar la información"
+      },
+      "content": {
+        "upload": {
+          "video": "Se ha producido un error al guardar la información. Por favor, inténtelo de nuevo. Si el problema persiste, contacte con el equipo de bracelet.",
+          "image": "Se ha producido un error al guardar la información. Por favor, inténtelo de nuevo. Si el problema persiste, contacte con el equipo de bracelet."
+        },
+        "delete": {
+          "video": "Se ha producido un error al eliminar la información. Por favor, inténtelo de nuevo. Si el problema persiste, contacte con el equipo de bracelet.",
+          "image": "Se ha producido un error al eliminar la información. Por favor, inténtelo de nuevo. Si el problema persiste, contacte con el equipo de bracelet."
+        }
+      }
+    }
+  },
+  "notification": {
+    "common": {
+      "validation-error": "Corrija los errores para poder continuar."
+    },
+    "entity": {
+      "user": {
+        "success": {
+          "add": "Usuario creado correctamente.",
+          "edit": "Usuario actualizado correctamente.",
+          "edit-profile": "Perfil actualizado correctamente.",
+          "delete": "Este usuario se ha eliminado correctamente.",
+          "delete-account": "Tu cuenta ha sido eliminada.",
+          "register": "Se ha completado tu registro.",
+          "resend-register": "Nuevo email de registro enviado."
+        },
+        "error": {
+          "required-tac": "Se deben aceptar los términos y condiciones.",
+          "resend-register": "No se ha podido reenviar el email de registro."
+        }
+      },
+      "password": {
+        "success": {
+          "edit": "Contraseña actualizada correctamente."
+        },
+        "error": {
+          "not-saved": "Se ha producido un error al actualizar la contraseña."
+        }
+      },
+      "permission": {
+        "no-access": "Usted no tiene acceso a este recurso."
+      },
+      "patient": {
+        "success": {
+          "add": "Paciente creado correctamente.",
+          "edit": "Paciente actualizado correctamente",
+          "delete": "Este paciente se ha eliminado correctamente."
+        }
+      },
+      "patient-model": {
+        "success": {
+          "add": "Modelo del paciente creado correctamente.",
+          "edit": "Modelo del paciente actualizado correctamente",
+          "delete": "Modelo del paciente se ha eliminado correctamente."
+        }
+      },
+      "instrument": {
+        "success": {
+          "add": "Instrumento creado correctamente.",
+          "edit": "Instrumento actualizado correctamente.",
+          "delete": "Instrumento eliminado correctamente."
+        },
+        "error": {
+          "add": "Se ha producido un error al añadir instrumento."
+        }
+      },
+      "pathology": {
+        "success": {
+          "add": "Patología creada correctamente.",
+          "edit": "Patología actualizada correctamente.",
+          "delete": "Patología eliminada correctamente."
+        },
+        "error": {
+          "add": "Se ha producido un error al añadir una patología."
+        }
+      },
+      "patient-pathology": {
+        "success": {
+          "link": "Patologías del paciente actualizadas correctamente.",
+          "delete": "La patología ha sido desvinculada correctamente."
+        }
+      },
+      "generic-organs-model": {
+        "success": {
+          "add": "Modelo de órganos creado correctamente.",
+          "edit": "Modelo de órganos actualizado correctamente.",
+          "delete": "Modelo de órganos eliminado correctamente."
+        },
+        "error": {
+          "add": "Se ha producido un error al añadir un modelo de órganos."
+        }
+      }
+    },
+    "upload-file": {
+      "video": {
+        "post": "Vídeo subido correctamente",
+        "put": "Vídeo actualizado correctamente"
+      },
+      "image": {
+        "post": "Imagen subida correctamente",
+        "put": "Imagen actualizada correctamente"
+      }
+    }
+  },
+  "component": {
+    "navbar": {
+      "theme": {
+            "dark": "Tema oscuro",
+            "light": "Tema claro"
+          },
+      "menu": {
+        "col-xs-title": "Menú",
+        "section": {
+          "user_account": "Usuarios",
+          "patient": "Pacientes",
+          "instrument": "Instrumentos",
+          "pathology": "Patologías",
+          "chat": "Chats",
+          "alarms": "Alarmas",
+          "my_patient_info": "Mi información médica"
+        }
+      },
+      "sidebar": {
+        "chat-title": "Compartido conmigo"
+      },
+      "profile-menu": {
+        "my-profile": "Mi perfil",
+        "shared-with-me": "Compartido conmigo",
+        "logout": "Cerrar sesión"
+      }
+    },
+    "select": {
+      "no-options": "Ningún resultado encontrado.",
+      "use": "Usar \"{text}\" como selección"
+    },
+    "upload-dropzone": {
+      "drag-files": "Suelta aquí {multiple, select, false {el archivo para subirlo} other {los archivos para subirlos}}",
+      "accepted-types": "Ficheros de tipo: {types}",
+      "tags": {
+        "active": "Actual",
+        "remove": "Para eliminar",
+        "upload": "Nuevo"
+      },
+      "warning": {
+        "forbidden-chars": "Se han omitido algunos ficheros que contenían caracteres no válidos ( {chars} ).",
+        "invalid-extension": "Se han omitido ficheros que no tenían una extensión válida."
+      },
+      "error": {
+        "file-type-mismatched": "El tipo de archivo subido no coincide con el tipo de recurso seleccionado."
+      }
+    },
+    "select-media-devices": {
+      "label": {
+        "video": "Vídeo",
+        "mic": "Micrófono",
+        "audio": "Audio",
+        "test-audio": "Prueba de audio"
+      },
+      "option": {
+        "no-video": "No usar dispositivo de vídeo",
+        "no-mic": "No usar micrófono",
+        "no-audio": "No usar dispositivo de audio"
+      },
+      "issue": {
+        "rotten": "Con problemas",
+        "reload": "Recargar dispositivo"
+      }
+    },
+    "three-viewer": {
+      "not-available": "No disponible"
+    }
+  },
+  "modal": {
+    "devices-permissions-helper": {
+      "header": "Se requiere activar los permisos",
+      "steps": {
+        "generic": {
+          "first": "Parece que tu navegador no tiene acceso a los dispositivos de cámara y micrófono de tu equipo.",
+          "second": "Normalmente tu navegador te preguntará acerca del acceso a tus dispositivos. Presiona 'Permitir' cuando el navegador te solicite el acceso.",
+          "third": "Si has denegado los permisos, es necesario que los actives manualmente. Según tu navegador, esto podría ser desde la barra de navegación o directamente desde la configuración."
+        },
+        "chrome": {
+          "first": "Parece que tu navegador no tiene acceso a los dispositivos de cámara y micrófono de tu equipo.",
+          "second": "En la barra de direcciones superior, presiona el icono de la cámara que aparece a la derecha.",
+          "third": "En el menú recién abierto, selecciona la opción para permitir el acceso de bracelet a tus dispositivos.",
+          "fourth": "Presiona el botón 'Hecho'."
+        },
+        "firefox": {
+          "first": "Parece que tu navegador no tiene acceso a los dispositivos de cámara y micrófono de tu equipo.",
+          "second": "En la barra de direcciones superior, presiona el icono de la cámara que aparece a la izquierda.",
+          "third": "En el menú recién abierto, confirma el acceso a los dispositivos. Si los permisos fueron previamente bloqueados, por favor, desbloquéalos."
+        },
+        "safari": {
+          "first": "Parece que tu navegador no tiene acceso a los dispositivos de cámara y micrófono de tu equipo.",
+          "second": "Presiona click derecho en la barra de direcciones superior. En el menú recién abierto, selecciona 'Ajustes de ...'.",
+          "third": "Esto abrirá un menú que permite dar acceso al micrófono y la cámara a través del botón 'Permitir'.",
+          "fourth": "Recarga la página para cargar los cambios."
+        },
+        "last": "Una vez configurados, presiona 'He aceptado los permisos'."
+      },
+      "button": {
+        "accept": "He aceptado los permisos"
+      }
+    },
+    "no-devices-helper": {
+      "header": "No hay dispositivos conectados",
+      "steps": {
+        "generic": {
+          "first": "Parece que no se ha encontrado ningún dispositivo.",
+          "second": "En caso de tener dispositivos conectados, comprueba la conexión con tu equipo e inténtalo de nuevo.",
+          "third": "Si no tienes ningún dispositivo conectado, por favor conecta uno."
+        }
+      },
+      "button": {
+        "accept": "Dispositivos conectados"
+      }
+    },
+    "create-patient-model": {
+      "header": "Crear modelo"
+    },
+    "patient-pathology": {
+      "header": "Vincular patología"
+    }
+  },
+  "route": {
+    "vr": {
+      "title": "Escena"
+    },
+    "login": {
+      "title": "Iniciar sesión",
+      "button": {
+        "login": "Iniciar sesión",
+        "forgot-password": "He olvidado la contraseña",
+        "request-a-demo": "Solicitar una prueba"
+      }
+    },
+    "register": {
+      "title": "Registro",
+      "initial": {
+        "title": "Completa tu registro",
+        "description": "Establece tu contraseña y prepárate para entrar en bracelet."
+      },
+      "accept-tac": "Acepto los términos y condiciones de uso.",
+      "activated": "Tu registro ha sido completado. ¡Inicia sesión ahora y disfruta bracelet!",
+      "canceled": {
+        "request": "Si prefiere no continuar y cerrar su cuenta, pinche aquí para",
+        "link": "cancelar el registro.",
+        "description": "Tu registro ha sido cancelado. Sentimos las molestias."
+      },
+      "no-available": "Este enlace ya no está disponible.",
+      "button": {
+        "confirm": "Completar registro",
+        "go-login": "Iniciar sesión",
+        "agree": "Acepto"
+      }
+    },
+    "reset-password": {
+      "title": "Restablecer contraseña",
+      "initial": {
+        "title": "¿Has olvidado tu contraseña?",
+        "content": "Introduce tu correo electrónico para recibir instrucciones acerca de cómo restablecer tu contraseña.",
+        "footer": "¿Has recordado la contraseña?"
+      },
+      "sent": {
+        "title": "Se ha enviado un correo a tu cuenta",
+        "content": "Por favor, revisa tu bandeja de entrada y accede al enlace para restablecer tu contraseña.",
+        "footer": "¿No has recibido el enlace?"
+      },
+      "button": {
+        "login": "Iniciar sesión",
+        "send": "Solicitar cambio de contraseña",
+        "resend": "Reenviar correo"
+      }
+    },
+    "edit-password": {
+      "title": "Modificar contraseña",
+      "information": "Cambia tu contraseña",
+      "invalid-token": "El enlace que has seguido no se encuentra disponible.",
+      "form": {
+        "label": {
+          "repeat": "Confirmar contraseña"
+        },
+        "validation": {
+          "not-match": "Las contraseñas no coinciden."
+        },
+        "button": {
+          "confirm": "Modificar contraseña"
+        }
+      },
+      "button": {
+        "resend": "Solicitar nuevo enlace",
+        "back-login": "Volver al inicio de sesión"
+      }
+    },
+    "home": {
+      "title": "Dashboard - Sistema de Monitoreo",
+      "no-idea": {
+        "info": "¿Qué te gustaría ver aquí?"
+      },
+      "greetings": {
+        "morning": "Buenos días",
+        "afternoon": "Buenas tardes",
+        "evening": "Buenas noches"
+      },
+      "welcome": "Bienvenido al Sistema de Monitoreo de Pulseras Médicas",
+      "role": "Rol",
+      "lastActivity": "Última actividad",
+      "stats": {
+        "totalAlarms": "Total Alarmas",
+        "criticalAlarms": "Alarmas Críticas",
+        "totalPatients": "Total Pacientes",
+        "activeChats": "Chats Activos"
+      },
+      "quickActions": {
+        "title": "Acciones Rápidas",
+        "viewPatients": "Ver Pacientes",
+        "chats": "Chats",
+        "myProfile": "Mi Perfil",
+        "logout": "Cerrar Sesión",
+        "access": "Acceder"
+      },
+      "tutorial": {
+        "title": "Video Tutorial",
+        "description": "Aprende a usar todas las funcionalidades de la plataforma"
+      },
+      "roles": {
+        "admin": "Administrador",
+        "user": "Usuario",
+        "doctor": "Médico", 
+        "patient": "Paciente"
+      }
+    },
+    "alarms": {
+      "title": "Alarmas",
+      "myAlarms": "Mis Alarmas",
+      "alarmsList": "Lista de Alarmas",
+      "loading": "Cargando alarmas...",
+      "columns": {
+        "patient": "Paciente",
+        "alarmType": "Tipo de Alerta",
+        "date": "Fecha",
+        "urgency": "Urgencia"
+      },
+      "types": {
+        "fall_detected": "Caída detectada",
+        "button_alarm": "Botón de pánico",
+        "strange_bpm": "Ritmo cardíaco anormal"
+      }
+    },
+    "study-detail": {
+      "title": "Métricas del paciente",
+      "Latidos": "Latidos por minuto",
+      "Oxigeno": "Oxigenación en sangre",
+      "Pasos": "Pasos diarios"
+    },
+    "users": {
+      "title": "Usuarios",
+      "list": "Usuarios",
+      "buttons": {
+        "add-user": "Añadir usuario"
+      }
+    },
+    "user-details": {
+      "title": "Detalles del usuario",
+      "form-title": "Información del usuario",
+      "owner": {
+        "title": "Detalles del propietario"
+      }
+    },
+    "user-add": {
+      "title": "Añadir usuario",
+      "form-title": "Información del usuario"
+    },
+    "user-edit": {
+      "title": "Editar usuario",
+      "form-title": "Información del usuario"
+    },
+    "patients": {
+      "title": "Pacientes",
+      "list": "Pacientes"
+    },
+    "patient-details": {
+      "title": "Detalles del paciente",
+      "form-title": "Detalles del paciente"
+    },
+    "patient-add": {
+      "title": "Añadir paciente",
+      "form-title": "Añadir paciente"
+    },
+    "patient-edit": {
+      "title": "Editar paciente",
+      "form-title": "Editar paciente"
+    },
+    "instruments" : {
+      "title": "Instrumentos",
+      "list": "Instrumentos"
+    },
+    "instrument-details" : {
+      "title": "Detalles del instrumento",
+      "form-title": "Detalles del instrumento"
+    },
+    "instrument-add" : {
+      "title": "Añadir instrumento",
+      "form-title": "Añadir instrumento"
+    },
+    "instrument-edit" : {
+      "title": "Editar instrumento",
+      "form-title": "Editar instrumento"
+    },
+    "pathologies" : {
+      "title": "Patologías",
+      "list": "Patologías"
+    },
+    "pathology-details": {
+      "title": "Detalles de la patología",
+      "form-title": "Detalles de la patología"
+    },
+    "pathology-add" : {
+      "title": "Añadir Patología",
+      "form-title": "Añadir Patología"
+    },
+    "pathology-edit" : {
+      "title": "Editar patología",
+      "form-title": "Editar patología"
+    },
+    "chats" : {
+      "title": "Chats",
+      "list": "Últimos chats",
+      "chat_title": "Chat con {name}",
+      "createChat": "Nuevo Chat",
+      "noChats": {
+        "title": "No tienes chats activos",
+        "description": "Cuando tengas conversaciones con otros usuarios aparecerán aquí.",
+        "privacyMessage": "Por privacidad y seguridad de datos, solo los administradores pueden crear nuevos chats entre usuarios. Contacta con un administrador si necesitas iniciar una conversación con alguien."
+      },
+      "create": {
+        "title": "Crear nuevo chat",
+        "chatType": "Tipo de chat",
+        "personalChat": "Chat conmigo",
+        "personalChatDesc": "Crear un chat entre tú y otro usuario",
+        "userChat": "Chat entre usuarios",
+        "userChatDesc": "Crear un chat entre dos usuarios específicos",
+        "searchUser": "Buscar usuario",
+        "searchFirstUser": "Buscar primer usuario",
+        "searchSecondUser": "Buscar segundo usuario",
+        "searchPlaceholder": "Escribe el nombre o email del usuario...",
+        "selectUser": "Selecciona un usuario para continuar",
+        "selectFirstUser": "Selecciona el primer usuario",
+        "selectSecondUser": "Selecciona el segundo usuario",
+        "clearSelection": "Limpiar selección",
+        "noUsersFound": "No se encontraron usuarios",
+        "selectedUser": "Crearás un chat con {name} ({email})",
+        "selectedFirstUser": "Primer usuario: {name} ({email})",
+        "selectedSecondUser": "Segundo usuario: {name} ({email})",
+        "create": "Crear Chat",
+        "createPersonal": "Crear Chat Conmigo",
+        "createBetweenUsers": "Crear Chat entre Usuarios",
+        "success": "Chat creado exitosamente",
+        "error": "Error al crear el chat",
+        "alreadyExists": "El chat ya existe y está disponible en tu lista de chats",
+        "errorSearchingUsers": "Error al buscar usuarios"
+      }
+    },
+    "organs-model": {
+      "title": "Modelos de órganos",
+      "list": "Modelos de órganos",
+      "origin": "Origen",
+      "select-origin": {
+        "patient-models": "Pacientes",
+        "generic-organs-model": "Genéricos"
+      },
+      "description-origin": "Mostrará modelos de pacientes o modelos de órganos genéricos."
+    },
+    "generic-organs-model-details": {
+      "title": "Detalles del modelo de órganos genérico",
+      "form-title": "Detalles del modelo de órganos genérico"
+    },
+    "generic-organs-model-add": {
+      "title": "Añadir modelo de órganos genérico",
+      "form-title": "Añadir modelo de órganos genérico"
+    },
+    "generic-organs-model-edit": {
+      "title": "Editar modelo de órganos genérico",
+      "form-title": "Editar modelo de órganos genérico"
+    },
+    "patient-pathology": {
+      "title": "Patologías del paciente",
+      "list": "Patologías del paciente",
+      "my-list": "Mis patologías"
+    },
+    "patient-alarms": {
+      "title": "Alarmas del paciente",
+      "list": "Alarmas del paciente",
+      "my-list": "Mis alarmas"
+    },
+    "study-dates": {
+      "title": "Estudios del paciente",
+      "list": "Estadísticas del paciente",
+      "my-list": "Mis estudios"
+    },
+    "patient-models": {
+      "title": "Modelos del paciente",
+      "list": "Modelos del paciente",
+      "my-list": "Mis modelos"
+    },
+    "my-profile": {
+      "title": "Mi perfil",
+      "profile": {
+        "title": "Información del perfil",
+        "no-info": "No hay nada que mostrar aquí.",
+        "no-phone": "No se ha añadido un teléfono"
+      }
+    },
+    "my-profile-edit": {
+      "title": "Editar perfil",
+      "profile-title": "Información del perfil",
+      "password": {
+        "title": "Modificar contraseña",
+        "content": "Introduce tu contraseña actual y establece una nueva para el próximo inicio de sesión",
+        "form": {
+          "label": {
+            "current": "Contraseña actual",
+            "new": "Nueva contraseña",
+            "repeated": "Confirmar nueva contraseña"
+          },
+          "validation": {
+            "not-match": "Las contraseñas no coinciden."
+          },
+          "button": {
+            "change-password": "Actualizar contraseña"
+          }
+        }
+      },
+      "delete": {
+        "account": "Cuenta",
+        "delete": "Eliminar tu cuenta"
+      }
+    },
+    "personal": {
+      "title": "Sobre mi"
+    },
+    "docs": {
+      "title": "TFG Diego De Pablo"
+    },
+    "tac": {
+      "title": "UMA TFG info"
+    },
+    "error": {
+      "common": {
+        "help": "Como alternativa, siempre existe la opción de volver donde todo comenzó.",
+        "button": {
+          "go-home": "Volver al inicio"
+        }
+      },
+      "404": {
+        "title": "Página no encontrada",
+        "content": {
+          "first": "Vaya... Has encontrado una página que no está disponible",
+          "last": "Asegúrate de haber escrito correctamente en la barra de direcciones o vuelve a la página anterior."
+        }
+      },
+      "500": {
+        "title": "Error interno",
+        "content": {
+          "first": "Parece que algo no funciona bien aquí...",
+          "last": "Podría ser algo bueno, pero parece que no... De seguro estamos trabajando en ello, pero mientras tanto... puedes probar otras páginas."
+        }
+      }
+    }
+  },
+  "common": {
+    "label": {
+      "actions": "Acciones",
+      "status": "Estado",
+      "no-information": "Sin información",
+      "from-to": "De {start} hasta {end}",
+      "organized-by": "Organizado por {name}",
+      "created-by": "Creado por {name}",
+      "created-at": "Creado el {date}",
+      "duration": "{hours}h {minutes}min {seconds}s"
+    },
+    "form": {
+      "field": {
+        "required": "El campo {field} es obligatorio.",
+        "bad-format": {
+          "base": "Este campo tiene un valor no válido.",
+          "specific": "El campo {field} tiene un valor no válido."
+        }
+      },
+      "url": "Formato de URL incorrecto.",
+      "start-since-today": "La fecha de inicio no puede ser anterior a hoy.",
+      "date-not-future": "La fecha no puede ser superior a hoy.",
+      "finish-before-start": "La fecha de fin no puede ser anterior al inicio."
+    },
+    "list-entity": {
+      "fts": "Buscar",
+      "button": {
+        "first": "Primera",
+        "prev": "Anterior",
+        "next": "Siguiente",
+        "reset": "Limpiar"
+      }
+    },
+    "button": {
+      "accept": "Aceptar",
+      "confirm": "Confirmar",
+      "cancel": "Cancelar",
+      "add": "Añadir",
+      "save": "Guardar",
+      "save-and-continue": "Guardar y continuar",
+      "save-and-finish": "Guardar y terminar",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "disable": "Desactivar",
+      "back": "Atrás",
+      "close": "Cerrar"
+    },
+    "extra": {
+      "lang": "es"
+    },
+    "date-period": {
+      "year": "Año",
+      "month": "Mes",
+      "day": "Día"
+    }
+  },
+  "extra": {
+    "lang": "es"
+  },
+  "date-period": {
+    "year": "Año",
+      "month": "Mes",
+      "day": "Día"
+    }
+  }

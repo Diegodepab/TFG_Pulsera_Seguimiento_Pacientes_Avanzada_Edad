@@ -1,0 +1,118 @@
+/* --------------------------------------------------
+   Nucleo SVG Icon Styles – Updated Palette & Enhancements
+   -------------------------------------------------- */
+
+:root {
+  /* Custom Palette */
+  --color1: #d8c6be;  /* Light Beige */
+  --color2: #cac7a5;  /* Sage */
+  --color3: #0f020b;  /* Near Black */
+  --color4: #807675;  /* Taupe Gray */
+  --color5: #f8f8f8;  /* Off-White */
+
+  /* Semantic mappings */
+  --icon-primary: var(--color3);
+  --icon-secondary: var(--color2);
+  --icon-accent: var(--color4);
+  --icon-bg: var(--color5);
+  --icon-disabled: rgba(15, 2, 11, 0.4);
+}
+
+/* --------------------------------
+   Base Icon Styles
+   -------------------------------- */
+.icon {
+  display: inline-block;
+  color: var(--icon-primary);
+  fill: currentColor;
+  stroke: none;
+  height: 1em;
+  width: 1em;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.icon use {
+  fill: var(--icon-secondary);
+  stroke: none;
+}
+
+.icon.icon-outline {
+  fill: none;
+  stroke: currentColor;
+}
+
+.icon.icon-outline use {
+  fill: none;
+  stroke: var(--icon-secondary);
+}
+
+/* --------------------------------
+   Sizes
+   -------------------------------- */
+.icon-xs { width: 0.5em; height: 0.5em; }
+.icon-sm { width: 0.8em; height: 0.8em; }
+.icon-lg { width: 1.6em; height: 1.6em; }
+.icon-xl { width: 2em;   height: 2em;   }
+
+/* --------------------------------
+   Alignment with Text
+   -------------------------------- */
+.icon-text-aligner {
+  display: flex;
+  align-items: center;
+}
+.icon-text-aligner .icon {
+  margin-right: 0.5em;
+  color: inherit;
+}
+.icon-text-aligner .icon use {
+  fill: currentColor;
+}
+.icon-text-aligner .icon.icon-outline use {
+  stroke: currentColor;
+}
+
+/* --------------------------------
+   Hover, Active & Disabled States
+   -------------------------------- */
+.icon:hover {
+  transform: scale(1.1);
+  color: var(--icon-accent);
+}
+.icon.active {
+  text-shadow: 0 0 6px var(--icon-secondary);
+}
+.icon.disabled {
+  color: var(--icon-disabled);
+  pointer-events: none;
+}
+
+/* --------------------------------
+   Stroke Effects for Outline Icons
+   -------------------------------- */
+.icon-outline.icon-stroke-1 { stroke-width: 1px; }
+.icon-outline.icon-stroke-2 { stroke-width: 2px; }
+.icon-outline.icon-stroke-3 { stroke-width: 3px; }
+.icon-outline.icon-stroke-4 { stroke-width: 4px; }
+
+.icon-outline.icon-stroke-1 use,
+.icon-outline.icon-stroke-3 use {
+  transform: translate(0.5px, 0.5px);
+}
+
+/* --------------------------------
+   Background Utility (optional)
+   -------------------------------- */
+.icon-bg {
+  background-color: var(--icon-bg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25em;
+  padding: 0.2em;
+}
+
+/* Example Usage:
+   <span class="icon icon-lg icon-outline icon-stroke-2 hoverable"></span>
+   <span class="icon-bg"><svg class="icon">...</svg></span>
+*/

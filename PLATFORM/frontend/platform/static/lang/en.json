@@ -1,0 +1,835 @@
+{
+  "entity": {
+    "user": {
+      "entity-name": "User",
+      "email": "Email",
+      "password": "Password",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "phone": "Phone",
+      "roleName": "Role",
+      "profileImage": "Profile image",
+      "position": "Position",
+      "statusName": "Status",
+      "createTs": "Created at",
+      "updateTs": "Updated at",
+      "fullName": "Full name",
+      "owner": "Owner",
+      "statusType": {
+        "active": "Active",
+        "pending": "Pending",
+        "inactive": "Inactive"
+      },
+      "roleType": {
+        "admin": "Administrator",
+        "user": "Doctor",
+        "patient": "Patient"
+      }
+    },
+    "patient": {
+      "entity-name": "Patient",
+      "code": "Name",
+      "weight": "Weight (kg)",
+      "gender": "Gender",
+      "birth-date": "Birth Date",
+      "ownerFullName": "Doctor",
+      "genderType": {
+        "male": "Male",
+        "female": "Female"
+      },
+      "updateTs": "Last update"
+    },
+    "instrument": {
+      "entity-name": "Instrument",
+      "name": "Name",
+      "model": "Model"
+    },
+    "pathology": {
+      "entity-name": "Pathology",
+      "name": "Name",
+      "updateTs": "Last update"
+    },
+    "chat": {
+      "participants": "Name",
+      "lastMessage": "Last message",
+      "last": "Timestamp",
+      "doctor": "Doctor",
+      "technicalService": "Technical Support",
+      "noMessages": "No conversation started yet",
+      "anonymousParticipants": "Chat participants"
+    },
+    "patient-pathology": {
+      "entity-name": "Patient pathology",
+      "name": "Pathology name",
+      "patientCode": "Patient name",
+      "detection-date": "Detection date"
+    },
+    "patient-study": {
+      "date": "Date of study",
+      "count": "Number of records",
+      "firstTime": "First record",
+      "lastTime": "Last record",
+      "lastStepCount": "Total steps"
+    },
+    "patient-model": {
+      "entity-name": "Patient model",
+      "name": "Model name",
+      "patientCode": "Patient name",
+      "updateTs": "Last update"
+    },
+    "patient-alarms": {
+      "list": "Patient alarms",
+      "alert_type": "Alert type",
+      "timestamp": "Timestamp",
+      "urgent": "Urgent"
+    }
+  },
+  "exception": {
+    "common": {
+      "unknown": {
+        "title": "Unknown error",
+        "content": "An unexpected error has occurred, please reload your page.<br>If your problem persist contact to the support team."
+      },
+      "404": {
+        "user": {
+          "title": "User not found",
+          "content": "The user is no longer available."
+        }
+      },
+      "500": {
+        "generic": {
+          "title": "Internal error",
+          "content": "An error has occurred while data was processing.<br>Check information and try again later.<br>If your problem persist contact to the support team."
+        },
+        "oauth": {
+          "title": "Authentication error",
+          "content": "An unexpected error has occurred, please reload your page.<br>If your problem persist contact to the support team."
+        }
+      },
+      "422": {
+        "generic": {
+          "title": "Unprocessable information",
+          "content": "An error has occurred while data was processing.<br>Check information and try again later.<br>If your problem persist contact to the support team."
+        }
+      },
+      "409": {
+        "generic": {
+          "title": "Data conflict error",
+          "content": "An error has occurred while data was processing.<br>Check information and try again later.<br>If your problem persist contact to the support team."
+        },
+        "token": {
+          "title": "Unavailable token",
+          "content": "Received token is unavailable. Repeat process and try again.<br>If your problem persist contact to the support team."
+        }
+      }
+    },
+    "uiCtx": {
+      "100400": {
+        "title": "Login failed",
+        "content": "An error has occurred during authentication, check your user and password and try again."
+      },
+      "100401": {
+        "title": "Login failed",
+        "content": "Wrong user or password"
+      },
+      "300404": {
+        "title": "User not found",
+        "content": "Any registered user with entered email has been found. Check entered email and try again."
+      },
+      "400422": {
+        "title": "Wrong password",
+        "content": "The current password is wrong."
+      }
+    },
+    "apiCtx": {
+      "1000": {
+        "title": "Duplicated email",
+        "content": "This email is already linked to a current user."
+      },
+      "1001": {
+        "title": "User already activated",
+        "content": "This user is already active"
+      },
+      "1002": {
+        "title": "Disabled user",
+        "content": "This user is disabled."
+      },
+      "1003": {
+        "title": "Invalid status name",
+        "content": "Status name cannot be set on this user."
+      },
+      "1004": {
+        "title": "Invalid credentials",
+        "content": "This account will be blocked after reach the attempts limit. Attempts left: {attempts_left}."
+      },
+      "1005": {
+        "title": "User blocked",
+        "content": "This account has been blocked due to too many failed login attempts. Check the email for more information."
+      },
+      "2000": {
+        "title": "Duplicated name",
+        "content": "This name is already linked to a current patient."
+      }
+    }
+  },
+  "alert": {
+    "common": {
+      "confirmation": {
+        "title": "Are you sure?"
+      },
+      "delete": {
+        "content": "Are you sure you want delete the {entity}? You won't be able to revert this!"
+      },
+      "disable": {
+        "content": "Are you sure you want disable the {entity}? Once disabled you will not be able to access it."
+      },
+      "button": {
+        "confirm-delete": "Yes, delete it!",
+        "confirm-disable": "Yes, disable it!"
+      }
+    },
+    "upload-file-warning": {
+      "title": {
+        "upload": "Information could not be saved",
+        "delete": "Information could not be deleted"
+      },
+      "content": {
+        "upload": {
+          "video": "An error occurred saving the information. Please, retry it again. If the problem persists, contact the bracelet team.",
+          "image": "An error occurred saving the information. Please, retry it again. If the problem persists, contact the bracelet team."
+        },
+        "delete": {
+          "video": "An error occurred removing the information. Please, retry it again. If the problem persists, contact the bracelet team.",
+          "image": "An error occurred removing the information. Please, retry it again. If the problem persists, contact the bracelet team."
+        }
+      }
+    }
+  },
+  "notification": {
+    "common": {
+      "validation-error": "Some fields have to be fixed before continue."
+    },
+    "entity": {
+      "user": {
+        "success": {
+          "add": "User added successfully.",
+          "edit": "User modified successfully.",
+          "edit-profile": "Profile information updated successfully.",
+          "delete": "This account has been deleted.",
+          "delete-account": "Your account has been deleted."
+        },
+        "error": {
+          "required-tac": "You must accept terms and conditions."
+        }
+      },
+      "password": {
+        "success": {
+          "edit": "Password updated successfully."
+        },
+        "error": {
+          "not-saved": "Some issue occurred while updating the password."
+        }
+      },
+      "permission": {
+        "no-access": "You don't have access to this resource."
+      },
+      "patient": {
+        "success": {
+          "add": "Patient added successfully.",
+          "edit": "Patient modified successfully.",
+          "delete": "This patient has been deleted."
+        }
+      },
+      "patient-model": {
+        "success": {
+          "add": "Patient model added successfully.",
+          "edit": "Patient model modified successfully.",
+          "delete": "This patient model has been deleted."
+        }
+      },
+      "instrument": {
+        "success": {
+          "add": "Instrument added successfully.",
+          "edit": "Instrument modified successfully.",
+          "delete": "Instrument has been deleted."
+        },
+        "error": {
+          "add": "Some issue occurred while updating the instrument."
+        }
+      },
+      "pathology": {
+        "success": {
+          "add": "Pathology added successfully.",
+          "edit": "Pathology modified successfully.",
+          "delete": "Pathology has been deleted."
+        },
+        "error": {
+          "add": "Some issue occurred while updating the pathology."
+        }
+      },
+      "patient-pathology": {
+        "success": {
+          "link": "Patient's pathology correctly updated.",
+          "delete": "This pathology has been correctly unlinked."
+        }
+      },
+      "generic-organs-model": {
+        "success": {
+          "add": "Organs model added successfully.",
+          "edit": "Organs model modified successfully.",
+          "delete": "Organs model has been deleted."
+        },
+        "error": {
+          "add": "Some issue occurred while updating the organs model."
+        }
+      },
+      "upload-file": {
+        "video": {
+          "post": "Video uploaded successfully",
+          "put": "Video updated successfully"
+        },
+        "image": {
+          "post": "Image uploaded successfully",
+          "put": "Image updated successfully"
+        }
+      }
+    }
+  },
+  "component": {
+    "navbar": {
+      "theme": {
+            "dark": "Dark theme",
+            "light": "Light theme"
+      },
+      "menu": {
+        "col-xs-title": "Menu",
+        "section": {
+          "user_account": "Users",
+          "patient": "Patients",
+          "instrument": "Instruments",
+          "pathology": "Pathologies",
+          "chat": "Chats",
+          "alarms": "Alarms",
+          "my_patient_info": "My medical information"
+        }
+      },
+      "sidebar": {
+        "chat-title": "Shared with me"
+      },
+      "profile-menu": {
+        "my-profile": "My profile",
+        "shared-with-me": "Shared with me",
+        "logout": "Logout"
+      }
+    },
+    "select": {
+      "no-options": "Any result found",
+      "use": "Use \"{text}\" as option"
+    },
+    "upload-dropzone": {
+      "drag-files": "Drop {multiple, select, false {files} other {file} } here to upload",
+      "accepted-types": "Allowed file types: {types}",
+      "tags": {
+        "active": "Current file",
+        "remove": "File to remove",
+        "upload": "New file"
+      },
+      "warning": {
+        "forbidden-chars": "Some files which contains some invalid characters has been omitted ( {chars} ).",
+        "invalid-extension": "Some files has been omitted due to not accepted extension."
+      },
+      "error": {
+        "file-type-mismatched": "The file uploaded does not match with the resource type selected."
+      }
+    },
+    "select-media-devices": {
+      "label": {
+        "video": "Video",
+        "mic": "Microphone",
+        "audio": "Audio",
+        "test-audio": "Test audio output"
+      },
+      "option": {
+        "no-video": "Do not use any video device",
+        "no-mic": "Do not use any microphone",
+        "no-audio": "Do not use any audio device"
+      },
+      "issue": {
+        "rotten": "With issues",
+        "reload": "Reload device"
+      }
+    },
+    "three-viewer": {
+      "not-available": "No available"
+    }
+  },
+  "modal": {
+    "devices-permissions-helper": {
+      "header": "Permissions required",
+      "steps": {
+        "generic": {
+          "first": "It seems that your browser has no access to your camera and microphone devices.",
+          "second": "Normally, your browser will ask you to allow it to access your devices. Click 'Allow' when the browser asks you about it.",
+          "third": "If you have denied the permissions, you will have to enable them manually. Based on your browser, it should be made from the navigator bar or directly from browser settings."
+        },
+        "chrome": {
+          "first": "It seems that your browser has no access to your camera and microphone devices.",
+          "second": "Press the icon which appears on the right side of the navigation bar.",
+          "third": "Into the opened menu, choose the option to allow access from bracelet to your media devices.",
+          "fourth": "Press 'Done' button."
+        },
+        "firefox": {
+          "first": "It seems that your browser has no access to your camera and microphone devices.",
+          "second": "Press the icon which appears on the left side of the navigation bar.",
+          "third": "Into the opened menu, allow the page to access devices. If permissions are previously blocked, please, unlock them."
+        },
+        "safari": {
+          "first": "It seems that your browser has no access to your camera and microphone devices.",
+          "second": "To enable them, do right click over the navigation bar and in the opened menu, press 'Settings of...'.",
+          "third": "In this new menu, enable microphone and camera permissions option to 'Allow'.",
+          "fourth": "You have to reload the page for changes to apply."
+        },
+        "last": "When permissions were enabled, click 'I've enabled access'."
+      },
+      "button": {
+        "accept": "I've enabled access"
+      }
+    },
+    "no-devices-helper": {
+      "header": "No devices connected",
+      "steps": {
+        "generic": {
+          "first": "It seems that any device has been found.",
+          "second": "If you have devices connected, check connection with your equip and try again",
+          "third": "If you don't have any devices connected, please connect one."
+        }
+      },
+      "button": {
+        "accept": "Device connected"
+      }
+    },
+    "create-patient-model": {
+      "header": "Create model"
+    },
+    "patient-pathology": {
+      "header": "Linking pathology"
+    }
+  },
+  "route": {
+    "login": {
+      "title": "Login",
+      "button": {
+        "login": "Login",
+        "forgot-password": "Forgot password?",
+        "request-a-demo": "Request a demo"
+      }
+    },
+    "register": {
+      "title": "Register",
+      "initial": {
+        "title": "Complete your register",
+        "description": "Set password and be ready to enter bracelet!"
+      },
+      "accept-tac": "I agree terms and conditions of use.",
+      "activated": "You register has been completed. Login now and enjoy bracelet!",
+      "canceled": {
+        "request": "In case you don't want to continue and delete your information, click here to",
+        "link": "cancel your account.",
+        "description": "Your register has been canceled. Sorry for the inconvenience."
+      },
+      "no-available": "This link is no longer available.",
+      "button": {
+        "confirm": "Complete register",
+        "go-login": "Login",
+        "agree": "I agree"
+      }
+    },
+    "reset-password": {
+      "title": "Reset password",
+      "initial": {
+        "title": "Forgot your password?",
+        "content": "Enter your email and we'll send you a message with instructions about reset your  password.",
+        "footer": "Remember the password?"
+      },
+      "sent": {
+        "title": "An email has been sent to you",
+        "content": "Please check your inbox and click on the link to reset your password.",
+        "footer": "Have you not received the email?"
+      },
+      "button": {
+        "login": "Login",
+        "send": "Request reset the password",
+        "resend": "Resend email"
+      }
+    },
+    "edit-password": {
+      "title": "Edit password",
+      "information": "Change your password",
+      "invalid-token": "This link is no longer available.",
+      "form": {
+        "label": {
+          "repeat": "Repeat password"
+        },
+        "validation": {
+          "not-match": "Passwords don't match."
+        },
+        "button": {
+          "confirm": "Confirm password"
+        }
+      },
+      "button": {
+        "resend": "Request a new link",
+        "back-login": "Back to login"
+      }
+    },
+    "home": {
+      "title": "Dashboard - Monitoring System",
+      "greetings": {
+        "morning": "Good morning",
+        "afternoon": "Good afternoon",
+        "evening": "Good evening"
+      },
+      "welcome": "Welcome to the Medical Bracelet Monitoring System",
+      "role": "Role",
+      "lastActivity": "Last activity",
+      "stats": {
+        "totalAlarms": "Total Alarms",
+        "criticalAlarms": "Critical Alarms", 
+        "totalPatients": "Total Patients",
+        "activeChats": "Active Chats"
+      },
+      "quickActions": {
+        "title": "Quick Actions",
+        "viewPatients": "View Patients",
+        "chats": "Chats",
+        "myProfile": "My Profile",
+        "logout": "Logout",
+        "access": "Access"
+      },
+      "tutorial": {
+        "title": "Video Tutorial",
+        "description": "Learn how to use all the platform features"
+      },
+      "roles": {
+        "admin": "Administrator",
+        "user": "User",
+        "doctor": "Doctor",
+        "patient": "Patient"
+      }
+    },
+    "alarms": {
+      "title": "Alarms",
+      "myAlarms": "My Alarms",
+      "alarmsList": "Alarms List",
+      "loading": "Loading alarms...",
+      "columns": {
+        "patient": "Patient",
+        "alarmType": "Alert Type",
+        "date": "Date",
+        "urgency": "Urgency"
+      },
+      "types": {
+        "fall_detected": "Fall detected",
+        "button_alarm": "Panic button",
+        "strange_bpm": "Abnormal heart rate"
+      }
+    },
+    "study-detail": {
+      "title": "Patient metrics",
+      "Latidos": "Beats per minute",
+      "Oxigeno": "Blood oxygenation",
+      "Pasos": "Daily steps"
+    },
+    "users": {
+      "title": "Users",
+      "list": "Users",
+      "button": {
+        "add-user": "Add user"
+      }
+    },
+    "user-details": {
+      "title": "User details",
+      "form-title": "User information",
+      "owner": {
+        "title": "Owner details"
+      }
+    },
+    "user-add": {
+      "title": "Add user",
+      "form-title": "User information"
+    },
+    "user-edit": {
+      "title": "Edit user",
+      "form-title": "User information"
+    },
+    "patients": {
+      "title": "Patients",
+      "list": "Patients"
+    },
+    "patient-details": {
+      "title": "Patient information",
+      "form-title": "Patient information"
+    },
+    "patient-add": {
+      "title": "Add patient",
+      "form-title": "Add patient"
+    },
+    "patient-edit": {
+      "title": "Edit patient",
+      "form-title": "Edit patient"
+    },
+    "my-info": {
+      "title": "My Information",
+      "list": "My Information",
+      "form-title": "My medical information"
+    },
+    "instruments" : {
+      "title": "Instruments",
+      "list": "Instruments"
+    },
+    "instrument-details" : {
+      "title": "Instrument information",
+      "form-title": "Instrument information"
+    },
+    "instrument-add" : {
+      "title": "Add instrument",
+      "form-title": "Add instrument"
+    },
+    "instrument-edit" : {
+      "title": "Edit instrument",
+      "form-title": "Edit instrument"
+    },
+    "pathologies" : {
+      "title": "Pathologies",
+      "list": "Pathologies"
+    },
+    "chats": {
+      "title": "Chats",
+      "list": "Recent chats",
+      "chat_title": "Chat with {name}",
+      "createChat": "New Chat",
+      "noChats": {
+        "title": "No active chats",
+        "description": "When you have conversations with other users, they will appear here.",
+        "privacyMessage": "For privacy and data security, only administrators can create new chats between users. Contact an administrator if you need to start a conversation with someone."
+      },
+      "create": {
+        "title": "Create new chat",
+        "chatType": "Chat type",
+        "personalChat": "Chat with me",
+        "personalChatDesc": "Create a chat between you and another user",
+        "userChat": "Chat between users",
+        "userChatDesc": "Create a chat between two specific users",
+        "searchUser": "Search user",
+        "searchFirstUser": "Search first user",
+        "searchSecondUser": "Search second user",
+        "searchPlaceholder": "Type user name or email...",
+        "selectUser": "Select a user to continue",
+        "selectFirstUser": "Select the first user",
+        "selectSecondUser": "Select the second user",
+        "clearSelection": "Clear selection",
+        "noUsersFound": "No users found",
+        "selectedUser": "You will create a chat with {name} ({email})",
+        "selectedFirstUser": "First user: {name} ({email})",
+        "selectedSecondUser": "Second user: {name} ({email})",
+        "create": "Create Chat",
+        "createPersonal": "Create Chat with Me",
+        "createBetweenUsers": "Create Chat between Users",
+        "success": "Chat created successfully",
+        "error": "Error creating chat",
+        "alreadyExists": "The chat already exists and is available in your chat list",
+        "errorSearchingUsers": "Error searching users"
+      }
+    },
+    "pathology-details": {
+      "title": "Pathology information",
+      "form-title": "Pathology information"
+    },
+    "pathology-add" : {
+      "title": "Add pathology",
+      "form-title": "Add pathology"
+    },
+    "pathology-edit" : {
+      "title": "Edit pathology",
+      "form-title": "Edit pathology"
+    },
+    "organs-model": {
+      "title": "Organs model",
+      "list": "Organs model",
+      "origin": "Origin",
+      "select-origin": {
+        "patient-models": "Patients",
+        "generic-organs-model": "Generics"
+      },
+      "description-origin": "It will show models of patients or generic organs model."
+    },
+    "generic-organs-model-details": {
+      "title": "Generic organs model information",
+      "form-title": "Generic organs model information"
+    },
+    "generic-organs-model-add": {
+      "title": "Add generic organs model",
+      "form-title": "Add generic organs model"
+    },
+    "generic-organs-model-edit": {
+      "title": "Edit generic organs model",
+      "form-title": "Edit generic organs model"
+    },
+    "patient-pathology": {
+      "title": "Patient pathologies",
+      "list": "Patient pathologies",
+      "my-list": "My pathologies"
+    },
+    "patient-alarms": {
+      "title": "Patient alarms",
+      "list": "Patient alarms",
+      "my-list": "My alarms"
+    },
+    "study-dates": {
+      "title": "Patient studies",
+      "list": "Patient stadistics",
+      "my-list": "My studies"
+    },
+    "patient-models": {
+      "title": "Patient models",
+      "list": "Patient models",
+      "my-list": "My models"
+    },
+    "patient-model-details": {
+      "title": "Patient model information",
+      "list": "Patient model information"
+    },
+    "patient-model-add": {
+      "title": "Add patient model",
+      "list": "Add patient model"
+    },
+    "patient-model-edit": {
+      "title": "Edit patient model",
+      "list": "Edit patient model"
+    },
+    "my-info": {
+      "title": "My information",
+      "list": "My information"
+    },
+    "my-profile": {
+      "title": "My profile",
+      "profile": {
+        "title": "Profile information",
+        "no-info": "There is no information to display here.",
+        "no-phone": "No phone added"
+      }
+    },
+    "my-profile-edit": {
+      "title": "Edit profile",
+      "profile-title": "Profile information",
+      "password": {
+        "title": "Password change",
+        "content": "Enter your current password and set a new one to change it for the next time you login",
+        "form": {
+          "label": {
+            "current": "Current password",
+            "new": "New password",
+            "repeated": "Repeat new password"
+          },
+          "validation": {
+            "not-match": "Passwords don't match."
+          },
+          "button": {
+            "change-password": "Update password"
+          }
+        }
+      },
+      "delete": {
+        "account": "Account",
+        "delete": "Delete your account"
+      }
+    },
+    "personal": {
+      "title": "Sobre mi"
+    },
+    "docs": {
+      "title": "TFG Diego De Pablo"
+    },
+    "tac": {
+      "title": "UMA TFG info"
+    },
+    "error": {
+      "common": {
+        "help": "There is always an alternative. Maybe return where all began.",
+        "button": {
+          "go-home": "Back to home"
+        }
+      },
+      "404": {
+        "title": "Page not found",
+        "content": {
+          "first": "Oops... It seems that this page is not available",
+          "last": "Make sure you typed in the page address correctly or go back to your previous page."
+        }
+      },
+      "500": {
+        "title": "Internal error",
+        "content": {
+          "first": "Looks like something is wrong here...",
+          "last": "It could be something good, but is seems like an error. For sure we are working on it, but while in the meantime... you can try another pages!"
+        }
+      }
+    }
+  },
+  "common": {
+    "label": {
+      "actions": "Actions",
+      "status": "Status",
+      "no-information": "No information",
+      "from-to": "From {start} to {end}",
+      "organized-by": "Organized by {name}",
+      "created-by": "Created by {name}",
+      "created-at": "Created at {date}",
+      "duration": "{hours}h {minutes}min {seconds}s"
+    },
+    "form": {
+      "field": {
+        "required": "Field {field} is required.",
+        "bad-format": {
+          "base": "This field has an invalid value.",
+          "specific": "Field {field} has an invalid value."
+        }
+      },
+      "url": "Invalid URL format.",
+      "start-since-today": "Start date must be greatest than current date.",
+      "date-not-future": "The date cannot be later than today.",
+      "finish-before-start": "End date must be greatest than the start date."
+    },
+    "list-entity": {
+      "fts": "Search",
+      "button": {
+        "first": "First",
+        "prev": "Previous",
+        "next": "Next",
+        "reset": "Reset"
+      }
+    },
+    "button": {
+      "accept": "Accept",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "add": "Add",
+      "save": "Save",
+      "save-and-continue": "Save and continue",
+      "save-and-finish": "Save and finish",
+      "edit": "Edit",
+      "disable": "Disable",
+      "delete": "Delete",
+      "back": "Back",
+      "close": "Close"
+    },
+    "extra": {
+      "lang": "en"
+    },
+    "date-period": {
+      "year": "Year",
+      "month": "Month",
+      "day": "Day"
+    }
+  }
+}

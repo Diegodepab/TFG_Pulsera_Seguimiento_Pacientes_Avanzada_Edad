@@ -1,0 +1,9 @@
+{
+  "entity": {
+    "user": {
+      "roleType": {
+        "patient": "Patient"
+      }
+    }
+  }
+}

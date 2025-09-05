@@ -20,7 +20,6 @@ MAX30105 particleSensor;
 const int BUTTON1_PIN = 0;
 const int BUTTON2_PIN = 35;
 unsigned long buttonPressStart = 0;
-bool bothButtonsPressed = false;
 
 // MPU-6050 variables
 float prevAccX = 0, prevAccY = 0, prevAccZ = 0;
@@ -59,16 +58,16 @@ static uint32_t tempIR[FreqS];
 static uint32_t tempRed[FreqS];
 
 void shiftBuffers(uint16_t shiftCount);
-void displayRealtime(uint32_t hr, uint32_t sp);
+void displayRealtime();
 
 // ———  Wi-Fi y NTP ————————————————————————————————————————————————
-const char* SSID     = "TFGDiegoDePablo";
-const char* PASSWORD = "TFGde10!";
+const char* SSID     = ""; // Nombre de la red wifi
+const char* PASSWORD = ""; //Contraseña 
 const char* NTP1     = "pool.ntp.org";
 const char* NTP2     = "time.nist.gov";
 
 // ——— Configuración MQTT (Mosquitto local) ——————————————————————————
-const char* MQTT_BROKER = "192.168.248.238";  // IP cambiala
+const char* MQTT_BROKER = "";  // IP local del PC
 const int   MQTT_PORT   = 1883;
 const char* MQTT_TOPIC  = "pulsera/test";
 
@@ -87,6 +86,21 @@ const unsigned long SINGLE_DURATION = 500;   // ms que dura el amarillo
 const unsigned long BOTH_THRESHOLD  = 2500;  // ms para pasar a rojo
 const unsigned long BOTH_DURATION   = 2000;  // ms que dura el rojo
 
+// ---------------- Cache de métricas ----------------
+#define METRIC_CACHE_SIZE 60
+struct MetricSample {
+  time_t ts;
+  uint16_t steps;  
+  int32_t bpm;
+  int32_t spo2;
+};
+MetricSample metricCache[METRIC_CACHE_SIZE];
+int cacheHead = 0;    
+int cacheTail = 0;    
+int cacheCount = 0;
+
+uint32_t lastSentStepCount = 0; 
+
 // Function prototypes
 void initDisplay();
 void initMPU();
@@ -97,7 +111,55 @@ void handleMAX();
 void connectWiFi();
 void connectMQTT();
 void displayClock();
+void compressCache();
+void cachePush(const MetricSample &m);
 
+// --- Mensajes transitorios no bloqueantes ---
+enum TransientMsgType { MSG_NONE, MSG_ALERT_FALL, MSG_WIFI_ERROR, MSG_MQTT_ERROR };
+TransientMsgType transientMsgType = MSG_NONE;
+unsigned long transientMsgStart = 0;
+const unsigned long TRANSIENT_MSG_DURATION = 2000; // ms
+
+void showTransientMsg(TransientMsgType type) {
+  transientMsgType = type;
+  transientMsgStart = millis();
+  switch (type) {
+    case MSG_ALERT_FALL:
+      tft.fillScreen(TFT_RED);
+      tft.setTextColor(TFT_WHITE);
+      tft.setTextSize(2);
+      tft.drawString("ALERTA", 10, 90);
+      tft.drawString("CAIDA", 10, 110);
+      break;
+    case MSG_WIFI_ERROR:
+      tft.fillScreen(TFT_RED);
+      tft.setTextColor(TFT_WHITE);
+      tft.setTextSize(2);
+      tft.drawString("WiFi NO",  20,  80);
+      tft.drawString("conectado", 10, 110);
+      break;
+    case MSG_MQTT_ERROR:
+      tft.fillScreen(TFT_RED);
+      tft.setTextColor(TFT_WHITE);
+      tft.setTextSize(2);
+      tft.drawString("MQTT NO",  20,  80);
+      tft.drawString("conectado", 10, 110);
+      break;
+    default: break;
+  }
+}
+
+void handleTransientMsg() {
+  if (transientMsgType != MSG_NONE) {
+    // Mientras dura el mensaje, sigue actualizando métricas en pantalla
+    displayRealtime();
+    if (millis() - transientMsgStart >= TRANSIENT_MSG_DURATION) {
+      transientMsgType = MSG_NONE;
+      tft.pushImage(0, 0, 160, 235, frame_001);
+      displayRealtime();
+    }
+  }
+}
 
 void setup() {
   Serial.begin(115200);
@@ -122,11 +184,13 @@ void loop() {
   mpu.update();
   handleMPU();
   handleMAX();
+  handleTransientMsg();
   // 60 000 ms
   if (millis() - lastMinuteMillis >= 60000) {
   lastMinuteMillis += 60000;
   sendMetrics();   
   }
+   mqtt.loop(); 
 
 }
 
@@ -185,15 +249,12 @@ void handleButtonsAndInputs() {
   unsigned long now = millis();
   bool b1 = digitalRead(BUTTON1_PIN) == LOW;
   bool b2 = digitalRead(BUTTON2_PIN) == LOW;
-
-
   if (b1 && b2) {
     if (alertState != BOTH) {
       if (alertState == NONE) alertStart = now;
       if (now - alertStart >= BOTH_THRESHOLD) {
         alertState = BOTH;
         alertStart = now;              
-        
         tft.fillScreen(TFT_RED);
         tft.setTextColor(TFT_WHITE);
         tft.setTextSize(2);
@@ -218,7 +279,8 @@ void handleButtonsAndInputs() {
     }
   }
   else if (b1 || b2) {
-    // Only 1 buttom adverstiment
+    // Only 1 button advertisement
+    buttonPressStart = 0;
     if (alertState != SINGLE) {
       alertState = SINGLE;
       alertStart = now;
@@ -229,12 +291,12 @@ void handleButtonsAndInputs() {
       tft.drawString("Presionado!",   10, 130);
       Serial.println("Aviso: 1 boton presionado");
     } else {
-
       alertStart = now;
     }
   }
   else {
-    // no buttom
+    // No button
+    buttonPressStart = 0;
     if (alertState == SINGLE && now - alertStart >= SINGLE_DURATION) {
       alertState = NONE;
       tft.pushImage(0, 0, 160, 235, frame_001);
@@ -264,19 +326,11 @@ void handleMPU() {
   float dY = abs(accY - prevAccY);
   float dZ = abs(accZ - prevAccZ);
   if ((dX > FALL_THRESHOLD || dY > FALL_THRESHOLD || dZ > FALL_THRESHOLD)) {
-    tft.fillScreen(TFT_RED);
-    tft.setTextColor(TFT_WHITE);
-    tft.setTextSize(2);
-    tft.drawString("ALERTA", 10, 90);
-    tft.drawString("CAIDA", 10, 110);
+    showTransientMsg(MSG_ALERT_FALL);
     Serial.println("ALERTA: Caida detectada");
     sendMQTT("ALERTA_CAIDA", "\"dx\":" + String(dX)
                           + ",\"dy\":" + String(dY)
                           + ",\"dz\":" + String(dZ));
-    delay(2000);
-    tft.pushImage(0, 0, 160, 235, frame_001);  // fondo fijo
-    displayRealtime();
-
   }
 
   // --- STEP DETECTION AREA ---
@@ -449,6 +503,8 @@ void displayRealtime() {
   }
 }
 
+
+
 // — Conection Wi-Fi 
 void connectWiFi() {
   WiFi.begin(SSID, PASSWORD);
@@ -465,16 +521,7 @@ void connectWiFi() {
   } else {
     wifiConnected = false;
     Serial.println(" FALLÓ.");
-
-    tft.fillScreen(TFT_RED);
-    tft.setTextColor(TFT_WHITE);
-    tft.setTextSize(2);
-    tft.drawString("WiFi NO",  20,  80);
-    tft.drawString("conectado", 10, 110);
-    delay(2000);
-    tft.pushImage(0, 0, 160, 235, frame_001);
-    displayRealtime();
-
+    showTransientMsg(MSG_WIFI_ERROR);
   }
 }
 
@@ -541,23 +588,25 @@ void connectMQTT() {
   if (mqtt.connect("ESP32Client")) {
     mqttConnected = true;
     Serial.println(" OK");
+    if (cacheCount > 0) {
+      Serial.println("MQTT reconectado: enviando cache...");
+       flushCacheAndSendSummary();
+    }
   } else {
     mqttConnected = false;
     Serial.println(" FALLÓ");
-    tft.fillScreen(TFT_RED);
-    tft.setTextColor(TFT_WHITE);
-    tft.setTextSize(2);
-    tft.drawString("MQTT NO",  20,  80);
-    tft.drawString("conectado", 10, 110);
-    delay(2000);
-    tft.pushImage(0, 0, 160, 235, frame_001);
+    showTransientMsg(MSG_MQTT_ERROR);
   }
 }
 
 
 void publishJSON(const String& payload) {
   if (!mqtt.connected()) connectMQTT();
-  mqtt.publish(MQTT_TOPIC, payload.c_str());
+  if (mqtt.connected()) {
+    mqtt.publish(MQTT_TOPIC, payload.c_str());
+  } else {
+    Serial.println("ERROR: No se pudo publicar en MQTT, conexión fallida.");
+  }
 }
 
 void sendMQTT(const char* eventType, const String& data) {
@@ -571,11 +620,25 @@ void sendMQTT(const char* eventType, const String& data) {
 }
 
 void sendMetrics() {
+  uint16_t stepDelta = 0;
+  if (stepCount >= lastSentStepCount) stepDelta = stepCount - lastSentStepCount;
+  else stepDelta = stepCount; // rollover improbable pero sencillo
+
   if (!wifiConnected) {
     Serial.println("WARN: Sin WiFi, reintentando conexión...");
     connectWiFi();
     if (!wifiConnected) {
-      Serial.println("ERROR: No hay WiFi. Métricas descartadas.");
+      Serial.println("ERROR: No hay WiFi. Guardando métrica en caché.");
+      MetricSample s;
+      s.ts = time(nullptr);
+      s.steps = stepDelta;
+      s.bpm = lastAvgHR;
+      s.spo2 = lastAvgSpO2;
+      if (s.steps > 0 || s.bpm > 0 || s.spo2 > 0) {
+        cachePush(s);
+      } else {
+          Serial.println("Métrica descartada: valores inválidos (<=0)");
+      }
       return;
     }
   }
@@ -583,19 +646,53 @@ void sendMetrics() {
     Serial.println("INFO: MQTT desconectado, reintentando...");
     connectMQTT();
     if (!mqttConnected) {
-      Serial.println("ERROR: No hay MQTT. Métricas descartadas.");
+      Serial.println("ERROR: No hay MQTT. Guardando métrica en caché.");
+      MetricSample s;
+      s.ts = time(nullptr);
+      s.steps = stepDelta;
+      s.bpm = lastAvgHR;
+      s.spo2 = lastAvgSpO2;
+      if (s.steps > 0 || s.bpm > 0 || s.spo2 > 0) {
+      cachePush(s);
+      } else {
+          Serial.println("Métrica descartada: valores inválidos (<=0)");
+      }
       return;
     }
   }
 
+  // Construir payload JSON para enviar ahora
   String payload = "{";
-  payload += "\"step_count\":" + String(stepCount)   + ",";
+  payload += "\"step_count\":" + String(stepDelta)   + ",";
   payload += "\"bpm\":"        + String(lastAvgHR)   + ",";
   payload += "\"spo2\":"       + String(lastAvgSpO2) + ",";
   payload += "\"ts\":\""       + getISOTime()        + "\"";
   payload += "}";
-  mqtt.publish(MQTT_TOPIC, payload.c_str());
-  Serial.println("MQTT METRICS >> " + payload);
+
+  // Intentar publicar y comprobar resultado
+  bool ok = mqtt.publish(MQTT_TOPIC, payload.c_str());
+  if (ok) {
+    Serial.println("MQTT METRICS >> " + payload);
+    // actualización del contador de pasos ya enviado
+    lastSentStepCount = stepCount;
+    // Si hay cosas en la cache pendientes, enviarlas agrupadas
+    if (cacheCount > 0) {
+      Serial.println("Conectado: enviando cache acumulada...");
+      flushCacheAndSendSummary(); 
+    }
+  } else {
+    Serial.println("Fallo publicando en MQTT. Guardando métrica en caché.");
+    MetricSample s;
+    s.ts = time(nullptr);
+    s.steps = stepDelta;
+    s.bpm = lastAvgHR;
+    s.spo2 = lastAvgSpO2;
+    if (s.steps > 0 || s.bpm > 0 || s.spo2 > 0) {
+    cachePush(s);
+    } else {
+        Serial.println("Métrica descartada: valores inválidos (<=0)");
+    }
+  }
 }
 
 void displayClock() {
@@ -610,4 +707,133 @@ void displayClock() {
   tft.setTextColor(TFT_BLACK, TFT_WHITE);
   tft.setCursor(40, 5);   
   tft.print(buf);
+}
+
+void flushCacheAndSendSummary() {
+  if (cacheCount == 0) return;
+
+  uint32_t totalSteps = 0;
+  long sumBpm = 0, sumSpo2 = 0;
+  int countBpm = 0, countSpo2 = 0;
+  time_t startTs = metricCache[cacheTail].ts;
+  time_t endTs = startTs;
+
+  // Accumulate totals and sums across the cache.
+  for (int i = 0; i < cacheCount; ++i) {
+    int idx = (cacheTail + i) % METRIC_CACHE_SIZE;
+    MetricSample &s = metricCache[idx];
+    totalSteps += s.steps;
+    if (s.bpm > 0)  { sumBpm  += s.bpm;  countBpm++;  }   // only include valid bpm (>0)
+    if (s.spo2 > 0) { sumSpo2 += s.spo2; countSpo2++; }   // only include valid spo2 (>0)
+    endTs = s.ts;                                         // end timestamp is updated to last sample
+  }
+
+  // Compute averages safely (avoid division by zero)
+  int32_t avgBpm  = (countBpm  > 0) ? (sumBpm  / countBpm)  : 0;
+  int32_t avgSpo2 = (countSpo2 > 0) ? (sumSpo2 / countSpo2) : 0;
+
+  // Build ISO timestamp strings for the JSON payload
+  String startIso, endIso;
+  {
+    struct tm t; gmtime_r(&startTs, &t);
+    char b[25]; strftime(b, sizeof(b), "%Y-%m-%dT%H:%M:%SZ", &t);
+    startIso = String(b);
+  }
+  {
+    struct tm t; gmtime_r(&endTs, &t);
+    char b[25]; strftime(b, sizeof(b), "%Y-%m-%dT%H:%M:%SZ", &t);
+    endIso = String(b);
+  }
+
+  // Construct compact JSON data (no outer braces; sendMQTT will insert event+ts)
+  String data = "";
+  data += "\"start_ts\":\"" + startIso + "\",";
+  data += "\"end_ts\":\""   + endIso   + "\",";
+  data += "\"total_steps\":" + String(totalSteps) + ",";
+  data += "\"avg_bpm\":"     + String(avgBpm)     + ",";
+  data += "\"avg_spo2\":"    + String(avgSpo2)    + ",";
+  data += "\"samples\":"     + String(cacheCount);
+
+  // Send aggregated event (sendMQTT wraps into a full JSON and publishes)
+  sendMQTT("BULK_METRICS", data);
+
+  // Clear the cache after sending the aggregated summary
+  cacheHead = cacheTail = cacheCount = 0;
+  Serial.println("Cache enviada y vaciada.");
+}
+
+void compressCache() {
+  if (cacheCount < 2) return;
+
+  static MetricSample tmp[METRIC_CACHE_SIZE]; // temporary buffer on stack/global (static to avoid large stack use)
+  int newCount = 0;
+  int i = 0;
+
+  // Process complete pairs (A,B)
+  while (i + 1 < cacheCount) {
+    int idxA = (cacheTail + i) % METRIC_CACHE_SIZE;
+    int idxB = (cacheTail + i + 1) % METRIC_CACHE_SIZE;
+    MetricSample &A = metricCache[idxA];
+    MetricSample &B = metricCache[idxB];
+
+    MetricSample C;
+    C.ts = A.ts;                   // keep timestamp of first element in the pair
+    C.steps = A.steps + B.steps;   // sum steps to avoid losing counts
+
+    // Average bpm from valid entries (bpm > 0)
+    int bpmSum = 0, bpmCnt = 0;
+    if (A.bpm > 0) { bpmSum += A.bpm; bpmCnt++; }
+    if (B.bpm > 0) { bpmSum += B.bpm; bpmCnt++; }
+    C.bpm = (bpmCnt > 0) ? (bpmSum / bpmCnt) : 0;
+
+    // Average spo2 from valid entries (spo2 > 0)
+    int spo2Sum = 0, spo2Cnt = 0;
+    if (A.spo2 > 0) { spo2Sum += A.spo2; spo2Cnt++; }
+    if (B.spo2 > 0) { spo2Sum += B.spo2; spo2Cnt++; }
+    C.spo2 = (spo2Cnt > 0) ? (spo2Sum / spo2Cnt) : 0;
+
+    tmp[newCount++] = C;
+    i += 2;
+  }
+
+  // If there is an odd sample left, copy it unchanged
+  if (i < cacheCount) {
+    int idx = (cacheTail + i) % METRIC_CACHE_SIZE;
+    tmp[newCount++] = metricCache[idx];
+  }
+
+  // Copy back the compressed buffer and reindex (compact to start at index 0)
+  for (int k = 0; k < newCount; ++k) metricCache[k] = tmp[k];
+  cacheTail = 0;
+  cacheHead = newCount % METRIC_CACHE_SIZE;
+  cacheCount = newCount;
+
+  Serial.printf("Cache comprimida: ahora %d muestras\n", cacheCount);
+}
+
+void cachePush(const MetricSample &m) {
+  // Try compressing a few times to free space before discarding anything.
+  const int MAX_COMPRESS_PASSES = 4;
+  int pass = 0;
+  while (cacheCount >= METRIC_CACHE_SIZE && pass < MAX_COMPRESS_PASSES) {
+    Serial.println("Cache llena: intento de compresión para liberar espacio...");
+    compressCache();
+    pass++;
+  }
+
+  if (cacheCount >= METRIC_CACHE_SIZE) {
+    // Fallback: still full -> drop oldest sample to make room.
+    Serial.println("Cache aún llena tras compresión: descartando muestra más antigua");
+    cacheTail = (cacheTail + 1) % METRIC_CACHE_SIZE;
+    cacheCount--;
+  }
+
+  // Normal insertion into circular buffer
+  metricCache[cacheHead] = m;
+  cacheHead = (cacheHead + 1) % METRIC_CACHE_SIZE;
+  cacheCount++;
+
+  // Debug print: timestamp, steps, vitals, current cache size
+  Serial.printf("Cache: push ts=%lu steps=%d bpm=%ld spo2=%ld (count=%d)\n",
+                (unsigned long)m.ts, m.steps, (long)m.bpm, (long)m.spo2, cacheCount);
 }
