@@ -1,90 +1,130 @@
 \babel@toc {spanish}{}\relax 
-\contentsline {section}{\numberline {1}Introducción}{9}{section.1}%
-\contentsline {subsection}{\numberline {1.1}Motivatión}{9}{subsection.1.1}%
-\contentsline {subsection}{\numberline {1.2}Objetivos}{10}{subsection.1.2}%
-\contentsline {subsubsection}{\numberline {1.2.1}Objetivo general}{10}{subsubsection.1.2.1}%
-\contentsline {subsubsection}{\numberline {1.2.2}Objetivos específicos}{11}{subsubsection.1.2.2}%
-\contentsline {subsection}{\numberline {1.3}Estructura de la memoria}{11}{subsection.1.3}%
-\contentsline {section}{\numberline {2}Marco teórico}{15}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Ejemplos similares de dispositivos y teleasistencia médica}{15}{subsection.2.1}%
-\contentsline {subsubsection}{\numberline {2.1.1}SeniorDomo}{15}{subsubsection.2.1.1}%
-\contentsline {subsubsection}{\numberline {2.1.2}Bastón Pauto}{15}{subsubsection.2.1.2}%
-\contentsline {subsubsection}{\numberline {2.1.3}Teleasistencia avanzada en Castilla-La Mancha}{16}{subsubsection.2.1.3}%
-\contentsline {subsection}{\numberline {2.2}Sistemas de detección de caídas existentes}{16}{subsection.2.2}%
-\contentsline {subsubsection}{\numberline {2.2.1}Sistemas basados en umbrales}{16}{subsubsection.2.2.1}%
-\contentsline {subsubsection}{\numberline {2.2.2}Sistemas basados en aprendizaje automático}{17}{subsubsection.2.2.2}%
-\contentsline {subsection}{\numberline {2.3}Medición de constantes vitales en wearables}{17}{subsection.2.3}%
-\contentsline {section}{\numberline {3}Análisis funcional y técnico}{18}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Metodología de diseño}{18}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}Requisitos}{19}{subsection.3.2}%
-\contentsline {subsubsection}{\numberline {3.2.1}Requisitos funcionales}{19}{subsubsection.3.2.1}%
-\contentsline {subsubsection}{\numberline {3.2.2}No funcionales}{20}{subsubsection.3.2.2}%
-\contentsline {subsection}{\numberline {3.3}Análisis de riesgo}{20}{subsection.3.3}%
-\contentsline {subsection}{\numberline {3.4}Stakeholders}{21}{subsection.3.4}%
-\contentsline {section}{\numberline {4}Elección de componentes electrónicos}{22}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Microcontroladores IoT}{22}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}Acelerómetros y detección de caídas}{24}{subsection.4.2}%
-\contentsline {subsection}{\numberline {4.3}Sensor de pulso y oxímetro}{25}{subsection.4.3}%
-\contentsline {section}{\numberline {5}Diseño de la pulsera (Hardware)}{27}{section.5}%
-\contentsline {subsection}{\numberline {5.1}Esquemáticos y PCB}{27}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2}Desarrollo de software del prototipo}{29}{subsection.5.2}%
-\contentsline {subsubsection}{\numberline {5.2.1}Uso del sensor GY‑MAX30102}{29}{subsubsection.5.2.1}%
-\contentsline {subsubsection}{\numberline {5.2.2}Uso del sensor MPU‑6050}{30}{subsubsection.5.2.2}%
-\contentsline {subsubsection}{\numberline {5.2.3}Medición de tiempo}{30}{subsubsection.5.2.3}%
-\contentsline {subsubsection}{\numberline {5.2.4}Conexión Wi‑Fi}{31}{subsubsection.5.2.4}%
-\contentsline {subsubsection}{\numberline {5.2.5}Conectividad MQTT y envío de datos}{31}{subsubsection.5.2.5}%
-\contentsline {subsubsection}{\numberline {5.2.6}Almacenamiento de datos sin conexión}{32}{subsubsection.5.2.6}%
-\contentsline {subsubsection}{\numberline {5.2.7}Fondos animados y botones de la pantalla}{32}{subsubsection.5.2.7}%
-\contentsline {subsection}{\numberline {5.3}Protocolos de comunicación}{33}{subsection.5.3}%
-\contentsline {subsection}{\numberline {5.4}Ejemplo en funcionamiento}{34}{subsection.5.4}%
-\contentsline {section}{\numberline {6}Creación de la base de datos}{37}{section.6}%
-\contentsline {subsection}{\numberline {6.1}Uso de PostgreSQL}{37}{subsection.6.1}%
-\contentsline {subsection}{\numberline {6.2}Implementación y despliegue con contenedores}{37}{subsection.6.2}%
-\contentsline {subsection}{\numberline {6.3}Integración con Python y control de esquema}{38}{subsection.6.3}%
-\contentsline {subsection}{\numberline {6.4}Modelo entidad-relación}{39}{subsection.6.4}%
-\contentsline {subsubsection}{\numberline {6.4.1}Generalidades: trazabilidad y metadatos temporales}{39}{subsubsection.6.4.1}%
-\contentsline {subsubsection}{\numberline {6.4.2}Explicación de cada tabla}{40}{subsubsection.6.4.2}%
-\contentsline {subsection}{\numberline {6.5}Herramientas de administración}{44}{subsection.6.5}%
-\contentsline {subsection}{\numberline {6.6}Población de base de datos}{44}{subsection.6.6}%
-\contentsline {section}{\numberline {7}Desarrollo de la plataforma web}{45}{section.7}%
-\contentsline {subsection}{\numberline {7.1}Arquitectura general}{45}{subsection.7.1}%
-\contentsline {subsubsection}{\numberline {7.1.1}Componentes principales}{45}{subsubsection.7.1.1}%
-\contentsline {subsubsection}{\numberline {7.1.2}Redis}{46}{subsubsection.7.1.2}%
-\contentsline {subsubsection}{\numberline {7.1.3}Nginx}{47}{subsubsection.7.1.3}%
-\contentsline {subsubsection}{\numberline {7.1.4}Flujo y puentes de comunicación}{48}{subsubsection.7.1.4}%
-\contentsline {subsubsection}{\numberline {7.1.5}Despliegue con Docker Compose}{48}{subsubsection.7.1.5}%
-\contentsline {subsubsection}{\numberline {7.1.6}Lanzamiento automatizado (launch.sh)}{48}{subsubsection.7.1.6}%
-\contentsline {subsubsection}{\numberline {7.1.7}Gestión de dependencias y reproducibilidad}{49}{subsubsection.7.1.7}%
-\contentsline {subsubsection}{\numberline {7.1.8}Ventajas de la arquitectura}{49}{subsubsection.7.1.8}%
-\contentsline {subsection}{\numberline {7.2}Back‑end en Python}{50}{subsection.7.2}%
-\contentsline {subsection}{\numberline {7.3}Front‑end en Svelte}{50}{subsection.7.3}%
-\contentsline {section}{\numberline {8}Conclusiones y perspectivas futuras}{51}{section.8}%
-\contentsline {subsection}{\numberline {8.1}Resultados principales}{51}{subsection.8.1}%
-\contentsline {subsection}{\numberline {8.2}Líneas de mejora}{51}{subsection.8.2}%
-\contentsline {section}{Ap\'{e}ndice \numberline {A}Manual de usuario}{59}{appendix.alph1.Alph1}%
-\contentsline {subsection}{\numberline {A.1}Uso del prototipo de la pulsera}{59}{subsection.alph1.Alph1.1}%
-\contentsline {subsubsection}{\numberline {A.1.1}Resumen}{59}{subsubsection.alph1.Alph1.1.1}%
-\contentsline {subsubsection}{\numberline {A.1.2}Encendido y arranque}{59}{subsubsection.alph1.Alph1.1.2}%
-\contentsline {subsubsection}{\numberline {A.1.3}Pantalla y presentación de datos}{59}{subsubsection.alph1.Alph1.1.3}%
-\contentsline {subsubsection}{\numberline {A.1.4}Botones y alertas}{60}{subsubsection.alph1.Alph1.1.4}%
-\contentsline {subsubsection}{\numberline {A.1.5}Mediciones de frecuencia cardiaca y SpO\textsubscript {2}}{60}{subsubsection.alph1.Alph1.1.5}%
-\contentsline {subsubsection}{\numberline {A.1.6}Detección de pasos y caídas}{60}{subsubsection.alph1.Alph1.1.6}%
-\contentsline {subsubsection}{\numberline {A.1.7}Conexión Wi-Fi y MQTT}{61}{subsubsection.alph1.Alph1.1.7}%
-\contentsline {subsubsection}{\numberline {A.1.8}Formato de los mensajes MQTT (ejemplos)}{61}{subsubsection.alph1.Alph1.1.8}%
-\contentsline {subsubsection}{\numberline {A.1.9}Depuración y mensajes en serie}{62}{subsubsection.alph1.Alph1.1.9}%
-\contentsline {subsection}{\numberline {A.2}Uso de la plataforma}{63}{subsection.alph1.Alph1.2}%
-\contentsline {subsection}{\numberline {A.3}Configuración y despliegue del entorno con Docker}{63}{subsection.alph1.Alph1.3}%
-\contentsline {paragraph}{Requisitos de software}{63}{paragraph*.1}%
-\contentsline {paragraph}{Preparación del entorno}{63}{paragraph*.2}%
-\contentsline {subsection}{\numberline {A.4}Población y administración de la base de datos}{64}{subsection.alph1.Alph1.4}%
-\contentsline {paragraph}{Cargar datos}{64}{paragraph*.3}%
-\contentsline {subsubsection}{\numberline {A.4.1}Administración de la base de datos con DBeaver}{65}{subsubsection.alph1.Alph1.4.1}%
-\contentsline {paragraph}{1. Instalación de DBeaver}{65}{paragraph*.4}%
-\contentsline {paragraph}{2. Creación de una nueva conexión}{65}{paragraph*.5}%
-\contentsline {paragraph}{3. Exploración y gestión de datos}{66}{paragraph*.6}%
-\contentsline {subsection}{\numberline {A.5}Publicación de mensajes MQTT desde un ESP32}{66}{subsection.alph1.Alph1.5}%
-\contentsline {paragraph}{Requisitos previos}{66}{paragraph*.7}%
-\contentsline {subsubsection}{\numberline {A.5.1}Preparación y prueba del broker MQTT}{67}{subsubsection.alph1.Alph1.5.1}%
-\contentsline {subsubsection}{\numberline {A.5.2}Configuración de Mosquitto}{68}{subsubsection.alph1.Alph1.5.2}%
-\contentsline {paragraph}{Apertura del puerto 1883 en el cortafuegos de Windows}{68}{paragraph*.8}%
-\contentsline {subsubsection}{\numberline {A.5.3}Uso de ESP32}{69}{subsubsection.alph1.Alph1.5.3}%
+\contentsline {section}{\numberline {1}Introducción}{10}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Motivatión}{10}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Objetivos}{11}{subsection.1.2}%
+\contentsline {subsubsection}{\numberline {1.2.1}Objetivo general}{11}{subsubsection.1.2.1}%
+\contentsline {subsubsection}{\numberline {1.2.2}Objetivos específicos}{12}{subsubsection.1.2.2}%
+\contentsline {subsection}{\numberline {1.3}Estructura de la memoria}{12}{subsection.1.3}%
+\contentsline {section}{\numberline {2}Marco teórico}{16}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Ejemplos similares de dispositivos y teleasistencia médica}{16}{subsection.2.1}%
+\contentsline {subsubsection}{\numberline {2.1.1}SeniorDomo}{16}{subsubsection.2.1.1}%
+\contentsline {subsubsection}{\numberline {2.1.2}Bastón Pauto}{16}{subsubsection.2.1.2}%
+\contentsline {subsubsection}{\numberline {2.1.3}Teleasistencia avanzada en Castilla-La Mancha}{17}{subsubsection.2.1.3}%
+\contentsline {subsection}{\numberline {2.2}Sistemas de detección de caídas existentes}{17}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}Sistemas basados en umbrales}{17}{subsubsection.2.2.1}%
+\contentsline {subsubsection}{\numberline {2.2.2}Sistemas basados en aprendizaje automático}{18}{subsubsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.3}Medición de constantes vitales en wearables}{18}{subsection.2.3}%
+\contentsline {section}{\numberline {3}Análisis funcional y técnico}{19}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Metodología de diseño}{19}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Requisitos}{20}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}Requisitos funcionales}{20}{subsubsection.3.2.1}%
+\contentsline {subsubsection}{\numberline {3.2.2}No funcionales}{21}{subsubsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.3}Análisis de riesgo}{21}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Stakeholders}{22}{subsection.3.4}%
+\contentsline {section}{\numberline {4}Elección de componentes electrónicos}{23}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Microcontroladores IoT}{23}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Acelerómetros y detección de caídas}{25}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Sensor de pulso y oxímetro}{26}{subsection.4.3}%
+\contentsline {section}{\numberline {5}Diseño de la pulsera (Hardware)}{28}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Esquemáticos y PCB}{28}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Desarrollo de software del prototipo}{30}{subsection.5.2}%
+\contentsline {subsubsection}{\numberline {5.2.1}Uso del sensor GY‑MAX30102}{30}{subsubsection.5.2.1}%
+\contentsline {subsubsection}{\numberline {5.2.2}Uso del sensor MPU‑6050}{31}{subsubsection.5.2.2}%
+\contentsline {subsubsection}{\numberline {5.2.3}Medición de tiempo}{31}{subsubsection.5.2.3}%
+\contentsline {subsubsection}{\numberline {5.2.4}Conexión Wi‑Fi}{32}{subsubsection.5.2.4}%
+\contentsline {subsubsection}{\numberline {5.2.5}Conectividad MQTT y envío de datos}{32}{subsubsection.5.2.5}%
+\contentsline {subsubsection}{\numberline {5.2.6}Almacenamiento de datos sin conexión}{33}{subsubsection.5.2.6}%
+\contentsline {subsubsection}{\numberline {5.2.7}Fondos animados y botones de la pantalla}{33}{subsubsection.5.2.7}%
+\contentsline {subsection}{\numberline {5.3}Protocolos de comunicación}{34}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Ejemplo en funcionamiento}{35}{subsection.5.4}%
+\contentsline {section}{\numberline {6}Creación de la base de datos}{38}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Uso de PostgreSQL}{38}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Implementación y despliegue con contenedores}{38}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Integración con Python y control de esquema}{39}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}Modelo entidad-relación}{40}{subsection.6.4}%
+\contentsline {subsubsection}{\numberline {6.4.1}Generalidades: trazabilidad y metadatos temporales}{40}{subsubsection.6.4.1}%
+\contentsline {subsubsection}{\numberline {6.4.2}Explicación de cada tabla}{41}{subsubsection.6.4.2}%
+\contentsline {subsection}{\numberline {6.5}Herramientas de administración}{45}{subsection.6.5}%
+\contentsline {subsection}{\numberline {6.6}Población de base de datos}{45}{subsection.6.6}%
+\contentsline {section}{\numberline {7}Desarrollo de la plataforma web}{46}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Arquitectura general}{46}{subsection.7.1}%
+\contentsline {subsubsection}{\numberline {7.1.1}Componentes principales}{46}{subsubsection.7.1.1}%
+\contentsline {subsubsection}{\numberline {7.1.2}Redis}{47}{subsubsection.7.1.2}%
+\contentsline {subsubsection}{\numberline {7.1.3}Nginx}{48}{subsubsection.7.1.3}%
+\contentsline {subsubsection}{\numberline {7.1.4}Flujo y puentes de comunicación}{49}{subsubsection.7.1.4}%
+\contentsline {subsubsection}{\numberline {7.1.5}Despliegue con Docker Compose}{49}{subsubsection.7.1.5}%
+\contentsline {subsubsection}{\numberline {7.1.6}Lanzamiento automatizado (launch.sh)}{49}{subsubsection.7.1.6}%
+\contentsline {subsubsection}{\numberline {7.1.7}Gestión de dependencias y reproducibilidad}{50}{subsubsection.7.1.7}%
+\contentsline {subsubsection}{\numberline {7.1.8}Ventajas de la arquitectura}{50}{subsubsection.7.1.8}%
+\contentsline {subsection}{\numberline {7.2}Back‑end}{51}{subsection.7.2}%
+\contentsline {subsubsection}{\numberline {7.2.1}Elección de tecnologías}{51}{subsubsection.7.2.1}%
+\contentsline {paragraph}{Python:}{51}{paragraph*.1}%
+\contentsline {paragraph}{FastAPI:}{52}{paragraph*.2}%
+\contentsline {paragraph}{Pydantic:}{52}{paragraph*.3}%
+\contentsline {paragraph}{SQLAlchemy:}{52}{paragraph*.4}%
+\contentsline {paragraph}{Alembic:}{53}{paragraph*.5}%
+\contentsline {paragraph}{Seguridad: hashing de contraseñas y gestión de tokens}{53}{paragraph*.6}%
+\contentsline {subsubsection}{\numberline {7.2.2}Arquitectura general}{53}{subsubsection.7.2.2}%
+\contentsline {subsubsection}{\numberline {7.2.3}Patrones de diseño y buenas prácticas aplicadas}{54}{subsubsection.7.2.3}%
+\contentsline {paragraph}{Ejemplo concreto — flujo \texttt {patient} (MVC + Proxy)}{55}{paragraph*.7}%
+\contentsline {subsubsection}{\numberline {7.2.4}Autenticación y seguridad (hashing de contraseñas y JWT)}{58}{subsubsection.7.2.4}%
+\contentsline {paragraph}{Hashing de contraseñas}{58}{paragraph*.8}%
+\contentsline {paragraph}{JWT (JSON Web Tokens) y OAuth2}{59}{paragraph*.9}%
+\contentsline {subsubsection}{\numberline {7.2.5}Endpoint}{59}{subsubsection.7.2.5}%
+\contentsline {paragraph}{Ejemplo de endpoint}{59}{paragraph*.10}%
+\contentsline {subsection}{\numberline {7.3}Front‑end}{60}{subsection.7.3}%
+\contentsline {subsubsection}{\numberline {7.3.1}Elección de tecnologías}{60}{subsubsection.7.3.1}%
+\contentsline {paragraph}{Svelte:}{60}{paragraph*.11}%
+\contentsline {paragraph}{JavaScript (ES6+):}{60}{paragraph*.12}%
+\contentsline {paragraph}{HTML y CSS:}{60}{paragraph*.13}%
+\contentsline {paragraph}{Recursos externos y cumplimiento de licencias}{61}{paragraph*.14}%
+\contentsline {subsubsection}{\numberline {7.3.2}Estructura del proyecto}{61}{subsubsection.7.3.2}%
+\contentsline {paragraph}{\texttt {static/}}{61}{paragraph*.15}%
+\contentsline {paragraph}{\texttt {src/}}{62}{paragraph*.16}%
+\contentsline {subsubsection}{\numberline {7.3.3}Patrones de diseño aplicados en el frontend}{63}{subsubsection.7.3.3}%
+\contentsline {paragraph}{Visión general}{63}{paragraph*.17}%
+\contentsline {subsubsection}{\numberline {7.3.4}Permisos y funcionalidades por tipo de usuario}{65}{subsubsection.7.3.4}%
+\contentsline {section}{\numberline {8}Conclusiones y perspectivas futuras}{67}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Conclusiones}{67}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Líneas de mejora}{68}{subsection.8.2}%
+\contentsline {section}{Ap\'{e}ndice \numberline {A}Manual de usuario}{78}{appendix.alph1.Alph1}%
+\contentsline {subsection}{\numberline {A.1}Uso del prototipo de la pulsera}{78}{subsection.alph1.Alph1.1}%
+\contentsline {subsubsection}{\numberline {A.1.1}Resumen}{78}{subsubsection.alph1.Alph1.1.1}%
+\contentsline {subsubsection}{\numberline {A.1.2}Encendido y arranque}{78}{subsubsection.alph1.Alph1.1.2}%
+\contentsline {subsubsection}{\numberline {A.1.3}Pantalla y presentación de datos}{78}{subsubsection.alph1.Alph1.1.3}%
+\contentsline {subsubsection}{\numberline {A.1.4}Botones y alertas}{79}{subsubsection.alph1.Alph1.1.4}%
+\contentsline {subsubsection}{\numberline {A.1.5}Mediciones de frecuencia cardiaca y SpO\textsubscript {2}}{79}{subsubsection.alph1.Alph1.1.5}%
+\contentsline {subsubsection}{\numberline {A.1.6}Detección de pasos y caídas}{79}{subsubsection.alph1.Alph1.1.6}%
+\contentsline {subsubsection}{\numberline {A.1.7}Conexión Wi-Fi y MQTT}{80}{subsubsection.alph1.Alph1.1.7}%
+\contentsline {subsubsection}{\numberline {A.1.8}Formato de los mensajes MQTT (ejemplos)}{80}{subsubsection.alph1.Alph1.1.8}%
+\contentsline {subsubsection}{\numberline {A.1.9}Depuración y mensajes en serie}{81}{subsubsection.alph1.Alph1.1.9}%
+\contentsline {subsection}{\numberline {A.2}Uso de la plataforma}{82}{subsection.alph1.Alph1.2}%
+\contentsline {subsubsection}{\numberline {A.2.1}Resumen}{82}{subsubsection.alph1.Alph1.2.1}%
+\contentsline {subsubsection}{\numberline {A.2.2}Inicio de sesión (Login)}{82}{subsubsection.alph1.Alph1.2.2}%
+\contentsline {subsubsection}{\numberline {A.2.3}Contraseña olvidada}{83}{subsubsection.alph1.Alph1.2.3}%
+\contentsline {subsubsection}{\numberline {A.2.4}Página principal (Home)}{83}{subsubsection.alph1.Alph1.2.4}%
+\contentsline {subsubsection}{\numberline {A.2.5}Listado de pacientes}{84}{subsubsection.alph1.Alph1.2.5}%
+\contentsline {subsubsection}{\numberline {A.2.6}Paciente específico}{85}{subsubsection.alph1.Alph1.2.6}%
+\contentsline {subsubsection}{\numberline {A.2.7}Lecturas de un día seleccionado}{88}{subsubsection.alph1.Alph1.2.7}%
+\contentsline {subsubsection}{\numberline {A.2.8}Patologías de la plataforma}{90}{subsubsection.alph1.Alph1.2.8}%
+\contentsline {subsubsection}{\numberline {A.2.9}Patología específica}{90}{subsubsection.alph1.Alph1.2.9}%
+\contentsline {subsubsection}{\numberline {A.2.10}Chats}{91}{subsubsection.alph1.Alph1.2.10}%
+\contentsline {subsubsection}{\numberline {A.2.11}Entrar en una conversación}{92}{subsubsection.alph1.Alph1.2.11}%
+\contentsline {subsubsection}{\numberline {A.2.12}Mis alarmas}{92}{subsubsection.alph1.Alph1.2.12}%
+\contentsline {subsubsection}{\numberline {A.2.13}Perfil}{93}{subsubsection.alph1.Alph1.2.13}%
+\contentsline {subsubsection}{\numberline {A.2.14}Usuarios}{94}{subsubsection.alph1.Alph1.2.14}%
+\contentsline {subsection}{\numberline {A.3}Configuración y despliegue del entorno con Docker}{95}{subsection.alph1.Alph1.3}%
+\contentsline {paragraph}{Requisitos de software}{95}{paragraph*.18}%
+\contentsline {paragraph}{Preparación del entorno}{95}{paragraph*.19}%
+\contentsline {subsection}{\numberline {A.4}Población y administración de la base de datos}{96}{subsection.alph1.Alph1.4}%
+\contentsline {paragraph}{Cargar datos}{96}{paragraph*.20}%
+\contentsline {subsubsection}{\numberline {A.4.1}Administración de la base de datos con DBeaver}{97}{subsubsection.alph1.Alph1.4.1}%
+\contentsline {paragraph}{1. Instalación de DBeaver}{97}{paragraph*.21}%
+\contentsline {paragraph}{2. Creación de una nueva conexión}{97}{paragraph*.22}%
+\contentsline {paragraph}{3. Exploración y gestión de datos}{98}{paragraph*.23}%
+\contentsline {subsection}{\numberline {A.5}Publicación de mensajes MQTT desde un ESP32}{98}{subsection.alph1.Alph1.5}%
+\contentsline {paragraph}{Requisitos previos}{98}{paragraph*.24}%
+\contentsline {subsubsection}{\numberline {A.5.1}Preparación y prueba del broker MQTT}{99}{subsubsection.alph1.Alph1.5.1}%
+\contentsline {subsubsection}{\numberline {A.5.2}Configuración de Mosquitto}{99}{subsubsection.alph1.Alph1.5.2}%
+\contentsline {paragraph}{Apertura del puerto 1883 en el cortafuegos de Windows}{100}{paragraph*.25}%
+\contentsline {subsubsection}{\numberline {A.5.3}Uso de ESP32}{101}{subsubsection.alph1.Alph1.5.3}%

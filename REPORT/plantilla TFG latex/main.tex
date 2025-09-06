@@ -82,17 +82,21 @@
 %% Abstract
 \begin{abstract}
     
-
-	{\bfseries\large Palabras clave:} 
+	El envejecimiento progresivo de la población exige soluciones de monitorización remota para mitigar uno de los principales riesgos a los que se enfrentan las personas mayores: las caídas y las lesiones relacionadas con ellas. Este Trabajo de Fin de Grado (TFG) presenta el diseño e implementación de un sistema completo de telemonitorización compuesto por un prototipo de pulsera y una plataforma de telemedicina complementaria. La pulsera, construida en torno a un módulo ESP32 (LilyGO TTGO T-Display) y equipada con un sensor óptico MAX30102 y un sensor de movimiento MPU-6050, registra la frecuencia cardíaca, la saturación de oxígeno en sangre (SpO\textsubscript{2}), el recuento de pasos y detecta las caídas mediante algoritmos basados en umbrales. Los datos se transmiten a través de MQTT a un broker; la plataforma de telemedicina aprovecha esta información para proporcionar un sistema de monitorización de pacientes con múltiples herramientas (gestión de pacientes, patologías asociadas, sistemas de alarmas, chat entre usuarios, etc.). Aunque los sensores empleados no son dispositivos clínicos certificados, el proyecto demuestra la integración práctica de hardware, algoritmos de procesamiento de señales y software para permitir la monitorización remota de pacientes.
+	
+	
+	
+	{\bfseries\large Palabras clave:} Telemedicina, Plataforma médica, ESP32, Ingeniería web
 
 \end{abstract}
 
 %% Resumen
 \section*{Abstract}
 
+	The progressive ageing of the population demands remote monitoring solutions to mitigate one of the main risks faced by older adults: falls and related injuries. This Final Degree Project (Trabajo de Fin de Grado, TFG) presents the designand implementation of a complete telemonitoring system composed of a wristband prototype and an accompanying telemedicine platform. The wristband, built around an ESP32 module (LilyGO TTGO T-Display) and equipped with a MAX30102 optical sensor and an MPU-6050 motion sensor, records heart rate, blood oxygen saturation (SpO\textsubscript{2}), step counts and detects falls using threshold-based algorithms. Data are transmitted via MQTT to a broker; the telemedicine platform exploits this information to provide a patient monitoring system with multiple tools (patient management, associated pathologies, alarm systems, user-to-user chat, etc.). Although the sensors employed are not certified clinical devices, the project demonstrates the practical integration of hardware, signal-processing algorithms and software to enable end-to-end remote patient monitoring.
 	
+	{\bfseries\large Keywords:} Telemedicine, Medical platform, ESP32, Web engineering
 	
-	{\bfseries\large Keywords:} 
 
 \clearpage
 \section*{Agradecimientos}
@@ -189,17 +193,14 @@ Muchas gracias.
 			\item \emph{Front-end (Svelte):} Se explican las decisiones de diseño de la interfaz de usuario, enfocado en la usabilidad para pacientes y personal sanitario. Se incluyen los componentes principales: panel de control con gráficas de evolución de constantes vitales (frecuencia cardíaca, SpO\textsubscript{2}, pasos diarios), lista de alertas en tiempo real y formularios para configuración de umbrales y datos de contacto.  
 		\end{itemize}
 		
-
-
-		
 		\item \textbf{Capítulo 8: Conclusiones y perspectivas futuras.}  
-		En este capítulo se recogen los resultados obtenidos tras la validación del prototipo: métricas de precisión en la detección de caídas, fiabilidad de las lecturas de frecuencia cardíaca y SpO\textsubscript{2}, rendimiento de la plataforma web y feedback obtenido de pruebas de usabilidad. Se analizan las limitaciones detectadas (consumo energético, cobertura Wi-Fi, ajustes en algoritmos de detección) y se proponen posibles mejoras, como la incorporación de baterías de mayor capacidad, algoritmos de inteligencia artificial para predicción de eventos críticos o la extensión de la plataforma a dispositivos móviles nativos.
+		En este capítulo se sintetizan los resultados obtenidos y se valora el grado de cumplimiento de los objetivos planteados al inicio del trabajo. Contiene un resumen ejecutivo de los logros técnicos (prototipo de pulsera, integración con plataforma web, mecanismos de comunicación y persistencia), Además, se presentan las líneas de mejora.
 		
 		\item \textbf{Apéndice (Manual de uso).}  
 		En el Apéndice se incluyen documentos de soporte para el usuario final y el equipo técnico:
 		\begin{itemize}
 			\item \emph{Manual de uso de la pulsera:} Ejemplo de uso del prototipo hardware, además de principales indicaciones y ejemplos de las funcionalidades.  
-			\item \emph{Manual de uso de la plataforma web:} Ejemplo de uso de plataforma de telemedicina enfocando sus funciones y utilidades. 
+			\item \emph{Manual de uso de la plataforma web:} Ejemplo de uso de plataforma de telemedicina enfocando en mostrar todas sus rutas,  funciones y utilidades. 
 			\item \emph{Guía de instalación del entorno de desarrollo:} Pasos detallados para desplegar la plataforma mediante Docker, configuración de variables de entorno.
 			\item \emph{Población de la base de datos en entorno de desarrollo} Guía para poblar la base de datos mediante un script de profesionales de la salud y pacientes a partir de datos falsos, para probar la plataforma en un entorno de desarrollo.
 			\item \emph{Preparación de un broker MQTT} Guía que describe como montar un entorno para manejar el protocolo MQTT en un PC (windows o linux) usando Mosquitto.
@@ -283,7 +284,7 @@ Muchas gracias.
 			Los requisitos funcionales definen los servicios y comportamientos que el sistema debe ofrecer para cumplir sus objetivos \cite{ieee830}. En este proyecto, los requisitos se describen mediante los siguientes atributos:
 			
 			\begin{itemize}
-				\item \textbf{ID:} Código único que identifica el requisito (e.g., RF1).
+				\item \textbf{ID:} Código único que identifica el requisito (ejemplo RF1).
 				\item \textbf{Descripción:} Enunciado breve de la función a realizar.
 				\item \textbf{Obligatoriedad:} “Obligatorio” u “Opcional” según prioridad de implementación.
 				\item \textbf{Dependencia:} Requisitos previos necesarios para su correcto funcionamiento.
@@ -431,7 +432,7 @@ Muchas gracias.
 		\item \textbf{Medición de aceleración:} ±2/4/8/16 g, suficiente para capturar picos de impacto y cambios bruscos de movimiento en caídas .
 		\item \textbf{Medición de rotación:} ±250/500/1000/2000 °/s, útil para caracterizar la orientación y la fase de giro durante una caída.
 		\item \textbf{DMP integrado:} fusión inicial de acelerómetro y giroscopio en hardware, que descarga parte del procesamiento de la MCU y permite ejecutar algoritmos de detección en tiempo real con menor latencia.
-		\item \textbf{Interfaz I\textsuperscript{2}C:} funciona a hasta 400 kHz, simplificando el cableado y compartiendo bus con otros sensores (p. ej. MAX30102).
+		\item \textbf{Interfaz I\textsuperscript{2}C:} funciona a hasta 400 kHz, simplificando el cableado y compartiendo bus con otros sensores (por ejemplo MAX30102).
 	\end{itemize}
 	
 	\begin{figure}[htbp]
@@ -767,10 +768,7 @@ Cada entrada incluye los campos relevantes y una breve justificación de su impo
 
 
 
-\texttt{1) user\_account}
-
-
- Centraliza la autenticación, la gestión de usuarios (cuidadores, administradores, pacientes) y permite auditar acciones por cuenta, es la tabla más importante de la plataforma.
+\textbf{1) user\_account:} Centraliza la autenticación, la gestión de usuarios (cuidadores, administradores, pacientes) y permite auditar acciones por cuenta, es la tabla más importante de la plataforma.
 
 
 \begin{itemize}
@@ -786,36 +784,28 @@ Cada entrada incluye los campos relevantes y una breve justificación de su impo
 \end{itemize}
 
 
-\texttt{2) user\_role}
-
-Define conjuntos de permisos y separa responsabilidades (quién puede ver/editar datos clínicos, quién solo visualiza).
+\textbf{2) user\_role:} Define conjuntos de permisos y separa responsabilidades (quién puede ver/editar datos clínicos, quién solo visualiza).
 
 \begin{itemize}
 	\item \texttt{name} (VARCHAR(64), PK). Ejemplo: \texttt{admin}, \texttt{user} o \texttt{patient}.
 \end{itemize}
 
 
-\texttt{3) user\_status}
-
-Permite otra capa de seguridad al controlar la confirmación al crear una cuenta o el bloquear cuentas con actividad sospechosa.
+\textbf{3) user\_status:} Permite otra capa de seguridad al controlar la confirmación al crear una cuenta o el bloquear cuentas con actividad sospechosa.
 
 \begin{itemize}
 	\item \texttt{name} (VARCHAR(64), PK). Ejemplo: \texttt{active}, \texttt{pending}, \texttt{blocked}.
 \end{itemize}
 
 
-\texttt{4) permission\_grant}
-
-Catálogo para asignar niveles de acceso granular sobre las entidades del sistema, el administrador tendrá todos los permisos siempre y ya dependiendo de las actividades las cuentas no tendrán permisos o solo de lectura.
+\textbf{4) permission\_grant:} Catálogo para asignar niveles de acceso granular sobre las entidades del sistema, el administrador tendrá todos los permisos siempre y ya dependiendo de las actividades las cuentas no tendrán permisos o solo de lectura.
 
 
 \begin{itemize}
 	\item \texttt{name} (VARCHAR, PK). Ejemplo: \texttt{none}, \texttt{read}, \texttt{write}.
 \end{itemize}
 
-\texttt{5) entity}
-
-Lista de objetos del dominio sobre los que se aplican permisos (permite gestionar ACL por entidad, evitando errores de tipos y manteniendo buenas prácticas).
+\textbf{5) entity:} Lista de objetos del dominio sobre los que se aplican permisos (permite gestionar ACL por entidad, evitando errores de tipos y manteniendo buenas prácticas).
 
 \begin{itemize}
 	\item \texttt{name} (VARCHAR, PK). Ejemplo: \texttt{patient}, \texttt{study}.
@@ -823,9 +813,7 @@ Lista de objetos del dominio sobre los que se aplican permisos (permite gestiona
 
 
 
-\texttt{6) permission}
-
-Centraliza la política de acceso; facilita comprobar permisos desde el frontend.
+\textbf{6) permission:} Centraliza la política de acceso; facilita comprobar permisos desde el frontend.
 \begin{itemize}
 	\item \texttt{user\_role\_name} (PK componente, FK a \texttt{user\_role}).
 	\item \texttt{entity\_name} (PK componente, FK a \texttt{entity}).
@@ -837,18 +825,13 @@ Centraliza la política de acceso; facilita comprobar permisos desde el frontend
 
 
 
-\texttt{7) pathology}
-
-Catálogo de patologías clínicas para relacionar al paciente con su historial, también servirá de base de datos de las enfermedades que se manejan en el centro de salud.
+\textbf{7) pathology:} Catálogo de patologías clínicas para relacionar al paciente con su historial, también servirá de base de datos de las enfermedades que se manejan en el centro de salud.
 \begin{itemize}
 	\item \texttt{id} (INTEGER, PK), \texttt{name} (VARCHAR(255)). Ejemplo: \texttt{Diabetes}.
 \end{itemize}
 
 
-\texttt{8) patient}
-
-
-Nodo central del dominio clínico; relaciona telemetría, alarmas y patologías con la identidad del paciente.
+\textbf{8) patient:} Nodo central del dominio clínico; relaciona telemetría, alarmas y patologías con la identidad del paciente.
 \begin{itemize}
 	\item \texttt{id} (INTEGER, PK), \texttt{code} (VARCHAR(255), UNIQUE). Por razones de seguridad se recomendaría guardar un código identificativo para priorizar el anonimato del paciente, pero para mayor entendimiento se trabajo como si fuera nombre y apellido, ejemplo: \texttt{Diego De Pablo}
 	\item \texttt{gender} (VARCHAR(64), FK a \texttt{gender\_type.name}). Ejemplo: \texttt{male}.
@@ -860,26 +843,20 @@ Nodo central del dominio clínico; relaciona telemetría, alarmas y patologías 
 
 
 
-\texttt{9) patient\_pathology}
-
-Relación N:M que registra cuándo se detectó una patología en un paciente (historial clínico).
+\textbf{9) patient\_pathology:} Relación N:M que registra cuándo se detectó una patología en un paciente (historial clínico).
 \begin{itemize}
 	\item \texttt{id} (INTEGER, PK), \texttt{patient\_id} (FK a \texttt{patient.id}), \texttt{pathology\_id} (FK a \texttt{pathology.id}).
 	\item \texttt{detection\_date} (DATE). Ejemplo: \texttt{2024-03-14}.
 \end{itemize}
 
 
-\texttt{10) gender\_type}
-
-Catálogo de tipos de género para integridad referencial y estandarización de datos.
+\textbf{10) gender\_type:} Catálogo de tipos de género para integridad referencial y estandarización de datos.
 \begin{itemize}
 	\item \texttt{name} (VARCHAR(64), PK). Ejemplo: \texttt{male}, \texttt{female}, \texttt{other}.
 \end{itemize}
 
 
-\texttt{11) study}
-
-Almacena la telemetría recibida de la pulsera; sirve para análisis temporal, detección de tendencias y generación de informes clínicos.
+\textbf{11) study:} Almacena la telemetría recibida de la pulsera; sirve para análisis temporal, detección de tendencias y generación de informes clínicos.
 \begin{itemize}
 	\item \texttt{id} (INTEGER, PK), \texttt{patient\_id} (FK a \texttt{patient.id}).
 	\item \texttt{step\_count} (INTEGER). Ejemplo: \texttt{1000}. Contador acumulado de pasos.
@@ -888,9 +865,7 @@ Almacena la telemetría recibida de la pulsera; sirve para análisis temporal, d
 	\item \texttt{ts} (TIMESTAMP / timestamptz). Ejemplo: \texttt{2025-05-26T12:34:56Z}.
 \end{itemize}
 
-\texttt{12) alarm}
-
- Registro de eventos críticos que requieren respuesta inmediata o análisis posterior; permite priorizar intervenciones según \texttt{is\_urgent}
+\textbf{12) alarm:} Registro de eventos críticos que requieren respuesta inmediata o análisis posterior; permite priorizar intervenciones según \texttt{is\_urgent}
 \begin{itemize}
 	\item \texttt{id} (INTEGER, PK), \texttt{patient\_id} (FK).
 	\item \texttt{alarm\_type} (VARCHAR(64)). Ejemplo: \texttt{fall\_detected}, \texttt{button\_alarm}.
@@ -899,16 +874,14 @@ Almacena la telemetría recibida de la pulsera; sirve para análisis temporal, d
 \end{itemize}
 
 
-\texttt{15) chat}
-Soporte de mensajería entre usuarios (familiares, cuidadores, personal sanitario, personal de servicio de la aplicación). \\
+\textbf{13) chat:} Soporte de mensajería entre usuarios (familiares, cuidadores, personal sanitario, personal de servicio de la aplicación). 
 \begin{itemize}
 	\item \texttt{id} (INTEGER, PK), \texttt{user1\_id}, \texttt{user2\_id} (FKs a \texttt{user\_account.id}).
 	\item \texttt{administration} (BOOLEAN). Ejemplo: \texttt{False}. Indica chat de soporte/administración si \texttt{True}.
 \end{itemize}
 
 
-\texttt{16) message}
-Forma sencilla de almacenar la conversación.
+\textbf{14) message:} Forma sencilla de almacenar la conversación.
 \begin{itemize}
 	\item \texttt{id} (INTEGER, PK), \texttt{chat\_id} (FK a \texttt{chat.id}), \texttt{sender\_id} (FK a \texttt{user\_account.id}, \texttt{ON DELETE SET NULL}).
 	\item \texttt{content} (TEXT, max\_length \textasciitilde 1000). Ejemplo: \texttt{"Hello, how are you?"}.
@@ -1008,7 +981,7 @@ Se incluye un script de lanzamiento (\texttt{launch.sh}) que automatiza la puest
 
 \texttt{Funcionalidades típicas:}
 \begin{itemize}
-	\item Comprobación de dependencias (p. ej. que Docker y Docker Compose estén instalados).
+	\item Comprobación de dependencias (por ejemplo que Docker y Docker Compose estén instalados).
 	\item Generación del fichero \texttt{.env} a partir de una plantilla si no existe.
 	\item Opciones de ejecución:
 	
@@ -1049,20 +1022,317 @@ El uso de docker permite garantizar las instalaciones reproducible, para asegura
 \end{itemize}
 
 
-\subsection{Back‑end en Python} Por que python es una buena elección para backend, Como funciona el hashed password, que patrones de diseño se usa, cosas comunes como busqueda ascendente o descendente, etc.
+\subsection{Back‑end} 
+
+El backend de este proyecto es el núcleo lógico y funcional de la plataforma, desarrollado en Python y estructurado siguiendo buenas prácticas de ingeniería de software. Su principal función es gestionar la comunicación entre la base de datos, los dispositivos y el frontend, procesando y validando todas las operaciones relacionadas con usuarios, pacientes, dispositivos y registros médicos. Implementa una API RESTful robusta mediante el framework FastAPI, asegurando la autenticación, autorización y control de permisos para cada acción. Además, centraliza la lógica de negocio, maneja la persistencia de datos en PostgreSQL, integra servicios como Redis para caché y mensajería, y garantiza la seguridad de la información mediante técnicas como el hashing de contraseñas y la gestión de roles y permisos.
 
 
-\subsection{Front‑end en Svelte} Que es svelte 
+\subsubsection{Elección de tecnologías}
+
+Cada tecnologías usada es típica en el sector y con una gran comunidad, desde herramientas con mucha adaptabilidad y diversidad en funciones hasta más específicas con menos roles pero más robustez; se busca replicar todas las buenas prácticas de un proyecto real. Se usaron las siguientes tecnologías.
+
+\paragraph{Python:}
+ ofrece una sintaxis clara, un ecosistema maduro y amplia disponibilidad de paquetes para web, bases de datos, seguridad y análisis de datos, lo que facilita el desarrollo rápido de prototipos y la integración con herramientas de ciencia de datos cuando es necesario \cite{PythonDoc}. Python es una herramienta muy versátil que cumple múltiples funciones en el trabajo siendo imprescindible.
+
+\paragraph{FastAPI:}
+Se eligió este framework web por su rendimiento y por integrar de forma nativa validación. FastAPI genera especificaciones OpenAPI/Swagger automáticamente a partir de las anotaciones de tipos, lo que mejora la calidad de la API y acelera la colaboración con el frontend. Su soporte nativo para programación asíncrona (async/await) permite manejar muchas conexiones I/O de forma eficiente, una ventaja cuando el servicio recibe datos frecuentes desde dispositivos IoT \cite{FastAPI}.
+
+\paragraph{Pydantic:} se utiliza para definir los \emph{schemas} de entrada y salida (Modelos Pydantic). Esto aporta:
+\begin{itemize}
+	\item Validación automática de tipos y formatos (fechas, números, strings con restricciones).
+	\item Conversión y normalización de datos (por ejemplo cadenas a enteros o `datetime`), con errores claros si la entrada es inválida.
+	\item Documentación consistente al integrarse con FastAPI (los modelos definen los esquemas OpenAPI, cada tabla cuenta con un modelo en el cual se describe profundamente).
+\end{itemize}
+Separar los modelos Pydantic (schemas) de los modelos ORM permite que la representación pública (API) y la persistencia evolucionen de forma independiente \cite{Pydantic}.
+
+\paragraph{SQLAlchemy:} se usa como ORM para modelar las tablas y relaciones en PostgreSQL. Sus ventajas son:
+\begin{itemize}
+	\item Flexibilidad para construir consultas complejas y optimizarlas (joins, índices, subconsultas).
+	\item Compatibilidad con la mayoría de bases de datos SQL, comunidad activa y documentación extensa. \cite{SQLAlchemy}.
+\end{itemize}
+En la práctica se mantienen modelos SQLAlchemy para persistencia y Pydantic para validación/serialización, siguiendo la separación de responsabilidades.
+
+\paragraph{Alembic:}
+Como se mencionó en la base de datos para controlar la evolución del esquema se utiliza Alembic, la herramienta de migraciones asociada a SQLAlchemy. Alembic permite generar y aplicar migraciones versionadas (scripts reproducibles), lo que facilita despliegues y el mantenimiento de la estructura de tablas entre entornos (desarrollo/producción) \cite{Alembic}.
+
+\paragraph{Seguridad: hashing de contraseñas y gestión de tokens}
+Para el almacenamiento seguro se tienen librerías probadas como \texttt{passlib}\cite{Passlib}. Para la autenticación de sesión/API el proyecto usa JWT y OAuth2 (Bearer tokens), siguiendo prácticas estándar (firma de tokens, expiración y revocación controlada) \cite{JWT}. 
+
+
+\subsubsection{Arquitectura general}
+
+La arquitectura del back-end es modular y orientada a controladores. Cada entidad del dominio (las tablas vistas en base de datos) cuenta con su propio modelo, controlador y rutas; la interacción entre capas sigue el patrón MVC adaptado a APIs REST, haciendo que la aplicación reutilice la lógica para cada elemento, pero teniendo controlada la información que se maneja específicamente en cada tabla.
+
+Se podría decir que esta dividido en dos partes, la primera correspondiente al manejo de información que vendría a corresponder a la api en si, siendo esta encargada de tener un proxy que se encargue de evaluar las peticiones y a que elemento del backend va a delegar las tareas, montar y verificar el funcionamiento correcto de fastapi y el manejo de endpoints por medio de peticiones HTTPs que controlen exactamente que información puede ser dada y que tipo de usuario puede hacer esta petición y una segunda parte que se encarga más de la lógica del proyecto, definiendo las excepciones (necesarias para controlar errores y evitar filtrar información), los modelos y los controladores de cada entidad.
+
+El proyecto cuenta con gran variedad de scripts y funciones que pueden ser confusas en un inicio, pero una vez se sigue el flujo de información, se puede entender que todo está basado en patrones de diseño e intentando evitar la duplicación de código con funciones aptas para el uso de todas las entidades que serán heredadas y especializadas en las necesidades de cada una de las tablas. 
+
+
+\subsubsection{Patrones de diseño y buenas prácticas aplicadas}
+
+En el proyecto se aplican constantemente patrones estructurales y de organización que facilitan la extensibilidad:
+
+\begin{itemize}
+	\item \textbf{Modelo–Vista–Controlador (MVC) adaptado:}  
+	
+	Cada parte de este patrón cuenta con clases bases de las cual deriva cada entidad, existe un  \texttt{base\_model},  \texttt{base\_ctrl} y  \texttt{common} en routes, que proporcionan la lógica y los métodos genéricos para realizar operaciones CRUD (crear, leer, actualizar, borrar) sobre cualquier entidad del sistema, teniendo cada entidad un MVC hque hereda de estas clases bases.
+	\begin{itemize}
+		\item \emph{Modelo:} El modelo define la estructura de los datos de los modelos, incluyendo campos, ejemplos y tipo de datos. Utiliza SQLAlchemy para la persistencia y Pydantic para la validación, asegurando que los datos sean correctos y completos en cada operación.
+		Además, gestiona automáticamente la relación con otras entidades, permitiendo consultas y operaciones complejas de forma sencilla y segura. Los métodos CRUD asincrónicos y reutilizables facilitan la extensión del sistema y garantizan la integridad de los datos en todas las operaciones.
+		\item \emph{Controlador:} El controlador implementa la lógica de negocio de cada entidad. Proporciona métodos CRUD asincrónicos y reutilizables, gestiona la validación de datos, aplica filtros y controla las relaciones entre entidades. Además, centraliza la gestión de permisos y propietarios, facilitando la extensibilidad y el mantenimiento del sistema.
+		\item \emph{Vista:} La vista corresponde a la representación JSON que retorna FastAPI en cada endpoint. Esta respuesta se genera automáticamente a partir de los modelos Pydantic, asegurando que los datos enviados al frontend estén validados, estructurados y contengan únicamente la información autorizada. Además, se personalizan los campos incluidos en la respuesta mediante parámetros como \texttt{FieldsQueryParam}, permitiendo respuestas flexibles y adaptadas a las necesidades del cliente, este rol hace función de rutas y controla los endpoints que se pedirán de cada entidad.
+	\end{itemize}
+	MVC proporciona modularidad y permite que el frontend reciba sólo la información explícitamente autorizada.
+	\item \textbf{Proxy para control de acceso (\texttt{braceletCtrlProxy}):}  
+	Centraliza la verificación de permisos y reglas transversales (autorización, logging, validación de entrada) antes de invocar los controladores, podría considerarse como la puerta de entrada y salida de la api. Esto evita que cada controlador implemente lógicas de permisos por separado y protege la capa de datos contra accesos no autorizados.
+	\item \textbf{Abstracción de persistencia / Singleton DB manager:}  
+	Un gestor de base de datos tipo singleton controla el pool de conexiones y la configuración de acceso a PostgreSQL, evitando conexiones duplicadas y facilitando la gestión de recursos.
+	\item \textbf{Validación en la frontera:}  
+	Se usan modelos Pydantic en endpoints para rechazar peticiones inválidas inmediatamente, reduciendo riesgos de inyección y errores posteriores.
+	\item \textbf{Manejo centralizado de errores:}  
+	Los manejadores globales estandarizan los códigos HTTP y mensajes, evitando fugas de información sensible en respuestas de error.
+	\item \textbf{Búsqueda, paginación y ordenación:}  
+	Endpoints con filtros, límites y orden (parámetros \texttt{asc}/\texttt{desc}) para consultas eficientes y controladas.
+\end{itemize}
+
+\paragraph{Ejemplo concreto — flujo \texttt{patient} (MVC + Proxy)}
+
+El flujo puede parecer complejo al intervenir tantas clases, pero al estar tan especializadas y tratarse de un proceso repetible para cada entidad, resulta claro y mantenible: cada componente cumple una función concreta y se evita la duplicación de lógica entre entidades. La figura \ref{fig:diagrama} muestra un diagrama realizado en Draw.io que ilustra cada paso del proceso.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{images/diagrama.png}
+	\caption[Diagrama del flujo MVC + Proxy]{Diagrama realizado en Draw.io que ilustra el flujo de una petición típica en el backend (MVC + Proxy).}
+	\label{fig:diagrama}
+\end{figure}
+
+A continuación se describe paso a paso el flujo representado en la figura:
+
+\begin{enumerate}
+	\item \textbf{Petición HTTP:} El usuario (o el frontend/pulsera) realiza una petición al backend, por ejemplo \texttt{GET /patients?embed=owner\_user\&limit=25}, solicitando la lista de pacientes con un máximo de 25 elementos.
+	\item \textbf{FastAPI (Rutas):} El endpoint correspondiente recibe la petición, parsea parámetros y encabezados, y llama al método adecuado del proxy; por ejemplo para realizar una consulta se usa  \verb|braceletCtrlProxy.search|.
+	\item \textbf{braceletCtrlProxy (Proxy):} Antes de delegar la operación, el proxy verifica los permisos del usuario consultando \texttt{PermissionCtrl}. Si el usuario cuenta con los permisos necesarios, el proxy delega la ejecución al controlador base; en caso contrario devuelve un error de autorización.
+	\item \textbf{BaseCtrl / braceletBaseCtrl:} El controlador base implementa métodos CRUD genéricos y lógica común (validaciones transversales, construcción de filtros comunes, paginación) y se encarga de invocar al controlador específico de la entidad.
+	\item \textbf{PatientCtrl:} El controlador específico de pacientes aplica la lógica de negocio particular (reglas de negocio, filtros específicos, transformaciones) y construye la consulta SQLAlchemy aplicando joins o embeds si se han solicitado.
+	\item \textbf{PatientModel (ORM / Modelo):} El modelo define la estructura de la entidad (campos, relaciones, validaciones adicionales) y prepara/ejecuta la consulta contra la base de datos usando SQLAlchemy.
+	\item \textbf{PostgreSQL (Persistencia):} La base de datos ejecuta la consulta y devuelve las filas solicitadas.
+	\item \textbf{PatientModel (mapeo de resultados):} El modelo mapea las filas devueltas por la BD a objetos de dominio (instancias de modelo) listos para ser manipulados por el controlador.
+	\item \textbf{PatientCtrl (procesamiento posterior):} El controlador procesa los objetos de dominio: aplica filtros finales, construye la estructura de salida, calcula agregados si procede, y prepara metadatos de paginación.
+	\item \textbf{FastAPI (Vista / Serialización):} FastAPI, apoyado en Pydantic, serializa los objetos a los esquemas de salida definidos (\texttt{PatientOut}, \texttt{PatientDetail}, etc.) y construye la respuesta JSON.
+	\item \textbf{Respuesta HTTP:} El servidor devuelve la respuesta JSON al cliente, que incluye los elementos solicitados, metadatos de paginación y las entidades embebidas si se pidieron.
+	\item \textbf{Manejo de errores y auditoría:} En cualquier punto del flujo, si ocurre un fallo (permiso denegado, validación inválida, recurso no encontrado), se devuelve la respuesta HTTP correspondiente (ej. \texttt{401/403/404/422}) y se registra en los logs de auditoría los detalles necesarios (usuario, endpoint, timestamp) para trazabilidad.
+\end{enumerate}
+
+
+\subsubsection{Autenticación y seguridad (hashing de contraseñas y JWT)}
+
+El hashing es un proceso matemático que transforma un texto (como una contraseña) en una secuencia de caracteres fija y aparentemente aleatoria. Este proceso es unidireccional: no se puede recuperar la contraseña original a partir del hash (puede visualizar la figura \ref{fig:hash}), lo que protege las credenciales de los usuarios en caso de filtración de la base de datos.
+
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.7\textwidth]{images/hash.png}
+	\caption[Ejemplo]{Ilustración de una función hash }
+	\label{fig:hash}
+\end{figure}
+\vspace{-10pt}
+
+\paragraph{Hashing de contraseñas}
+En la implementación actual, se añade un prefijo y sufijo fijos a la contraseña y aplica el algoritmo SHA-256, un algoritmo criptográfico de hash que transforma cualquier texto (por ejemplo, una contraseña) en una secuencia fija de 256 bits (64 caracteres hexadecimales). De este modo, las contraseñas nunca se guardan en texto claro, lo que protege las credenciales de los usuarios en caso de filtración de la base de datos.
+
+\paragraph{JWT (JSON Web Tokens) y OAuth2}
+El sistema utiliza JWT para el control de sesión y OAuth2/Bearer tokens para proteger rutas sensibles. La clave secreta para firmar los tokens se gestiona de forma segura en la configuración del backend. FastAPI valida automáticamente los tokens en cada petición protegida, rechazando aquellos que sean inválidos o hayan expirado. Además, el backend verifica el rol y los permisos del usuario en cada operación, asegurando que solo los usuarios autorizados acceden a los recursos.
+
+\subsubsection{Endpoint}
+
+Los endpoints en el backend se definen usando FastAPI y siguen el estándar RESTful, lo que facilita la interacción con el sistema desde cualquier cliente HTTP. Cada entidad principal (como pacientes, patologías, usuarios) cuenta con su propio conjunto de endpoints agrupados en rutas específicas, permitiendo operaciones CRUD y búsquedas avanzadas.
+
+Los endpoints más habituales son:
+\begin{itemize}
+	\item \textbf{GET /entidad}: Busca y devuelve una lista de registros, con soporte para filtros, paginación, ordenación y embebido de entidades relacionadas.
+	\item \textbf{GET /entidad/\{id\}}: Devuelve la información completa de un registro por su identificador.
+	\item \textbf{POST /entidad}: Crea un nuevo registro en la base de datos.
+	\item \textbf{PUT /entidad/\{id\}}: Actualiza completamente un registro existente.
+	\item \textbf{PATCH /entidad/\{id\}}: Actualiza parcialmente un registro.
+	\item \textbf{DELETE /entidad/\{id\}}: Elimina un registro por su identificador.
+\end{itemize}
+
+Cada endpoint recibe los parámetros necesarios mediante dependencias de FastAPI (por ejemplo, autenticación, filtros, campos a incluir) y delega la operación al proxy, que invoca el controlador específico.
+
+\paragraph{Ejemplo de endpoint}
+
+Un ejemplo típico es el endpoint para buscar pacientes:
+
+\begin{verbatim}
+	GET /patients?embed=owner_user&limit=25
+\end{verbatim}
+
+Este endpoint permite al usuario autenticado obtener una lista de pacientes, limitando la respuesta a 25 registros e incluyendo información embebida del usuario propietario. El backend procesa los parámetros, verifica los permisos y devuelve la respuesta en formato JSON, estructurada y validada mediante modelos Pydantic.
 
 
 
+\subsection{Front‑end}
+
+\subsubsection{Elección de tecnologías}
+
+Cada tecnología empleada en la capa de presentación es habitual en el sector; la selección se ha orientado a maximizar el aprendizaje complementando la formación dada en ingeniería de software con proyectos más realistas de plataformas médicas, manteniendo prácticas similares a las aplicadas en proyectos profesionales.
+
+\paragraph{Svelte:}
+Svelte es el framework elegido para construir la interfaz de usuario. A diferencia de frameworks que hacen la mayor parte de su trabajo en tiempo de ejecución, Svelte compila los componentes a código JavaScript optimizado en tiempo de compilación, reduciendo la sobrecarga en ejecución y el tamaño del paquete final. Su modelo de reactividad simplifica el manejo del estado (las asignaciones hacen que las variables sean reactivas por defecto) y facilita la creación de componentes autocontenidos, lo que reduce conflictos CSS y mejora la modularidad del código. Estas características lo hacen adecuado para interfaces reactivas y eficientes en dispositivos con recursos limitados y para acelerar el desarrollo de prototipos académicos y productos mínimos viables \cite{Svelte}.
+
+\paragraph{JavaScript (ES6+):}
+JavaScript es el lenguaje base del frontend. Se emplean características modernas de ECMAScript que permiten escribir código más declarativo, modular y fácil de testear. JavaScript se usa para la lógica del cliente: manejo de eventos, consumo de la API REST (peticiones HTTP asíncronas), transformaciones ligeras de datos y coordinación entre los componentes Svelte y los servicios remotos. El uso de ES6+ mejora la legibilidad y reduce errores comunes al programar en estilo moderno \cite{JSMDN}.
+
+\paragraph{HTML y CSS:}
+HTML proporciona la estructura semántica de la interfaz, mientras que CSS define la presentación visual (tipografías, colores, distribución). Se usan técnicas modernas de CSS (Flexbox, Grid y consultas de medios) para lograr un diseño adaptativo que funciona en distintos tamaños de pantalla (la plataforma esta pensada para tener buena apariencia en cualquier tamaño de pantalla, sea computadores o dispositivos móviles). En Svelte, los estilos se pueden encapsular por componente, reduciendo el riesgo de colisiones globales y facilitando el mantenimiento. \cite{HTMLMDN}\cite{CSSMDN}.
+
+\paragraph{Recursos externos y cumplimiento de licencias}
+Para mejorar la presentación se han utilizado recursos de terceros tales como plantillas UI, colecciones de iconos y fuentes web. Concretamente se han empleado plantillas y kits de interfaz (uiverse.io), iconos (FontAwesome, NucleoApp), fuentes de Google Fonts y dashboards/componentes de Creative Tim. Todos los recursos incorporados se usan respetando sus licencias; en la práctica, la mayoría de estos recursos se distribuyen bajo licencias permisivas (MIT), que permiten su uso en proyectos académicos y profesionales. De igual manera estos fueron más efectos creativos para darle un estilo más estético sin afectar la lógica del programa. \cite{MITLicense}\cite{FontAwesome}\cite{GoogleFonts}\cite{CreativeTim}\cite{uiverse}.
+
+\subsubsection{Estructura del proyecto}
+
+A continuación se describe la estructura principal empleada en la capa de presentación (frontend). Esta parte del proyecto puede llegar a ser complicada en primera instancia por la cantidad de scripts e información que se maneja, pero una vez se ve el funcionamiento de cada parte del código, se hace muy intuitivo el funcionamiento de cada sitio, como la escalabilidad del mismo y la facilitación de manejo del proyecto.
+
+Se dividen en dos carpetas principales, static y src:
+
+
+
+\paragraph{\texttt{static/}}  
+Carpeta destinada a recursos estáticos que no requieren procesamiento por el bundler:
+\begin{itemize}
+	\item \texttt{css/} — estilos globales, resets y variables.
+	\item \texttt{fonts/} — tipografías.
+	\item \texttt{images/} — logotipos, iconografía y gráficos estáticos.
+	\item \texttt{lang/} —. archivos de traducciones (español e inglés) y textos de interfaz en formato JSON
+\end{itemize}
+
+
+\paragraph{\texttt{src/}} Código fuente del frontend. Se tiene la siguiente subestructura:
+
+\begin{itemize}
+	\item \texttt{src/components/} — \emph{Componentes reutilizables} Svelte (tablas, botones, formularios, tarjetas, gráficos, navbar, etc.). Cada componente agrupa su plantilla, lógica y estilos y debe cumplir responsabilidad única siendo capaces de ser llamados para cualquier página.
+	\item \texttt{src/lib/} — Lógica de negocio y servicios; actúa como capa intermedia entre la vista y el backend:
+	\begin{itemize}
+		\item \texttt{services/} — Clases y funciones que encapsulan las llamadas HTTP al backend, gestionando la autenticación, la construcción de URLs y la serialización de datos (por ejemplo, \texttt{patient\_fetch.js}).
+		\item \texttt{models/} — Adaptadores y tipos que representan las entidades del dominio (pacientes, usuarios, patologías, etc.), transforman la respuesta de la API a objetos de UI y gestionan la lógica de conversión y embebido (\texttt{patient.js}, \texttt{patient\_list\_dc.js}).
+		\item \texttt{controllers/} — Controladores que orquestan la lógica de negocio (por ejemplo \texttt{patient\_controller.js}), coordinando modelos y servicios para operaciones complejas .
+		\item \texttt{commons/} — Constantes globales, configuración, utilidades generales que limitan globalmente la lógica de negocio, como podría ser limite de datos para manejar en una sola petición. (\texttt{constants.js}).
+		\item \texttt{exceptions/} — Clases y utilidades para el manejo y presentación de errores y mensajes de excepción (\texttt{exception\_messages.js}).
+		\item \texttt{utils/} — Funciones auxiliares para formateo de fechas, validaciones, helpers de queries (\texttt{query\_encoder.js}).
+		\item \texttt{session\_manager.js} — Gestión de autenticación, tokens, sesión y permisos del usuario.
+		\item \texttt{stores/} — Stores de Svelte para estado compartido (sesión, usuario, cachés locales).
+	\end{itemize}
+	
+	Esta capa mejora la testabilidad y aísla los componentes frente a cambios en la API.
+	\item \texttt{src/routes/} — páginas o rutas Svelte que definen las vistas visibles del usuario. Estas páginas ensamblan componentes y consumen los servicios de \texttt{lib/}.
+\end{itemize}
+
+Al igual que en el backend en esta parte del proceso existe múltiples patrones de diseño y elementos especializados para cada entidad que heredan funciones de elementos generales.
+
+\subsubsection{Patrones de diseño aplicados en el frontend}
+
+En el frontend se han aplicado patrones de diseño y buenas prácticas análogas a las vistas del backend, con las adaptaciones necesarias por la naturaleza de la interfaz. A continuación se describen los patrones principales, su implementación concreta en el proyecto y la diferencia frente a su contraparte en el backend.
+
+\paragraph{Visión general}  
+El frontend replica conceptualmente el patrón Modelo–Vista–Controlador (MVC) usado en el backend, pero con responsabilidades distintas: en el backend el \emph{controlador} ejecuta reglas de negocio y accede a persistencia; en el frontend el «controlador» coordina datos y presentación sin persistir información definitiva. Por ello el frontend se centra en \emph{presentación}, \emph{sincronización reactiva} y \emph{gestión de estado} mientras delega la validación y la seguridad definitiva al servidor.
+
+\begin{itemize}
+	\item \textbf{Modelo-Vista-controlador (MVC):}
+	\begin{itemize}
+		\item \emph{Modelo:} clases como \texttt{PatientModel}) que normalizan/validan datos para la interfaz de usuario.
+		\item \emph{Controlador:} clases como \texttt{PatientController} que orquestan llamadas a servicios y actualizan los stores; su responsabilidad es coordinar la interacción interfaz–servicio, no aplicar reglas autorizadas por la BD.
+		\item \emph{Vista:} archivos Svelte en \texttt{src/routes} y componentes en \texttt{src/components} que renderizan datos y gestionan la interacción del usuario.
+	\end{itemize}
+	
+	
+	\item \textbf{Data Container / Adapter:}  
+	Clases como \texttt{PatientListDC} y \texttt{BaseDC} actúan como adaptadores entre la API REST y la interfaz. Normalizan, agregan y transforman los JSON recibidos para optimizar filtrado, paginación y renderizado en componentes. Esto reduce el acoplamiento entre la representación remota (API) y la representación local.
+	
+	\item \textbf{Service Layer (fachada de API):}  
+	Módulos en \texttt{src/lib/services} (Por ejemplo \texttt{PatientFetch}) encapsulan llamadas HTTP, manejo de cabeceras (auth), reintentos y transformación básica de respuestas. Al igual que en el backend, esta capa centraliza la comunicación con servicios externos; en el frontend además gestiona aspectos de la comunicación (spinners, retries, mensajes de error amistosos).
+	
+	\item \textbf{Gestión de estado centralizado:}  
+	Stores de Svelte (\texttt{src/lib/stores}) mantienen estado compartido (usuario, sesión, caches, filtros). Los stores implementan la reactividad que provoca actualizaciones automáticas de las vistas cuando cambian los datos.
+		
+	\texttt{session\_manager.js} centraliza la autenticación, el almacenamiento y la renovación de tokens, y el control de acceso en el cliente. Está diseñado como singleton para garantizar un punto único de control sobre la sesión. El frontend nunca almacena contraseñas ni datos sensibles, solo el token de sesión, que se guarda en \texttt{localStorage} y se renueva automáticamente antes de expirar. El acceso a funcionalidades y vistas se controla según el rol y permisos del usuario, obtenidos a partir del token y consultados al backend. Todas las decisiones críticas de autorización se validan en el servidor, asegurando la protección de los datos y la integridad del sistema.
+	
+	\item \textbf{Patrón Presentador / Contenedor:}  
+	Este patrón se emplea en el frontend para separar la lógica de negocio de la presentación visual. Por ejemplo, en la ruta donde se muestra la información de un paciente la página svelte actúa como contenedor: gestiona la obtención y el estado de los datos del paciente, y pasa estos datos como propiedades al componente \texttt{PatientForm.svelte}, que es presentacional y se encarga únicamente de mostrar el formulario. Esta división facilita la reutilización de componentes visuales y mejora la testabilidad, ya que los componentes presentacionales no dependen de la lógica ni del estado global.
+
+\end{itemize}
+
+\subsubsection{Permisos y funcionalidades por tipo de usuario}
+
+\begin{itemize}
+	\item \textbf{Administrador (Admin):}  
+	Tiene acceso total de lectura y escritura sobre todas las entidades del sistema (usuarios, pacientes, modelos, estudios, alarmas, patologías, etc.), y puede visualizar toda la información, excepto los chats, que solo pueden ser vistos por sus participantes o manipulando directamente la base de datos), en la figura \ref{fig:admin}, se puede ver la pestaña de inicio al acceder como administrador, destaca por tener todas las funcionalidades y capacidad de inspeccionar a todos los pacientes de la plataforma, todas las alarmas e idealmente tienen un chat activo con todo usuario para solventar cualquier problema con la plataforma.
+	
+	
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=0.9\textwidth]{images/pov_admin.png}
+		\caption[Ejemplo]{Pestaña de inicio para un administrador}
+		\label{fig:admin}
+	\end{figure}
+	
+	
+	\item \textbf{Usuario profesional (médico o cuidador):}  
+	Dispone de permisos similares al administrador, pero limitados a los pacientes bajo su cuidado. No puede ver información de otros usuarios ni pacientes ajenos, y no tiene capacidad para crear nuevos chats; solo puede participar en los que le sean asignados. En la figura \ref{fig:doctor}, se puede ver la pestaña de inicio al acceder como doctor, a diferencia de admin ya encuentra ciertos limites como el no poder obtener ninguna información de otros usuarios. La plataforma enfocarse en los doctores casi todas las funcionalidades fueron pensadas para que puedan ser usadas por estos mismos.
+	
+	
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=0.9\textwidth]{images/pov_doctor.png}
+		\caption[Ejemplo]{Pestaña de inicio para un doctor}
+		\label{fig:doctor}
+	\end{figure}
+	
+	
+	\item \textbf{Paciente (Patient):}  
+	Es el usuario con menos privilegios. Solo puede consultar su propia información personal, estudios realizados por la pulsera, alarmas y patologías asociadas, gestionar su perfil de usuario y acceder a los chats en los que participa. En la figura \ref{fig:paco}, se puede ver la pestaña mucho más limitada que en los casos anteriores, esta bastante restringido a información propia.
+	
+	
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=0.9\textwidth]{images/pov_paciente.png}
+		\caption[Ejemplo]{Pestaña de inicio para un paciente}
+		\label{fig:paco}
+	\end{figure}
+\end{itemize}
+
+Se recomienda observar el ápendice A2 que muestra el uso de la plataforma, teniendo capturas más completas de cada ruta.
 
 \section{Conclusiones y perspectivas futuras}
-	\subsection{Resultados principales}
-	\subsection{Líneas de mejora}
-	
-	- Mejorar la detección de caídas aplicando aprendizaje automatico o definiendo posibles tipos de caída y su gravedad (por ejemplo: caída lateral, de sentado, de pie)  
+\subsection{Conclusiones}
 
+El presente Trabajo de Fin de Grado ha permitido diseñar y probar un prototipo de pulsera orientada al seguimiento de pacientes mayores, acompañado de una plataforma web de telemedicina completa. Se han alcanzado los objetivos planteados en la fase inicial:
+
+\begin{itemize}
+	\item \textbf{Objetivo general:} Se logró implementar un prototipo funcional capaz de monitorizar parámetros vitales (frecuencia cardíaca, saturación de oxígeno y actividad física) y detectar caídas, integrando la comunicación con una plataforma de seguimiento remoto.
+	\item \textbf{Diseño del hardware:} Se ensambló un prototipo con microcontrolador ESP32 y sensores (MAX30102 y MPU-6050), que demostró la viabilidad de registrar constantes vitales y eventos críticos en tiempo real.
+	\item \textbf{Algoritmos de detección:} Se desarrollaron y probaron algoritmos basados en umbrales para diferenciar caídas y movimientos cotidianos, alcanzando un nivel de precisión aceptable en el contexto de prototipo.
+	\item \textbf{Plataforma web:} Se implementó un sistema cliente–servidor con arquitectura modular, que incluye un \emph{backend} en Python/FastAPI y un \emph{frontend} en Svelte, ofreciendo autenticación, gestión de usuarios, gráficas de evolución de métricas y sistema de notificaciones.
+	\item \textbf{Comunicación segura:} Se validó el uso de Wi-Fi y protocolo MQTT para el envío de datos, junto con un sistema de almacenamiento en base de datos PostgreSQL, garantizando trazabilidad y persistencia.
+\end{itemize}
+
+En conjunto, el proyecto demuestra la viabilidad de integrar hardware, algoritmos y software en una solución completa para la telemedicina, aportando una base sólida de todos los conocimientos obtenidos en el grado de ingeniería de la salud.
+
+\subsection{Líneas de mejora}
+
+Aunque se han alcanzado los objetivos principales, el trabajo deja abiertas distintas líneas de mejora que permitirían aumentar la fiabilidad y el valor añadido del sistema:
+
+\begin{itemize}
+	\item Sustituir los sensores actuales por otros de mayor calidad, homologados y que cumplan con estándares médicos, a fin de garantizar precisión en las mediciones y seguridad del paciente.
+	\item Desarrollar una carcasa mediante impresión 3D que aporte robustez, ergonomía y realismo al prototipo de la pulsera.
+	\item Mejorar la detección de caídas mediante el uso de técnicas de aprendizaje automático, capaces de distinguir distintos tipos de caídas (laterales, sentado, de pie) y estimar su gravedad.
+	\item Ampliar la plataforma con módulos de seguimiento de hábitos saludables, registro de síntomas diarios y acceso a recomendaciones personalizadas.
+	\item Optimizar la lógica de notificaciones incorporando alertas de terceros, para notificar las alarmas por correo o mensajes de texto.
+	\item Integrar gráficos dinámicos e interactivos que permitan al paciente y a los profesionales visualizar de manera comparativa la evolución de parámetros clínicos mediante otras gráficas.
+	\item Añadir un sistema de recordatorios para la gestión de medicación, citas médicas y tareas relacionadas con la salud.
+	\item Implementar la exportación de datos en formatos estándar (PDF/CSV), facilitando la comunicación con profesionales sanitarios y la interoperabilidad con otras plataformas.
+\end{itemize}
+
+Este proyecto deja abiertas muchas posibilidades de mejora; con la forma de trabajar, Usando ingeniería de requisitos, patrones y lógica modular, da pie a que la escalabilidad de la plataforma pueda cumplir con todas las ideas que pueda llegar a tenerse.
 
 %% Bibliography
 \begin{thebibliography}{9}
@@ -1313,7 +1583,81 @@ EFF / Certbot.
 \textit{Certbot user guide}. Documentación Certbot.
 Disponible en: \url{https://eff-certbot.readthedocs.io/en/stable/using.html} (consultado 5 sep 2025).
 
+\bibitem{PythonDoc}
+Python Software Foundation. 
+\textit{Python Documentation} [Internet]. 
+Disponible en: \url{https://docs.python.org/3/}. (consultado 5 sep 2025).
+
+\bibitem{FastAPI}
+Ramírez S. FastAPI — Documentation [Internet]. 2018–. 
+Disponible en: \url{https://fastapi.tiangolo.com/}. (consultado 5 sep 2025).
+
+\bibitem{Pydantic}
+Pydantic authors. Pydantic — Documentation [Internet]. 
+Disponible en: \url{https://docs.pydantic.dev/}. (consultado 5 sep 2025).
+
+\bibitem{SQLAlchemy}
+SQLAlchemy authors. SQLAlchemy ORM — Documentation [Internet]. 
+Disponible en: \url{https://docs.sqlalchemy.org/}. (consultado 5 sep 2025).
+
+\bibitem{Alembic}
+Alembic authors. Alembic — Database migrations for SQLAlchemy [Internet]. 
+Disponible en: \url{https://alembic.sqlalchemy.org/}. (consultado 5 sep 2025).
+
+\bibitem{Passlib}
+Passlib developers. Passlib — Password hashing library [Internet]. 
+Disponible en: \url{https://passlib.readthedocs.io/}. (consultado 5 sep 2025).
+ 
+\bibitem{OWASPPasswords}
+OWASP Foundation. Password Storage Cheat Sheet [Internet]. 
+Disponible en: \url{https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html}. (consultado 5 sep 2025).
+
+\bibitem{JWT}
+IETF. RFC 7519 — JSON Web Token (JWT) [Internet]. 
+Disponible en: \url{https://datatracker.ietf.org/doc/html/rfc7519}. (consultado 5 sep 2025).
+
+\bibitem{Redis}
+Redis Ltd. Redis Documentation — Pub/Sub [Internet]. 
+Disponible en: \url{https://redis.io/docs/latest/develop/pubsub/}. (consultado 5 sep 2025).
 	
+	
+
+\bibitem{Svelte}
+Svelte Authors. Svelte — The Magical Disappearing Framework [Internet]. 
+Disponible en: \url{https://svelte.dev/} . (consultado 5 sep 2025).
+
+\bibitem{JSMDN}
+MDN Web Docs. JavaScript — Guide [Internet]. 
+Disponible en: \url{https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide}. (consultado 5 sep 2025).
+
+\bibitem{HTMLMDN}
+MDN Web Docs. HTML — Reference [Internet]. 
+Disponible en: \url{https://developer.mozilla.org/en-US/docs/Web/HTML}. (consultado 5 sep 2025).
+
+\bibitem{CSSMDN}
+MDN Web Docs. CSS — Reference [Internet]. 
+Disponible en: \url{https://developer.mozilla.org/en-US/docs/Web/CSS}. (consultado 5 sep 2025).
+
+\bibitem{MITLicense}
+Open Source Initiative. The MIT License — Open Source Initiative [Internet]. 
+Disponible en: \url{https://opensource.org/licenses/MIT}. (consultado 5 sep 2025).
+
+\bibitem{FontAwesome}
+Font Awesome. Font Awesome — Icons [Internet]. 
+Disponible en: \url{https://fontawesome.com/}. (consultado 5 sep 2025).
+
+\bibitem{GoogleFonts}
+Google. Google Fonts — Free and open source fonts [Internet]. 
+Disponible en: \url{https://fonts.google.com/}. (consultado 5 sep 2025).
+
+\bibitem{CreativeTim}
+Creative Tim. Free \& Premium UI Kits and Dashboards [Internet]. 
+Disponible en: \url{https://www.creative-tim.com/}. (consultado 5 sep 2025).
+
+\bibitem{uiverse}
+uiverse. UI components and templates [Internet]. 
+Disponible en: \url{https://uiverse.io/}. (consultado 5 sep 2025).
+
 \end{thebibliography}
 
 \begin{umaappendices}
@@ -1434,7 +1778,228 @@ Disponible en: \url{https://eff-certbot.readthedocs.io/en/stable/using.html} (co
 
 	
 	\subsection{Uso de la plataforma}
-	% … contenido omitido …
+	
+	\subsubsection{Resumen}
+	La plataforma incluye numerosas funcionalidades, por lo que puede resultar complejo revisarlas todas de un vistazo. En este apéndice se recorre la aplicación \emph{ruta a ruta}, mostrando las posibilidades disponibles una vez que los contenedores Docker se han iniciado correctamente y la base de datos está poblada con datos de ejemplo.
+	
+	\subsubsection{Inicio de sesión (Login)}
+	Una vez lanzados los contenedores Docker, si se accede mediante \texttt{localhost:PUERTO} o a través de la dirección IP del host, se visualizará la pantalla de inicio de sesión de la plataforma médica (fig. \ref{fig:login}). Esta ruta permite autenticarse; mientras el usuario no disponga de un token válido (JWT), cualquier intento de acceder a rutas protegidas le redirigirá a esta ventana. La interfaz utiliza el idioma del navegador por defecto, mostrándose en español o en inglés según corresponda.
+	
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=1\textwidth]{images/1_login.png}
+		\caption[Ejemplo]{Ruta: Login.}
+		\label{fig:login}
+	\end{figure}
+	
+	\subsubsection{Contraseña olvidada}
+	La pantalla de recuperación (fig. \ref{fig:olvide}) es similar a la de otras plataformas. Para evitar depender de servicios externos, la implementación actual sólo cambia el estado de la cuenta asociada al correo introducido y notifica al administrador para que contacte con el usuario y gestione el restablecimiento de la contraseña. En las líneas de mejora se plantea integrar un sistema de notificaciones que utilice servicios de terceros para automatizar el envío de correos o SMS.
+	
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=0.9\textwidth]{images/2_olvide.png}
+		\caption[Ejemplo]{Ruta: \texttt{password/reset}.}
+		\label{fig:olvide}
+	\end{figure}
+	
+	\subsubsection{Página principal (Home)}
+	La figura \ref{fig:alter} muestra la página principal que aparece tras iniciar sesión. La interfaz presenta una barra de navegación con las rutas y funciones disponibles, un panel de control con un resumen de métricas y acciones rápidas, y un videotutorial de uso de la plataforma.
+	
+	En la barra de navegación hay dos controles de interés que no cambian de ruta: un selector de idioma (cambia la interfaz entre español e inglés) y un botón de alternancia de tema (modo claro —con colores inspirados en el logotipo de la plataforma y de la Universidad de Málaga— y modo oscuro). La figura \ref{fig:alter} ilustra el efecto de estos controles en la apariencia de la interfaz.
+	
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=1\textwidth]{images/3_home.png}
+		\caption[Ejemplo]{Página principal (Home) tras iniciar sesión; muestra panel de control.}
+		\label{fig:alter}
+	\end{figure}
+	
+	\subsubsection{Listado de pacientes}
+	En la ruta de pacientes (fig. \ref{fig:list}) se presenta una tabla paginada que muestra, por defecto, 25 registros; el número de filas puede ampliarse a 50, 75 o 100. Al final de la tabla aparecen controles para navegar entre páginas, lo que evita la carga de todos los pacientes de una sola vez. La tabla permite ordenar por columnas (por ejemplo: nombre, sexo, fecha de última actualización) y dispone de un buscador para localizar entradas concretas.
+	
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=0.8\textwidth]{images/4_pacientes.png}
+		\caption[Ejemplo]{Ruta \texttt{Patients}: tabla con los pacientes a los que el usuario tiene acceso.}
+		\label{fig:list}
+	\end{figure}
+	
+	La página incluye un botón con el símbolo \texttt{+} que abre el formulario para añadir un nuevo paciente (\texttt{patients/add}), mostrado en la figura \ref{fig:add}. Para guardar un paciente es necesario completar todos los campos obligatorios: nombre, fecha de nacimiento (no puede ser posterior a la fecha actual), género (lista de valores admitidos: masculino/femenino), peso en kg, etc. Si el usuario autenticado es administrador, puede asignar cualquier médico como responsable del nuevo paciente; si el usuario es un médico, el paciente se vinculará automáticamente a su cuenta.
+	
+
+	
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=0.9\textwidth]{images/5_patientadd.png}
+		\caption[Ejemplo]{Ruta \texttt{Patients/add}: formulario para crear un nuevo paciente.}
+		\label{fig:add}
+	\end{figure}
+
+		\subsubsection{Paciente específico}
+		Si en la tabla de pacientes seleccionamos uno, accederemos a la vista detallada de ese paciente mediante la ruta con su identificador en la base de datos; por ejemplo, al seleccionar el paciente con \texttt{ID = 316} accederemos a \texttt{patients/316}. En las figuras \ref{fig:pac1} y \ref{fig:pac2} se muestra la información completa del paciente: datos personales (con la opción de modificarlos mediante el botón con el icono de hoja y lápiz), la lista de patologías asociadas junto con su fecha de detección (es posible añadir o editar patologías usando el botón \texttt{+}, que abre un selector con el catálogo de patologías, ver fig. \ref{fig:pato}), y una tabla de estadísticas que resume los datos obtenidos por la pulsera.
+		
+		\begin{figure}[htbp]
+			\centering
+			\includegraphics[width=0.9\textwidth]{images/6_patientID.png}
+			\caption[Ejemplo]{Informe de un paciente.}
+			\label{fig:pac1}
+		\end{figure}
+		Las estadísticas se agrupan por día y muestran, por cada estudio, la fecha, el número de registros, la hora del primer y del último registro, y el número total de pasos realizados ese día. Si se selecciona un estudio, se abre la ruta correspondiente al mismo. Asimismo, existe una tabla de alarmas que indica el tipo de alerta, la fecha y hora del evento y un símbolo que clasifica la urgencia de la alarma. El médico puede marcar las alarmas como atendidas o eliminarlas del registro. Lo ideal sería que, cuando se genera una alarma, el médico y los cuidadores recibieran notificaciones externas (por ejemplo, por correo o SMS) y que, una vez comprobado el estado del paciente, la alarma quedara registrada como resuelta.
+		
+		El sistema también comprueba si el usuario autenticado mantiene una conversación (chat) con el paciente y, en caso afirmativo, habilita el acceso al chat desde esta vista.
+		
+		La lógica de esta página se reutiliza cuando es el propio paciente quien accede para consultar sus datos: en ese caso se muestra la misma interfaz adaptada al rol del usuario.
+		
+
+		
+		\begin{figure}[htbp]
+			\centering
+			\includegraphics[width=0.9\textwidth]{images/6_patientID2.png}
+			\caption[Ejemplo]{Continuación de la figura \ref{fig:pac1}.}
+			\label{fig:pac2}
+		\end{figure}
+		
+		\begin{figure}[htbp]
+			\centering
+			\includegraphics[width=1\textwidth]{images/7_vincular.png}
+			\caption[Ejemplo]{Vinculación de patologías a un paciente concreto.}
+			\label{fig:pato}
+		\end{figure}
+			
+	\subsubsection{Lecturas de un día seleccionado}
+	Al seleccionar una fila de la tabla de estadísticas del paciente se accede a la ruta del estudio correspondiente, donde se presenta un panel de control con la información recopilada por la pulsera durante ese día. La cabecera resume el día con indicadores como: pasos totales, BPM promedio (latidos por minuto), SpO\textsubscript{2} promedio, horas con actividad física (o con un número notable de pasos) y el pico de actividad (hora con mayor actividad). Todos estos indicadores se muestran junto con sus rangos de referencia. Además, el sistema genera alertas automáticas cuando algunos parámetros requieren revisión por un profesional o cuando se detectan advertencias por ejemplo, baja actividad física o una saturación promedio disminuida, tal y como se aprecia en la figura~\ref{fig:est1}.
+	
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=0.9\textwidth]{images/8_estudio1.png}
+		\caption[Ejemplo]{Informe diario con los datos recopilados por la pulsera.}
+		\label{fig:est1}
+	\end{figure}
+	
+	En la figura~\ref{fig:est15} se presentan tres gráficas que representan las lecturas a lo largo del día, facilitando una visualización global y la identificación de patrones o episodios relevantes en el comportamiento del paciente. Finalmente, en la figura~\ref{fig:est2} se muestra una tabla con todos los registros del día; las filas emplean un código de colores para facilitar la lectura: verde para valores dentro de la normalidad, amarillo para valores que requieren atención y rojo para valores críticos que deberían revisarse cuanto antes.
+	
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=0.9\textwidth]{images/8_estudio.png}
+		\caption[Ejemplo]{Gráficas diarias que muestran la evolución temporal de las lecturas.}
+		\label{fig:est15}
+	\end{figure}
+	
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=0.9\textwidth]{images/8_estudio2.png}
+		\caption[Ejemplo]{Tabla de registros diarios con código de colores (verde/amarillo/rojo) para facilitar la interpretación.}
+		\label{fig:est2}
+	\end{figure}
+	
+\subsubsection{Patologías de la plataforma}
+Al acceder desde la barra de navegación a la sección \textit{Patologías} se muestra una tabla similar a la de pacientes (figura~\ref{fig:patol}). Dicha tabla presenta, como columnas principales, el nombre de la patología y la fecha de su última actualización. Mediante el botón de adición (\texttt{+}) es posible crear nuevas entradas en la base de datos; al pulsar sobre una fila se navega a la vista detallada de la patología seleccionada.
+
+\vspace{-5pt}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.7\textwidth]{images/9_patología.png}
+	\caption[Ejemplo]{Listado de patologías disponibles en la plataforma.}
+	\label{fig:patol}
+\end{figure}
+
+\vspace{-20pt}
+
+\subsubsection{Patología específica}
+Al seleccionar una patología se accede a su ficha detallada, que incluye el nombre de la patología y un listado de los pacientes afectados con la correspondiente fecha de detección. Desde esta vista es posible modificar el nombre de la patología, eliminarla o editar la lista de pacientes asociados (por ejemplo, añadir o retirar pacientes), tal y como se muestra en la figura~\ref{fig:patolo}.
+
+\vspace{-5pt}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.65\textwidth]{images/9_patología2.png}
+	\caption[Ejemplo]{Detalle de una patología: información básica y pacientes asociados.}
+	\label{fig:patolo}
+\end{figure}
+
+\subsubsection{Chats}
+La sección \textit{Chats} muestra una tabla con las conversaciones disponibles para el usuario (figura~\ref{fig:chat1}). Los chats disponibles dependen del rol: por ejemplo, un administrador suele ver conversaciones con cualquier usuario; un médico verá chats con sus pacientes y con compañeros.
+\vspace{-5pt}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.7\textwidth]{images/10_chat.png}
+	\caption[Ejemplo]{Listado de chats accesibles para el usuario.}
+	\label{fig:chat1}
+\end{figure}
+\vspace{-15pt}
+
+Los administradores disponen de un botón para crear nuevos chats; al pulsarlo se muestra un formulario (figura~\ref{fig:chat2}) que permite iniciar una conversación entre el administrador y otro usuario, o bien entre dos usuarios cualesquiera de la plataforma. Si se intenta crear un chat que ya existe, el sistema muestra un aviso indicando la duplicidad.
+\vspace{-5pt}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.37\textwidth]{images/10_chat2.png}
+	\caption[Ejemplo]{Formulario de creación manual de un chat entre dos usuarios.}
+	\label{fig:chat2}
+\end{figure}
+
+	\subsubsection{Entrar en una conversación}
+	Al seleccionar un chat al igual que otros medios de mensajería se abrira la conversación mostrandose los mensajes (figura~\ref{fig:chat2})
+	
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=0.9\textwidth]{images/11_chati.png}
+		\caption[Ejemplo]{Ejemplo de conversación en la plataforma.}
+		\label{fig:chati}
+	\end{figure}
+
+	\subsubsection{Mis alarmas}
+	Al seleccionar alarmas de la barra de navegación se abrirá una tabla resumen con todas las alarmas sin resolver, mostrando el paciente que la genero, el tipo de alarma, la fecha y si es urgente, al seleccionar una de estas alarmas envía al historial del paciente donde tiene acceso a los datos de ese día además de acceso a su chat (figura~\ref{fig:alarn})
+	
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=0.9\textwidth]{images/12_alarmas.png}
+		\caption[Ejemplo]{Listado de las alarmas de los pacientes que tienes acceso}
+		\label{fig:alarn}
+	\end{figure}
+
+	
+	\subsubsection{Perfil}
+	Cada usuario tiene acceso a su perfil personal, donde se encuentra la información vinculada a su cuenta: nombre, rol, correo electrónico y teléfono de contacto. Como es habitual en este tipo de plataformas, existe la opción de modificar estos datos mediante el botón de edición, tal y como se muestra en la figura~\ref{fig:per}.
+	
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=0.9\textwidth]{images/13_perfil.png}
+		\caption[Ejemplo]{Vista del perfil de usuario en la plataforma.}
+		\label{fig:per}
+	\end{figure}
+	
+	Al presionar el botón de edición, se accede a la ruta \texttt{my-profile/edit}, donde es posible actualizar la información de perfil o, por ejemplo, eliminar el número de teléfono de contacto (figura~\ref{fig:perf}). Además, se incluye un panel específico para la modificación de la contraseña (figura~\ref{fig:perff}).
+	
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=0.9\textwidth]{images/13_perfil2.png}
+		\caption[Ejemplo]{Edición de la información del perfil de usuario.}
+		\label{fig:perf}
+	\end{figure}
+	
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=0.9\textwidth]{images/13_perfil3.png}
+		\caption[Ejemplo]{Panel para la modificación de la contraseña.}
+		\label{fig:perff}
+	\end{figure}
+	\vspace{-15pt}
+\subsubsection{Usuarios}
+El acceso a esta sección está restringido exclusivamente a los administradores, ya que contiene información sensible de los usuarios de la plataforma, incluyendo correos electrónicos y otros datos personales como se observa en la figura (figura~\ref{fig:usuari}). Su objetivo principal es facilitar la gestión y el control de las cuentas activas, permitiendo contabilizar de forma clara el número de doctores, identificar las cuentas con permisos de administrador y revisar cualquier detalle relacionado con los usuarios.
+
+Al igual que en otras secciones del proyecto, esta ruta incorpora un botón para la creación de nuevos usuarios, así como opciones para modificar o actualizar la información de los usuarios existentes, siempre bajo un manejo cuidadoso y seguro de los datos.
+\vspace{-5pt}
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.95\textwidth]{images/14}
+	\caption[Ejemplo]{Tabla de gestión de usuarios en la plataforma.}
+	\label{fig:usuari}
+\end{figure}
+
+
 	
 	\subsection{Configuración y despliegue del entorno con Docker}
 	\label{sec:deploy_docker}
