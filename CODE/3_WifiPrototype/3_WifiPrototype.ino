@@ -61,13 +61,13 @@ void shiftBuffers(uint16_t shiftCount);
 void displayRealtime();
 
 // ———  Wi-Fi y NTP ————————————————————————————————————————————————
-const char* SSID     = ""; // Nombre de la red wifi
-const char* PASSWORD = ""; //Contraseña 
+const char* SSID     = "iPhone";
+const char* PASSWORD = "TFGde100";
 const char* NTP1     = "pool.ntp.org";
 const char* NTP2     = "time.nist.gov";
 
 // ——— Configuración MQTT (Mosquitto local) ——————————————————————————
-const char* MQTT_BROKER = "";  // IP local del PC
+const char* MQTT_BROKER = "172.20.10.3";  // IP local del PC
 const int   MQTT_PORT   = 1883;
 const char* MQTT_TOPIC  = "pulsera/test";
 
